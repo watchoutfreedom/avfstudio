@@ -1,0 +1,59 @@
+.flash {
+  animation: .5s flash .8s ease-in-out both;
+}
+
+@keyframes flash {
+  0% { 
+    opacity: 0;
+    transform: translateY(12px);
+  } 
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.flash_02 {
+  animation: .4s flash_02 1.5s ease-in-out both;
+}
+
+@keyframes flash_02 {
+  0% { 
+    opacity: 0;
+    transform: translateY(12px);
+  } 
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.flash_03 {
+  animation: .4s flash_03 2.25s ease-in-out both;
+}
+
+@keyframes flash_03 {
+  0% { 
+    opacity: 0;
+    transform: translateY(12px);
+  } 
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.flash_04 {
+  animation: .2s flash_04 1s ease-in-out both;
+}
+
+@keyframes flash_04 {
+  0% { 
+    opacity: 0;
+    transform: translateY(12px);
+  } 
+  100% {
+    opacity: 0.5;
+    transform: translateY(0);
+  }
+}

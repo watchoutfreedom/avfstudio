@@ -1,0 +1,49 @@
+.wrapper {
+  width: 95%;
+  margin: auto;
+  max-width: 840px;
+  padding-bottom: 100px;
+  font-family: $font-cereal;
+}
+
+.container_box {
+  color: black;
+  margin: 20px 0;
+}
+
+.question {
+  font-size: 1.2rem;
+  font-weight: 600;
+  padding: 20px 80px 20px 20px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.question::after {
+  content: "\002B";
+  font-size: 1rem;
+  position: absolute;
+  right: 20px;
+  transition: 0.2s;
+}
+
+.question.active::after {
+  transform: rotate(45deg);
+}
+
+.answercont {
+  max-height: 0;
+  overflow: hidden;
+  transition: 0.3s;
+}
+
+.answer {
+  padding: 0 20px 20px;
+  opacity: .8;
+  line-height: 1.5rem;
+}
+
+.question.active + .answercont {
+}

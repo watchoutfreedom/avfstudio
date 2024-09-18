@@ -1,0 +1,30 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100..900;1,100..900&display=swap');
+
+body {
+    font-family: "Inter", sans-serif;
+}
+
+
+
+@font-face {
+  font-family: 'AirbnbCereal_W_Bd';
+  src: url('../fonts/AirbnbCereal_W_Bd.otf') format('otf');
+  font-weight: 500;
+  font-display: swap;
+  font-style: normal;
+}
+
+
+@font-face {
+  font-family: 'AirbnbCereal_W_Md';
+  src: url('../fonts/AirbnbCereal_W_Md.otf') format('otf');
+  font-weight: 400;
+  font-display: swap;
+  font-style: normal;
+}
+
+$font-cereal: "Overpass", sans-serif;
+$font-cereal-m: "Overpass", sans-serif;
+
