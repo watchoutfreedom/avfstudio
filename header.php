@@ -27,12 +27,12 @@
   <link rel="shortcut icon" href="<?php bloginfo('template_directory'); ?>/assets/img/favicon.png" type="image/png" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
+   
+    <!-- Include Montserrat font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
 
 </head>
 
 <body>
-  <!-- Google Tag Manager (noscript) --> 
-  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TZDSHBHP" 
-  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript> 
-  <!-- End Google Tag Manager (noscript) -->
 
