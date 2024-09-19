@@ -1,0 +1,79 @@
+.sponsor {
+  width: 90%;
+  margin: auto;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+
+  .sponsor__cat {
+    display: none;
+  }
+
+  .sponsor__cat:first-child {
+    font-family: $font-cereal;
+    display: block;
+    flex: 0 1 100%;
+    text-align: center;
+    font-weight: bold;
+    font-size: 20px;
+    padding: 12px 0 0 0;
+    margin-top: 32px;
+  }
+}
+
+.sponsor__card {
+  flex: 0 1 100px;
+  margin: 24px;
+  display: inline-flex;
+  align-items: center;
+  transition: .2s;
+  order: 9;
+}
+
+.sponsor__title {
+  color: black;
+  text-align: center;
+  font-size: 11px;
+  padding-top: 17px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 16px;
+}
+
+.sponsor__link {
+  text-decoration: none;
+  display: block;
+}
+
+.sponsor__img {
+  width: 100%;
+  height: auto;
+  transition: .2s;
+
+  &:hover {
+    opacity: .8;
+    transform: scale(105%);
+  }
+}
+
+.Associate, 
+.Premier,
+.Platinum {
+  flex: 0 1 200px !important;
+  order: 1;
+}
+
+@media #{$breakpoints-large} {
+  .sponsor__card {
+    flex: 0 1 100px;
+    margin: 48px;
+  }
+
+
+  .Associate, 
+  .Premier,
+  .Platinum {
+    flex: 0 1 240px !important;
+  }
+}
