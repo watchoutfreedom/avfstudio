@@ -383,6 +383,78 @@ function horizontalLoop(items, config) {
 
 
 
+//sliders extra effects
+
+   // JavaScript for seamless looping
+
+        // Function to enable seamless vertical looping
+        function enableVerticalLooping(section) {
+          const images = section.querySelectorAll('.image-container');
+          const totalImages = images.length;
+
+          // Adjust scroll position to the first original image
+          section.scrollTop = images[0].offsetHeight;
+
+          section.addEventListener('scroll', () => {
+              const scrollTop = section.scrollTop;
+              const firstImageHeight = images[0].offsetHeight;
+              const lastImageHeight = images[totalImages - 1].offsetHeight;
+              const totalScrollHeight = section.scrollHeight;
+
+              // When scrolling up from the first image clone
+              if (scrollTop <= 0) {
+                  section.scrollTop = totalScrollHeight - (2 * firstImageHeight);
+              }
+
+              // When scrolling down from the last image clone
+              if (scrollTop >= totalScrollHeight - section.clientHeight) {
+                  section.scrollTop = firstImageHeight;
+              }
+
+              // Show contact message when scrolling vertically
+              if (scrollTop > images[0].offsetHeight / 2) {
+                  section.classList.add('scrolled');
+              } else {
+                  section.classList.remove('scrolled');
+              }
+          });
+      }
+
+      // Apply vertical looping to each section
+      document.querySelectorAll('.vertical-section').forEach(section => {
+          enableVerticalLooping(section);
+      });
+
+      // Function to enable seamless horizontal looping
+      function enableHorizontalLooping(container) {
+          const sections = container.querySelectorAll('.vertical-section');
+          const totalSections = sections.length;
+
+          // Adjust scroll position to the first original section
+          container.scrollLeft = sections[1].offsetWidth;
+
+          container.addEventListener('scroll', () => {
+              const scrollLeft = container.scrollLeft;
+              const firstSectionWidth = sections[1].offsetWidth;
+              const lastSectionWidth = sections[totalSections - 2].offsetWidth;
+              const totalScrollWidth = container.scrollWidth;
+
+              // When scrolling left from the first section clone
+              if (scrollLeft <= 0) {
+                  container.scrollLeft = totalScrollWidth - (2 * firstSectionWidth);
+              }
+
+              // When scrolling right from the last section clone
+              if (scrollLeft >= totalScrollWidth - container.clientWidth) {
+                  container.scrollLeft = firstSectionWidth;
+              }
+          });
+      }
+
+      // Apply horizontal looping to the container
+      const horizontalContainer = document.getElementById('horizontal-container');
+      enableHorizontalLooping(horizontalContainer);
+
 
 
 
