@@ -77,7 +77,14 @@ get_header();
                         </a>
                         <div class="post-content" style="color: black;">
                             <button class="close-content" style="color: black;">Close</button>
-                            <?php echo apply_filters( 'the_content', $post->post_content ); ?>
+                            <?php
+                            // Display the first paragraph of the content as an excerpt
+                            $content = apply_filters( 'the_content', $post->post_content );
+                            preg_match('/<p>(.*?)<\/p>/', $content, $matches);
+                            if (isset($matches[0])) {
+                                echo $matches[0];
+                            }
+                            ?>
                             <a href="<?php echo get_permalink( $post->ID ); ?>" class="view-more" style="color: black;">View More</a>
                         </div>
                     </div>
