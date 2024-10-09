@@ -246,76 +246,75 @@ get_header();
 </div>
 
 <script>
-        // JavaScript for seamless looping
+    // JavaScript for seamless looping
 
-        // Function to enable seamless vertical looping
-        function enableVerticalLooping(section) {
-            const images = section.querySelectorAll('.image-container');
-            const totalImages = images.length;
+    // Function to enable seamless vertical looping
+    function enableVerticalLooping(section) {
+        const images = section.querySelectorAll('.image-container');
+        const totalImages = images.length;
 
-            // Adjust scroll position to the first original image
-            section.scrollTop = images[0].offsetHeight;
+        // Adjust scroll position to the first original image
+        section.scrollTop = images[1].offsetTop;
 
-            section.addEventListener('scroll', () => {
-                const scrollTop = section.scrollTop;
-                const firstImageHeight = images[0].offsetHeight;
-                const lastImageHeight = images[totalImages - 1].offsetHeight;
-                const totalScrollHeight = section.scrollHeight;
+        section.addEventListener('scroll', () => {
+            const scrollTop = section.scrollTop;
+            const firstImageOffset = images[1].offsetTop;
+            const lastImageOffset = images[totalImages - 2].offsetTop;
+            const totalScrollHeight = section.scrollHeight;
+            const sectionHeight = section.clientHeight;
 
-                // When scrolling up from the first image clone
-                if (scrollTop <= 0) {
-                    section.scrollTop = totalScrollHeight - (2 * firstImageHeight);
-                }
+            // When scrolling up from the first original image
+            if (scrollTop <= images[0].offsetTop) {
+                // Jump to the clone of the first image at the bottom
+                section.scrollTop = lastImageOffset;
+            }
 
-                // When scrolling down from the last image clone
-                if (scrollTop >= totalScrollHeight - section.clientHeight) {
-                    section.scrollTop = firstImageHeight;
-                }
-
-                // Show contact message when scrolling vertically
-                if (scrollTop > images[0].offsetHeight / 2) {
-                    section.classList.add('scrolled');
-                } else {
-                    section.classList.remove('scrolled');
-                }
-            });
-        }
-
-        // Apply vertical looping to each section
-        document.querySelectorAll('.vertical-section').forEach(section => {
-            enableVerticalLooping(section);
+            // When scrolling down from the clone of the first image
+            if (scrollTop >= images[totalImages - 1].offsetTop) {
+                // Jump back to the first original image
+                section.scrollTop = firstImageOffset;
+            }
         });
+    }
 
-        // Function to enable seamless horizontal looping
-        function enableHorizontalLooping(container) {
-            const sections = container.querySelectorAll('.vertical-section');
-            const totalSections = sections.length;
+    // Apply vertical looping to each section
+    document.querySelectorAll('.vertical-section').forEach(section => {
+        enableVerticalLooping(section);
+    });
 
-            // Adjust scroll position to the first original section
-            container.scrollLeft = sections[1].offsetWidth;
+    // Function to enable seamless horizontal looping
+    function enableHorizontalLooping(container) {
+        const sections = container.querySelectorAll('.vertical-section');
+        const totalSections = sections.length;
 
-            container.addEventListener('scroll', () => {
-                const scrollLeft = container.scrollLeft;
-                const firstSectionWidth = sections[1].offsetWidth;
-                const lastSectionWidth = sections[totalSections - 2].offsetWidth;
-                const totalScrollWidth = container.scrollWidth;
+        // Adjust scroll position to the first original section
+        container.scrollLeft = sections[1].offsetLeft;
 
-                // When scrolling left from the first section clone
-                if (scrollLeft <= 0) {
-                    container.scrollLeft = totalScrollWidth - (2 * firstSectionWidth);
-                }
+        container.addEventListener('scroll', () => {
+            const scrollLeft = container.scrollLeft;
+            const firstSectionOffset = sections[1].offsetLeft;
+            const lastSectionOffset = sections[totalSections - 2].offsetLeft;
+            const totalScrollWidth = container.scrollWidth;
 
-                // When scrolling right from the last section clone
-                if (scrollLeft >= totalScrollWidth - container.clientWidth) {
-                    container.scrollLeft = firstSectionWidth;
-                }
-            });
-        }
+            // When scrolling left from the first original section
+            if (scrollLeft <= sections[0].offsetLeft) {
+                // Jump to the clone of the first section at the end
+                container.scrollLeft = lastSectionOffset;
+            }
 
-        // Apply horizontal looping to the container
-        const horizontalContainer = document.getElementById('horizontal-container');
-        enableHorizontalLooping(horizontalContainer);
-    </script>
+            // When scrolling right from the clone of the first section
+            if (scrollLeft >= sections[totalSections - 1].offsetLeft) {
+                // Jump back to the first original section
+                container.scrollLeft = firstSectionOffset;
+            }
+        });
+    }
+
+    // Apply horizontal looping to the container
+    const horizontalContainer = document.getElementById('horizontal-container');
+    enableHorizontalLooping(horizontalContainer);
+</script>
+
 
 <?php
 get_footer();
