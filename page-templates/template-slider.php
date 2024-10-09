@@ -10,6 +10,11 @@ get_header();
     // Define the categories or sections
     $sections = array(
         array(
+            'slug' => 'home',
+            'title' => '',
+            'subtitle' => '',
+        ),
+        array(
             'slug' => 'art',
             'title' => 'Art',
             'subtitle' => '',
