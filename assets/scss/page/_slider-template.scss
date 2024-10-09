@@ -120,3 +120,15 @@ html, body {
     cursor: pointer;
     outline: none;
 }
+
+.post-content p {
+    position: absolute;
+    color: black;
+    top: 50%;
+    line-height: normal;
+    width: 80%;
+    margin: 20px;
+    
+}
+
+
