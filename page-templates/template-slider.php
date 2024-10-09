@@ -14,7 +14,26 @@ get_header();
             'title' => 'Art',
             'subtitle' => '',
         ),
-        // ... other sections ...
+        array(
+            'slug' => 'architecture',
+            'title' => 'Architecture',
+            'subtitle' => '',
+        ),
+        array(
+            'slug' => 'software',
+            'title' => 'Software',
+            'subtitle' => '',
+        ),
+        array(
+            'slug' => 'wofreedom',
+            'title' => 'WoFreedom',
+            'subtitle' => '',
+        ),
+        array(
+            'slug' => 'production-club',
+            'title' => 'Production Club',
+            'subtitle' => 'Lead architect and concept artist',
+        ),
     );
 
     // Loop through sections to generate vertical sliders
@@ -110,12 +129,6 @@ get_header();
 
             // Hide the post content
             postContent.style.display = 'none';
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.post-content').forEach(content => {
-            content.style.display = 'none';
         });
     });
 </script>
