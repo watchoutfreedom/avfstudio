@@ -241,7 +241,7 @@ get_header();
             wp_reset_postdata();
         }
         ?>
-        <div class="contact-message">Contact AVF</div>
+        <div class="contact-message">Contact</div>
     </div>
 </div>
 
