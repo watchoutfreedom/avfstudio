@@ -39,6 +39,11 @@ get_header();
             'title' => 'Production Club',
             'subtitle' => 'Lead architect and concept artist',
         ),
+        array(
+            'slug' => 'illustration',
+            'title' => 'Illustration',
+            'subtitle' => 'Lead architect and concept artist',
+        ),
     );
 
     // Loop through sections to generate vertical sliders
