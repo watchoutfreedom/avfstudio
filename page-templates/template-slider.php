@@ -11,8 +11,8 @@ get_header();
     $sections = array(
         array(
             'slug' => 'home',
-            'title' => '',
-            'subtitle' => '',
+            'title' => 'AVFstudio',
+            'subtitle' => 'Slide to see more',
         ),
         array(
             'slug' => 'art',
