@@ -28,7 +28,7 @@ get_header();
         array(
             'slug' => 'wofreedom',
             'title' => 'WoFreedom',
-            'subtitle' => '',
+            'subtitle' => 'Asociación por la libertad de pensamiento y la cooperación social.',
         ),
         array(
             'slug' => 'production-club',
