@@ -56,7 +56,7 @@ get_header();
                     $image_url = get_the_post_thumbnail_url( $post->ID, 'full' );
                     ?>
                     <div class="image-container">
-                        <a href="<?php the_permalink(); ?>" class="image-link">
+                        <a href="#" class="image-link">
                             <img src="<?php echo esc_url( $image_url ); ?>" alt="<?php the_title_attribute(); ?>">
                             <?php if ( $post === reset( $posts->posts ) ) : ?>
                                 <div class="title-overlay"><?php echo esc_html( $section['title'] ); ?></div>
@@ -66,6 +66,10 @@ get_header();
                             <?php endif; ?>
                             <div class="image-title"><?php the_title(); ?></div>
                         </a>
+                        <div class="post-content">
+                            <button class="close-content">Close</button>
+                            <?php echo apply_filters( 'the_content', $post->post_content ); ?>
+                        </div>
                     </div>
                     <?php
                 }
@@ -80,18 +84,54 @@ get_header();
 </div>
 
 <script>
-    // Optional: Implement arrow keys navigation
-    document.addEventListener('keydown', function(e) {
-        const horizontalContainer = document.getElementById('horizontal-container');
-        const sectionWidth = window.innerWidth;
-        if (e.key === 'ArrowRight') {
-            horizontalContainer.scrollBy({ left: sectionWidth, behavior: 'smooth' });
-        } else if (e.key === 'ArrowLeft') {
-            horizontalContainer.scrollBy({ left: -sectionWidth, behavior: 'smooth' });
-        }
+    // JavaScript to handle click events on posts
+    document.querySelectorAll('.image-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault(); // Prevent default link behavior
+
+            const imageContainer = this.closest('.image-container');
+            const image = imageContainer.querySelector('img');
+            const title = imageContainer.querySelector('.image-title');
+            const postContent = imageContainer.querySelector('.post-content');
+
+            // Hide the image and title
+            image.style.display = 'none';
+            title.style.display = 'none';
+
+            // Hide overlays if present
+            const titleOverlay = imageContainer.querySelector('.title-overlay');
+            const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
+            if (titleOverlay) titleOverlay.style.display = 'none';
+            if (subtitleOverlay) subtitleOverlay.style.display = 'none';
+
+            // Show the post content
+            postContent.style.display = 'flex';
+        });
+    });
+
+    // JavaScript to handle close button
+    document.querySelectorAll('.close-content').forEach(button => {
+        button.addEventListener('click', function() {
+            const postContent = this.parentElement;
+            const imageContainer = postContent.parentElement;
+            const image = imageContainer.querySelector('img');
+            const title = imageContainer.querySelector('.image-title');
+
+            // Show the image and title
+            image.style.display = '';
+            title.style.display = '';
+
+            // Show overlays if present
+            const titleOverlay = imageContainer.querySelector('.title-overlay');
+            const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
+            if (titleOverlay) titleOverlay.style.display = '';
+            if (subtitleOverlay) subtitleOverlay.style.display = '';
+
+            // Hide the post content
+            postContent.style.display = 'none';
+        });
     });
 </script>
-
 
 <?php
 get_footer();
