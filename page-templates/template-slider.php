@@ -140,6 +140,8 @@ get_header();
             postContent.style.display = 'none';
         });
     });
+
+    
 </script>
 
 <?php
