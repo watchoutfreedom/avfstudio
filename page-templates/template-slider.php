@@ -14,26 +14,7 @@ get_header();
             'title' => 'Art',
             'subtitle' => '',
         ),
-        array(
-            'slug' => 'architecture',
-            'title' => 'Architecture',
-            'subtitle' => '',
-        ),
-        array(
-            'slug' => 'software',
-            'title' => 'Software',
-            'subtitle' => '',
-        ),
-        array(
-            'slug' => 'wofreedom',
-            'title' => 'WoFreedom',
-            'subtitle' => '',
-        ),
-        array(
-            'slug' => 'production-club',
-            'title' => 'Production Club',
-            'subtitle' => 'Lead architect and concept artist',
-        ),
+        // ... other sections ...
     );
 
     // Loop through sections to generate vertical sliders
