@@ -11,7 +11,7 @@ get_header();
     $sections = array(
         array(
             'slug' => 'home',
-            'title' => 'AVFstudio',
+            'title' => 'Welcome',
             'subtitle' => '',
         ),
         array(
