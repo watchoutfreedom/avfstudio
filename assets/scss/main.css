@@ -1185,19 +1185,6 @@ html, body {
     font-size: 4vw;
   }
 }
-/* Close button styles */
-.post-content .close-content {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: none;
-  border: none;
-  color: #ffffff;
-  font-size: 18px;
-  cursor: pointer;
-  outline: none;
-}
-
 .single {
   width: 90%;
   margin: 100px auto;
