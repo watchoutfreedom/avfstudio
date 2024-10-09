@@ -42,7 +42,7 @@ get_header();
         array(
             'slug' => 'illustration',
             'title' => 'Illustration',
-            'subtitle' => 'Lead architect and concept artist',
+            'subtitle' => '',
         ),
     );
 
