@@ -1158,7 +1158,7 @@ html, body {
 /* Contact message */
 .contact-message {
   position: fixed;
-  bottom: 10px;
+  top: 10px;
   width: 100%;
   text-align: center;
   font-size: 1.5vw;
