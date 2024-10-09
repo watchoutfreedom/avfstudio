@@ -46,7 +46,6 @@ get_header();
         );
         $posts = new WP_Query( $args );
 
-        // Original sections without clones
         ?>
         <div class="vertical-section" id="section-<?php echo esc_attr( $index + 1 ); ?>">
             <?php
@@ -81,20 +80,18 @@ get_header();
 </div>
 
 <script>
-    // Optional: Handle scroll events if needed
-    document.querySelectorAll('.vertical-section').forEach(section => {
-        section.addEventListener('scroll', () => {
-            const scrollTop = section.scrollTop;
-
-            // Example: Add a class when scrolled
-            if (scrollTop > 100) {
-                section.classList.add('scrolled');
-            } else {
-                section.classList.remove('scrolled');
-            }
-        });
+    // Optional: Implement arrow keys navigation
+    document.addEventListener('keydown', function(e) {
+        const horizontalContainer = document.getElementById('horizontal-container');
+        const sectionWidth = window.innerWidth;
+        if (e.key === 'ArrowRight') {
+            horizontalContainer.scrollBy({ left: sectionWidth, behavior: 'smooth' });
+        } else if (e.key === 'ArrowLeft') {
+            horizontalContainer.scrollBy({ left: -sectionWidth, behavior: 'smooth' });
+        }
     });
 </script>
+
 
 <?php
 get_footer();
