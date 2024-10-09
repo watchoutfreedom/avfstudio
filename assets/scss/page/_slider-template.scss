@@ -126,13 +126,13 @@ html, body {
     overflow-y: auto;
     flex-direction: column; /* Ensure content stacks vertically */
     z-index: 10; /* Ensure content appears above other elements */
-}
+}   
 
 .post-content p {
     font-size: 18px;
     line-height: 1.6;
     text-align: center;
-
+    
 }
 
 /* Close button styles */
@@ -142,7 +142,7 @@ html, body {
     right: 20px;
     background: none;
     border: none;
-    color: #030303;
+    color: #ffffff;
     font-size: 18px;
     cursor: pointer;
     outline: none;
