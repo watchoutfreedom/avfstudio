@@ -28,7 +28,7 @@ get_header();
         array(
             'slug' => 'wofreedom',
             'title' => 'WoFreedom',
-            'subtitle' => 'Asociación por la libertad de pensamiento y la cooperación social.',
+            'subtitle' => '',
         ),
         array(
             'slug' => 'production-club',
@@ -113,7 +113,7 @@ get_header();
                     wp_reset_postdata();
                 }
                 ?>
-                <div class="contact-message">Contact 2</div>
+                <div class="contact-message">Contact ?</div>
             </div>
             <?php
             wp_reset_postdata();
@@ -174,7 +174,7 @@ get_header();
                 wp_reset_postdata();
             }
             ?>
-            <div class="contact-message">Contact 3</div>
+            <div class="contact-message">Contact 2</div>
         </div>
         <?php
     }
@@ -241,9 +241,80 @@ get_header();
             wp_reset_postdata();
         }
         ?>
-        <div class="contact-message">Contact</div>
+        <div class="contact-message">Contact 3</div>
     </div>
 </div>
+
+<script>
+    // JavaScript for seamless looping
+
+    // Function to enable seamless vertical looping
+    function enableVerticalLooping(section) {
+        const images = section.querySelectorAll('.image-container');
+        const totalImages = images.length;
+
+        // Adjust scroll position to the first original image
+        section.scrollTop = images[1].offsetTop;
+
+        section.addEventListener('scroll', () => {
+            const scrollTop = section.scrollTop;
+            const firstImageOffset = images[1].offsetTop;
+            const lastImageOffset = images[totalImages - 2].offsetTop;
+            const totalScrollHeight = section.scrollHeight;
+            const sectionHeight = section.clientHeight;
+
+            // When scrolling up from the first original image
+            if (scrollTop <= images[0].offsetTop) {
+                // Jump to the clone of the first image at the bottom
+                section.scrollTop = lastImageOffset;
+            }
+
+            // When scrolling down from the clone of the first image
+            if (scrollTop >= images[totalImages - 1].offsetTop) {
+                // Jump back to the first original image
+                section.scrollTop = firstImageOffset;
+            }
+        });
+    }
+
+    // Apply vertical looping to each section
+    document.querySelectorAll('.vertical-section').forEach(section => {
+        enableVerticalLooping(section);
+    });
+
+    // Function to enable seamless horizontal looping
+    function enableHorizontalLooping(container) {
+        const sections = container.querySelectorAll('.vertical-section');
+        const totalSections = sections.length;
+
+        // Adjust scroll position to the first original section
+        container.scrollLeft = sections[1].offsetLeft;
+
+        container.addEventListener('scroll', () => {
+            const scrollLeft = container.scrollLeft;
+            const firstSectionOffset = sections[1].offsetLeft;
+            const lastSectionOffset = sections[totalSections - 2].offsetLeft;
+            const totalScrollWidth = container.scrollWidth;
+
+            // When scrolling left from the first original section
+            if (scrollLeft <= sections[0].offsetLeft) {
+                // Jump to the clone of the first section at the end
+                container.scrollLeft = lastSectionOffset;
+            }
+
+            // When scrolling right from the clone of the first section
+            if (scrollLeft >= sections[totalSections - 1].offsetLeft) {
+                // Jump back to the first original section
+                container.scrollLeft = firstSectionOffset;
+            }
+        });
+    }
+
+    // Apply horizontal looping to the container
+    const horizontalContainer = document.getElementById('horizontal-container');
+    enableHorizontalLooping(horizontalContainer);
+</script>
+
 
 <?php
 get_footer();
