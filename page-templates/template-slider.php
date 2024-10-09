@@ -102,18 +102,34 @@ get_header();
             const title = imageContainer.querySelector('.image-title');
             const postContent = imageContainer.querySelector('.post-content');
 
-            // Hide the image and title
-            image.style.display = 'none';
-            title.style.display = 'none';
+            // Toggle visibility
+            if (postContent.style.display === 'block') {
+                // Show the image and title
+                image.style.display = '';
+                title.style.display = '';
 
-            // Hide overlays if present
-            const titleOverlay = imageContainer.querySelector('.title-overlay');
-            const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
-            if (titleOverlay) titleOverlay.style.display = 'none';
-            if (subtitleOverlay) subtitleOverlay.style.display = 'none';
+                // Show overlays if present
+                const titleOverlay = imageContainer.querySelector('.title-overlay');
+                const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
+                if (titleOverlay) titleOverlay.style.display = '';
+                if (subtitleOverlay) subtitleOverlay.style.display = '';
 
-            // Show the post content
-            postContent.style.display = 'block';
+                // Hide the post content
+                postContent.style.display = 'none';
+            } else {
+                // Hide the image and title
+                image.style.display = 'none';
+                title.style.display = 'none';
+
+                // Hide overlays if present
+                const titleOverlay = imageContainer.querySelector('.title-overlay');
+                const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
+                if (titleOverlay) titleOverlay.style.display = 'none';
+                if (subtitleOverlay) subtitleOverlay.style.display = 'none';
+
+                // Show the post content
+                postContent.style.display = 'block';
+            }
         });
     });
 
@@ -165,6 +181,7 @@ get_header();
         });
     });
 </script>
+
 
 <?php
 get_footer();
