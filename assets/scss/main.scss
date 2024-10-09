@@ -1,0 +1,30 @@
+@charset "utf-8";
+
+// Basic 
+@import 'partial/reset';
+@import 'partial/common';
+@import 'partial/breakpoints';
+@import 'partial/fonts';
+@import 'partial/colors';
+@import 'partial/transitions';
+
+// Layout
+@import 'components/footer';
+
+// Theme
+@import 'components/hero';
+@import 'components/sponsor';
+@import 'components/ponentes';
+@import 'components/pricing';
+@import 'components/heading';
+@import 'components/last';
+@import 'components/gallery';
+@import 'components/faq';
+
+// page
+@import 'page/slider-template';
+@import 'page/single';
+
+
+// Import
+@import 'import/ribbon';
