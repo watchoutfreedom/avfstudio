@@ -45,7 +45,6 @@ get_header();
             'posts_per_page' => -1,
         );
         $posts = new WP_Query( $args );
-
         ?>
         <div class="vertical-section" id="section-<?php echo esc_attr( $index + 1 ); ?>">
             <?php
@@ -66,8 +65,8 @@ get_header();
                             <?php endif; ?>
                             <div class="image-title"><?php the_title(); ?></div>
                         </a>
-                        <div class="post-content">
-                            <button class="close-content">Close</button>
+                        <div class="post-content" style="color: black;">
+                            <button class="close-content" style="color: black;">Close</button>
                             <?php echo apply_filters( 'the_content', $post->post_content ); ?>
                         </div>
                     </div>
@@ -105,7 +104,7 @@ get_header();
             if (subtitleOverlay) subtitleOverlay.style.display = 'none';
 
             // Show the post content
-            postContent.style.display = 'flex';
+            postContent.style.display = 'block';
         });
     });
 
