@@ -91,7 +91,6 @@ get_header();
     }
     ?>
 </div>
-
 <script>
     // JavaScript to handle click events on posts
     document.querySelectorAll('.image-link').forEach(link => {
@@ -146,26 +145,23 @@ get_header();
 
         // Close when clicking anywhere on the post content div
         content.addEventListener('click', function(e) {
-            // Check if the click is on the content div itself, not on a child element
-            if (e.target === this) {
-                const postContent = this;
-                const imageContainer = postContent.parentElement;
-                const image = imageContainer.querySelector('img');
-                const title = imageContainer.querySelector('.image-title');
+            const postContent = this;
+            const imageContainer = postContent.parentElement;
+            const image = imageContainer.querySelector('img');
+            const title = imageContainer.querySelector('.image-title');
 
-                // Show the image and title
-                image.style.display = '';
-                title.style.display = '';
+            // Show the image and title
+            image.style.display = '';
+            title.style.display = '';
 
-                // Show overlays if present
-                const titleOverlay = imageContainer.querySelector('.title-overlay');
-                const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
-                if (titleOverlay) titleOverlay.style.display = '';
-                if (subtitleOverlay) subtitleOverlay.style.display = '';
+            // Show overlays if present
+            const titleOverlay = imageContainer.querySelector('.title-overlay');
+            const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
+            if (titleOverlay) titleOverlay.style.display = '';
+            if (subtitleOverlay) subtitleOverlay.style.display = '';
 
-                // Hide the post content
-                postContent.style.display = 'none';
-            }
+            // Hide the post content
+            postContent.style.display = 'none';
         });
     });
 </script>
