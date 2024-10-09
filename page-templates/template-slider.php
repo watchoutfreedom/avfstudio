@@ -112,6 +112,12 @@ get_header();
             postContent.style.display = 'none';
         });
     });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.post-content').forEach(content => {
+            content.style.display = 'none';
+        });
+    });
 </script>
 
 <?php
