@@ -12,7 +12,7 @@ get_header();
         array(
             'slug' => 'home',
             'title' => 'AVFstudio',
-            'subtitle' => 'Slide > or v to see more',
+            'subtitle' => '',
         ),
         array(
             'slug' => 'art',
@@ -141,7 +141,7 @@ get_header();
         });
     });
 
-    
+
 </script>
 
 <?php
