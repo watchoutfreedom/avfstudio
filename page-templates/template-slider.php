@@ -78,6 +78,7 @@ get_header();
                         <div class="post-content" style="color: black;">
                             <button class="close-content" style="color: black;">Close</button>
                             <?php echo apply_filters( 'the_content', $post->post_content ); ?>
+                            <a href="<?php echo get_permalink( $post->ID ); ?>" class="view-more" style="color: black;">View More</a>
                         </div>
                     </div>
                     <?php
