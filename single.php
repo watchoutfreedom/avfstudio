@@ -3,11 +3,10 @@
 <?php if (have_posts()) : while (have_posts()) : the_post(); ?>
   <article class="single">
     <div class="single__meta">
+      <h1 class="single__title"><?php the_title(); ?></h1>
       <div class="single__info">
         <span><?php the_field('field_66a224bc1299d'); ?></span> ·
-        <span>Tendrá una duración de <?php the_field('field_66a224971299b'); ?></span>
       </div>
-      <h1 class="single__title"><?php the_title(); ?></h1>
     </div>
     <div class="single__description">
       <?php the_field('field_66a224e77d91a'); ?>
