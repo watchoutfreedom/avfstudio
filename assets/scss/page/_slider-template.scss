@@ -1,12 +1,11 @@
-/* Reset default margins and paddings */
-* {
+  /* Reset default margins and paddings */
+  * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 html, body {
-    overflow-x: auto; /* Allows horizontal scrolling */
-    overflow-y: hidden; /* Keeps vertical overflow hidden */
+    overflow: hidden;
     width: 100%;
     height: 100%;
     font-family: 'Montserrat', sans-serif;
@@ -88,6 +87,7 @@ html, body {
     font-size: 1.5vw;
     color: black;
     font-weight: bold;
+    
 }
 .vertical-section.scrolled .contact-message {
     display: block;
@@ -107,29 +107,7 @@ html, body {
         font-size: 4vw;
     }
 }
-/* Post content styles */
-.post-content {
-    display: none; /* Hidden by default */
-    align-items: center;
-    justify-content: center;
-    background-color: #1a1a1a; /* Very dark grey background */
-    color: #ffffff; /* White text */
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    padding: 20px;
-    box-sizing: border-box;
-    overflow-y: auto;
-    flex-direction: column; /* Ensure content stacks vertically */
-    z-index: 10; /* Ensure content appears above other elements */
-}   
-.post-content p {
-    font-size: 18px;
-    line-height: 1.6;
-    text-align: center;
-}
+
 /* Close button styles */
 .post-content .close-content {
     position: absolute;
