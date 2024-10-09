@@ -10,6 +10,11 @@ get_header();
     // Define the categories or sections
     $sections = array(
         array(
+            'slug' => 'home',
+            'title' => 'Welcome',
+            'subtitle' => '',
+        ),
+        array(
             'slug' => 'art',
             'title' => 'Art',
             'subtitle' => '',
@@ -33,6 +38,11 @@ get_header();
             'slug' => 'production-club',
             'title' => 'Production Club',
             'subtitle' => 'Lead architect and concept artist',
+        ),
+        array(
+            'slug' => 'illustration',
+            'title' => 'Illustration',
+            'subtitle' => '',
         ),
     );
 
@@ -75,7 +85,7 @@ get_header();
                 wp_reset_postdata();
             }
             ?>
-            <div class="contact-message">Contact</div>
+            <div class="contact-message">hello at avfstdio dot com</div>
         </div>
         <?php
     }
