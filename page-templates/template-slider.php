@@ -85,8 +85,10 @@ get_header();
                                 echo $matches[0];
                             }
                             ?>
-                            <a href="<?php echo get_permalink( $post->ID ); ?>" class="view-more" style="color: black;">View More</a>
+                            <a href="#" class="view-more" data-post-id="<?php echo $post->ID; ?>" style="color: black;">View More</a>
+                            <div class="single-post-content"></div> <!-- This is where the full post content will load -->
                         </div>
+
                     </div>
                     <?php
                 }
@@ -188,6 +190,37 @@ get_header();
             postContent.style.display = 'none';
         });
     });
+
+    document.querySelectorAll('.view-more').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault(); // Prevent default behavior of the link
+
+            const postId = this.getAttribute('data-post-id');
+            const postContentContainer = this.closest('.post-content').querySelector('.single-post-content');
+
+            // Fetch the post content using AJAX
+            fetch('/wp-json/wp/v2/posts/' + postId)
+                .then(response => response.json())
+                .then(data => {
+                    // Display the full post content inside the single-post-content div
+                    postContentContainer.innerHTML = `
+                        <div style="position: fixed; top: 20px; left: 20px;">
+                            <button onclick="window.history.back();" style="background-color: #333; color: #fff; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
+                                ← Back
+                            </button>
+                        </div>
+                        <h1>${data.title.rendered}</h1>
+                        <div>${data.content.rendered}</div>
+                    `;
+
+                    // Optionally, hide the excerpt content and show the full post
+                    this.closest('.post-content').querySelector('p').style.display = 'none';
+                    postContentContainer.style.display = 'block';
+                })
+                .catch(error => console.error('Error fetching post:', error));
+        });
+    });
+
 </script>
 
 
