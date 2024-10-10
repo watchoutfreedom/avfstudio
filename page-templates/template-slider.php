@@ -85,10 +85,8 @@ get_header();
                                 echo $matches[0];
                             }
                             ?>
-                            <a href="#" class="view-more" data-post-id="<?php echo $post->ID; ?>" style="color: black;">View More</a>
-                            <div class="single-post-content"></div> <!-- This is where the full post content will load -->
+                            <a href="<?php echo get_permalink( $post->ID ); ?>" class="view-more" data-post-id="<?php echo $post->ID; ?>" style="color: black;">View More</a>
                         </div>
-
                     </div>
                     <?php
                 }
@@ -101,128 +99,51 @@ get_header();
     }
     ?>
 </div>
+
 <script>
-    // JavaScript to handle click events on posts
-    document.querySelectorAll('.image-link').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault(); // Prevent default link behavior
-
-            const imageContainer = this.closest('.image-container');
-            const image = imageContainer.querySelector('img');
-            const title = imageContainer.querySelector('.image-title');
-            const postContent = imageContainer.querySelector('.post-content');
-
-            // Toggle visibility
-            if (postContent.style.display === 'block') {
-                // Show the image and title
-                image.style.display = '';
-                title.style.display = '';
-
-                // Show overlays if present
-                const titleOverlay = imageContainer.querySelector('.title-overlay');
-                const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
-                if (titleOverlay) titleOverlay.style.display = '';
-                if (subtitleOverlay) subtitleOverlay.style.display = '';
-
-                // Hide the post content
-                postContent.style.display = 'none';
-            } else {
-                // Hide the image and title
-                image.style.display = 'none';
-                title.style.display = 'none';
-
-                // Hide overlays if present
-                const titleOverlay = imageContainer.querySelector('.title-overlay');
-                const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
-                if (titleOverlay) titleOverlay.style.display = 'none';
-                if (subtitleOverlay) subtitleOverlay.style.display = 'none';
-
-                // Show the post content
-                postContent.style.display = 'block';
-            }
+    // Function to save both horizontal and vertical scroll positions
+    function saveScrollPosition() {
+        const horizontalScroll = document.getElementById('horizontal-container').scrollLeft;
+        const sections = document.querySelectorAll('.vertical-section');
+        let verticalScroll = {};
+        sections.forEach(section => {
+            const sectionId = section.id;
+            verticalScroll[sectionId] = section.scrollTop;
         });
-    });
+        
+        sessionStorage.setItem('horizontalScroll', horizontalScroll);
+        sessionStorage.setItem('verticalScroll', JSON.stringify(verticalScroll));
+    }
 
-    // JavaScript to handle closing the post content
-    document.querySelectorAll('.post-content').forEach(content => {
-        // Close when clicking on the close button
-        const closeButton = content.querySelector('.close-content');
-        closeButton.addEventListener('click', function(e) {
-            e.stopPropagation(); // Prevent event from bubbling up to the content div
+    // Function to restore both horizontal and vertical scroll positions
+    function restoreScrollPosition() {
+        const savedHorizontalScroll = sessionStorage.getItem('horizontalScroll');
+        const savedVerticalScroll = JSON.parse(sessionStorage.getItem('verticalScroll'));
 
-            const postContent = this.parentElement;
-            const imageContainer = postContent.parentElement;
-            const image = imageContainer.querySelector('img');
-            const title = imageContainer.querySelector('.image-title');
+        if (savedHorizontalScroll !== null) {
+            document.getElementById('horizontal-container').scrollLeft = savedHorizontalScroll;
+        }
 
-            // Show the image and title
-            image.style.display = '';
-            title.style.display = '';
+        if (savedVerticalScroll !== null) {
+            Object.keys(savedVerticalScroll).forEach(sectionId => {
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    section.scrollTop = savedVerticalScroll[sectionId];
+                }
+            });
+        }
+    }
 
-            // Show overlays if present
-            const titleOverlay = imageContainer.querySelector('.title-overlay');
-            const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
-            if (titleOverlay) titleOverlay.style.display = '';
-            if (subtitleOverlay) subtitleOverlay.style.display = '';
+    // Call the restore function when the page loads
+    window.addEventListener('load', restoreScrollPosition);
 
-            // Hide the post content
-            postContent.style.display = 'none';
-        });
-
-        // Close when clicking anywhere on the post content div
-        content.addEventListener('click', function(e) {
-            const postContent = this;
-            const imageContainer = postContent.parentElement;
-            const image = imageContainer.querySelector('img');
-            const title = imageContainer.querySelector('.image-title');
-
-            // Show the image and title
-            image.style.display = '';
-            title.style.display = '';
-
-            // Show overlays if present
-            const titleOverlay = imageContainer.querySelector('.title-overlay');
-            const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
-            if (titleOverlay) titleOverlay.style.display = '';
-            if (subtitleOverlay) subtitleOverlay.style.display = '';
-
-            // Hide the post content
-            postContent.style.display = 'none';
-        });
-    });
-
+    // Handle "View More" link to save scroll position before navigating
     document.querySelectorAll('.view-more').forEach(link => {
         link.addEventListener('click', function(e) {
-            e.preventDefault(); // Prevent default behavior of the link
-
-            const postId = this.getAttribute('data-post-id');
-            const postContentContainer = this.closest('.post-content').querySelector('.single-post-content');
-
-            // Fetch the post content using AJAX
-            fetch('/wp-json/wp/v2/posts/' + postId)
-                .then(response => response.json())
-                .then(data => {
-                    // Display the full post content inside the single-post-content div
-                    postContentContainer.innerHTML = `
-                        <div style="position: fixed; top: 20px; left: 20px;">
-                            <button onclick="window.history.back();" style="background-color: #333; color: #fff; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
-                                ← Back
-                            </button>
-                        </div>
-                        <h1>${data.title.rendered}</h1>
-                        <div>${data.content.rendered}</div>
-                    `;
-
-                    // Optionally, hide the excerpt content and show the full post
-                    this.closest('.post-content').querySelector('p').style.display = 'none';
-                    postContentContainer.style.display = 'block';
-                })
-                .catch(error => console.error('Error fetching post:', error));
+            saveScrollPosition(); // Save the scroll position
         });
     });
-
 </script>
-
 
 <?php
 get_footer();
