@@ -85,7 +85,7 @@ get_header();
                                 echo $matches[0];
                             }
                             ?>
-                            <a href="<?php echo get_permalink( $post->ID ); ?>" class="view-more" data-post-id="<?php echo $post->ID; ?>" style="color: black;">View More</a>
+                            <a href="<?php echo get_permalink( $post->ID ); ?>" class="view-more" style="color: black;">View More</a>
                         </div>
                     </div>
                     <?php
@@ -99,18 +99,108 @@ get_header();
     }
     ?>
 </div>
-
 <script>
-    // Function to save both horizontal and vertical scroll positions
-    function saveScrollPosition() {
+    // JavaScript to handle click events on posts
+    document.querySelectorAll('.image-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault(); // Prevent default link behavior
+
+            const imageContainer = this.closest('.image-container');
+            const image = imageContainer.querySelector('img');
+            const title = imageContainer.querySelector('.image-title');
+            const postContent = imageContainer.querySelector('.post-content');
+
+            // Toggle visibility
+            if (postContent.style.display === 'block') {
+                // Show the image and title
+                image.style.display = '';
+                title.style.display = '';
+
+                // Show overlays if present
+                const titleOverlay = imageContainer.querySelector('.title-overlay');
+                const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
+                if (titleOverlay) titleOverlay.style.display = '';
+                if (subtitleOverlay) subtitleOverlay.style.display = '';
+
+                // Hide the post content
+                postContent.style.display = 'none';
+            } else {
+                // Hide the image and title
+                image.style.display = 'none';
+                title.style.display = 'none';
+
+                // Hide overlays if present
+                const titleOverlay = imageContainer.querySelector('.title-overlay');
+                const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
+                if (titleOverlay) titleOverlay.style.display = 'none';
+                if (subtitleOverlay) subtitleOverlay.style.display = 'none';
+
+                // Show the post content
+                postContent.style.display = 'block';
+            }
+        });
+    });
+
+    // JavaScript to handle closing the post content
+    document.querySelectorAll('.post-content').forEach(content => {
+        // Close when clicking on the close button
+        const closeButton = content.querySelector('.close-content');
+        closeButton.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent event from bubbling up to the content div
+
+            const postContent = this.parentElement;
+            const imageContainer = postContent.parentElement;
+            const image = imageContainer.querySelector('img');
+            const title = imageContainer.querySelector('.image-title');
+
+            // Show the image and title
+            image.style.display = '';
+            title.style.display = '';
+
+            // Show overlays if present
+            const titleOverlay = imageContainer.querySelector('.title-overlay');
+            const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
+            if (titleOverlay) titleOverlay.style.display = '';
+            if (subtitleOverlay) subtitleOverlay.style.display = '';
+
+            // Hide the post content
+            postContent.style.display = 'none';
+        });
+
+        // Close when clicking anywhere on the post content div
+        content.addEventListener('click', function(e) {
+            const postContent = this;
+            const imageContainer = postContent.parentElement;
+            const image = imageContainer.querySelector('img');
+            const title = imageContainer.querySelector('.image-title');
+
+            // Show the image and title
+            image.style.display = '';
+            title.style.display = '';
+
+            // Show overlays if present
+            const titleOverlay = imageContainer.querySelector('.title-overlay');
+            const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
+            if (titleOverlay) titleOverlay.style.display = '';
+            if (subtitleOverlay) subtitleOverlay.style.display = '';
+
+            // Hide the post content
+            postContent.style.display = 'none';
+        });
+    });
+
+
+      // Function to save both horizontal and vertical scroll positions
+      function saveScrollPosition() {
         const horizontalScroll = document.getElementById('horizontal-container').scrollLeft;
         const sections = document.querySelectorAll('.vertical-section');
         let verticalScroll = {};
+        
         sections.forEach(section => {
             const sectionId = section.id;
             verticalScroll[sectionId] = section.scrollTop;
         });
-        
+
         sessionStorage.setItem('horizontalScroll', horizontalScroll);
         sessionStorage.setItem('verticalScroll', JSON.stringify(verticalScroll));
     }
@@ -139,11 +229,12 @@ get_header();
 
     // Handle "View More" link to save scroll position before navigating
     document.querySelectorAll('.view-more').forEach(link => {
-        link.addEventListener('click', function(e) {
-            saveScrollPosition(); // Save the scroll position
+        link.addEventListener('click', function() {
+            saveScrollPosition(); // Save the scroll position before navigating
         });
     });
 </script>
+
 
 <?php
 get_footer();
