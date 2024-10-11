@@ -1214,7 +1214,16 @@ html, body {
 .view-more {
   position: absolute;
   bottom: 0;
-  padding: 10px;
+  padding: 20px;
+}
+
+/* Enable scrolling only for the single-template class */
+body.single-template {
+  overflow-y: auto; /* Enable vertical scroll */
+}
+
+body:not(.single-template) {
+  overflow: hidden; /* Disable scroll for other templates */
 }
 
 .single {

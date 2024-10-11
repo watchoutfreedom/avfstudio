@@ -69,6 +69,13 @@ function my_login_logo() { ?>
 <?php }
 // add_action( 'login_enqueue_scripts', 'my_login_logo' );
 
+function add_single_body_class($classes) {
+  if (is_single()) {
+      $classes[] = 'single-template'; // Adds 'single-template' class for single post pages
+  }
+  return $classes;
+}
+add_filter('body_class', 'add_single_body_class');
 
 function slider_template_assets() {
   // Enqueue Montserrat font
