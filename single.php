@@ -1,7 +1,7 @@
 <?php get_header(); ?>    
 
 <!-- Back Button -->
-<div class="back-button-container" style="position: fixed; top: 20px; left: 20px;">
+<div class="single-template back-button-container" style="position: fixed; top: 20px; left: 20px;">
     <button onclick="window.history.back();" style="background-color: #333; color: #fff; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
         ← Back
     </button>
