@@ -10,6 +10,7 @@
 // Get ACF vars from options
 
 ?>
+
 <!doctype html>
 <html class="no-js" <?php language_attributes(); ?>>
 
@@ -35,5 +36,5 @@
 
 </head>
 
-<body>
+<body <?php body_class(); ?>>
 
