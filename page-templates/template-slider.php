@@ -93,7 +93,7 @@ get_header();
                 wp_reset_postdata();
             }
             ?>
-            <div class="contact-message">hello at avfstdio dot com</div>
+            <div class="contact-message"></div>
         </div>
         <?php
     }
