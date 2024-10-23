@@ -1313,6 +1313,7 @@ body:not(.single-template) {
   .map-container {
     display: flex;
     /* grid-template-columns: 1fr 1fr; */
+    justify-content: unset;
     gap: 10px;
     flex-direction: row;
     flex: 1;
@@ -1320,7 +1321,7 @@ body:not(.single-template) {
     width: auto;
   }
   .map-slide {
-    width: 100%; /* Let grid layout control the width */
+    width: 100px; /* Let grid layout control the width */
     height: auto;
   }
   .map-slide img {
