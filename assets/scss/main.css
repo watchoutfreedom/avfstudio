@@ -1240,6 +1240,11 @@ body:not(.single-template) {
   justify-content: center;
   flex-direction: column;
   overflow-y: hidden; /* Prevent vertical scroll on desktop */
+  overflow-x: hidden; /* Prevent horizontal overflow */
+}
+
+.site-map.hidden {
+  display: none; /* Ensures that the map can be hidden */
 }
 
 .map-container {
@@ -1289,39 +1294,42 @@ body:not(.single-template) {
 
 /* Responsive styles for mobile devices */
 @media (max-width: 768px) {
-  /* Make the map fill more space on smaller screens */
-  .map-container {
-    max-width: 95%; /* Stretch the map to almost full screen width */
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  /* Enable vertical scrolling on mobile */
+  /* Ensure the map fits correctly in mobile view */
   .site-map {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.9);
+    z-index: 999;
+    display: flex;
+    align-items: flex-start; /* Start at the top */
+    justify-content: flex-start;
+    flex-direction: column;
     overflow-y: auto; /* Allow vertical scrolling */
+    padding: 20px; /* Padding to avoid content being cut off */
+  }
+  .map-container {
+    width: 100%; /* Stretch the map to full screen width */
   }
   .map-slide {
-    width: 30vw; /* Make the squares larger on mobile */
-    height: 30vw; /* Keep them proportional */
-    margin: 5px;
+    width: 45vw; /* Make the squares larger and responsive */
+    height: 45vw; /* Keep the squares proportional */
+    margin: 10px;
   }
   .map-slide img {
     width: 100%;
     height: 100%;
     -o-object-fit: cover;
-       object-fit: cover; /* Stretch to cover but maintain proportions */
+       object-fit: cover; /* Stretch to cover */
   }
 }
 @media (max-width: 480px) {
   /* Adjust even further for very small screens */
   .map-slide {
-    width: 40vw; /* Make each square take more width */
-    height: 40vw; /* Keep the squares proportional */
-  }
-  .map-slide img {
-    width: 100%;
-    height: 100%;
-    -o-object-fit: cover;
-       object-fit: cover;
+    width: 90vw; /* One large slide per row */
+    height: 90vw;
   }
 }
 .single {
