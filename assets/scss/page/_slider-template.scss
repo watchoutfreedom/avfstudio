@@ -165,11 +165,12 @@ body:not(.single-template) {
     background-color: rgba(255, 255, 255, 0.9);
     z-index: 999;
     display: flex;
-    align-items: center;
+    // align-items: center;
     justify-content: center;
     flex-direction: column;
     overflow-y: hidden; /* Prevent vertical scroll on desktop */
     overflow-x: hidden; /* Prevent horizontal overflow */
+
 }
 
 .site-map.hidden {
@@ -259,6 +260,16 @@ body:not(.single-template) {
 }
 
 @media (max-width: 480px) {
+
+    // .site-map {
+
+    //     display: flex;
+    //     align-items: flex-start; /* Start at the top */
+    //     justify-content: flex-start;
+    //     flex-direction: column;
+    //     overflow-y: auto; /* Allow vertical scrolling */
+
+    // }
     /* Adjust further for very small screens */
     .map-slide {
         width: 100%; /* One large image per row for very small screens */

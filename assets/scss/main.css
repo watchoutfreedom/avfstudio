@@ -1236,7 +1236,6 @@ body:not(.single-template) {
   background-color: rgba(255, 255, 255, 0.9);
   z-index: 999;
   display: flex;
-  align-items: center;
   justify-content: center;
   flex-direction: column;
   overflow-y: hidden; /* Prevent vertical scroll on desktop */
