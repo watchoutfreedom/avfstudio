@@ -155,7 +155,6 @@ body:not(.single-template) {
     overflow: hidden; /* Disable scroll for other templates */
 }
 
-
 /* Base Styles for Map (Desktop) */
 .site-map {
     position: fixed;
@@ -169,6 +168,7 @@ body:not(.single-template) {
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    overflow-y: hidden; /* Prevent vertical scroll on desktop */
 }
 
 .map-container {
@@ -221,6 +221,12 @@ body:not(.single-template) {
     .map-container {
         max-width: 95%; /* Stretch the map to almost full screen width */
         flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    /* Enable vertical scrolling on mobile */
+    .site-map {
+        overflow-y: auto; /* Allow vertical scrolling */
     }
 
     .map-slide {

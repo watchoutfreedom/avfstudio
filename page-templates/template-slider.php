@@ -156,7 +156,7 @@ get_header();
                     // Scroll to the target section
                     targetSection.scrollIntoView({ behavior: 'smooth' });
 
-                    // Hide the map
+                    // Hide the map after clicking
                     siteMap.classList.add('hidden');
                 }
             });

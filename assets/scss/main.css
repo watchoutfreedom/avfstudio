@@ -1239,6 +1239,7 @@ body:not(.single-template) {
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  overflow-y: hidden; /* Prevent vertical scroll on desktop */
 }
 
 .map-container {
@@ -1292,6 +1293,11 @@ body:not(.single-template) {
   .map-container {
     max-width: 95%; /* Stretch the map to almost full screen width */
     flex-wrap: wrap;
+    justify-content: center;
+  }
+  /* Enable vertical scrolling on mobile */
+  .site-map {
+    overflow-y: auto; /* Allow vertical scrolling */
   }
   .map-slide {
     width: 30vw; /* Make the squares larger on mobile */
