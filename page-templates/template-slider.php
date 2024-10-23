@@ -140,6 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const mapToggle = document.getElementById('map-toggle');
     const siteMap = document.getElementById('site-map');
     const horizontalContainer = document.getElementById('horizontal-container');
+    let currentYouAreHereLabel = null;
 
     // Toggle map visibility
     mapToggle.addEventListener('click', function () {
@@ -162,7 +163,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Handle map slide click to scroll to the corresponding section and image
     document.querySelectorAll('.map-slide').forEach(slide => {
-        slide.addEventListener('click', function () {
+        slide.addEventListener('click', function (event) {
+            event.stopPropagation(); // Prevent the click from propagating to the map container
             const targetSectionId = this.getAttribute('data-target'); // Get section ID
             const targetSection = document.getElementById(targetSectionId);
 
@@ -186,7 +188,154 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
+
+    // Close the map if you click outside of a map-slide
+    siteMap.addEventListener('click', function (event) {
+        // If the click happens directly on the map container and not a map slide
+        if (!event.target.closest('.map-slide')) {
+            siteMap.classList.add('hidden');
+        }
+    });
+
+    // Function to update the "YOU ARE HERE" marker on the map
+    function updateYouAreHere(post) {
+        // Remove the previous "YOU ARE HERE" label if it exists
+        if (currentYouAreHereLabel) {
+            currentYouAreHereLabel.remove();
+        }
+
+        // Find the corresponding map slide
+        const postImage = post.querySelector('img');
+        const imageSrc = postImage.src;
+        const mapSlide = document.querySelector(`.map-slide img[src="${imageSrc}"]`).parentElement;
+
+        // Create and add the "YOU ARE HERE" label
+        const youAreHereLabel = document.createElement('div');
+        youAreHereLabel.innerText = 'YOU ARE HERE';
+        youAreHereLabel.style.position = 'absolute';
+        youAreHereLabel.style.top = '-20px';
+        youAreHereLabel.style.left = '0';
+        youAreHereLabel.style.color = 'red';
+        youAreHereLabel.style.fontWeight = 'bold';
+        youAreHereLabel.style.backgroundColor = 'white';
+        youAreHereLabel.style.padding = '5px';
+
+        mapSlide.style.position = 'relative'; // Ensure the slide is positioned
+        mapSlide.appendChild(youAreHereLabel);
+
+        // Store the current label to remove it when the next post is detected
+        currentYouAreHereLabel = youAreHereLabel;
+    }
+
+    // Set up an IntersectionObserver to detect which post is currently visible
+    const postObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                updateYouAreHere(entry.target);
+            }
+        });
+    }, {
+        root: null, // Observe within the viewport
+        threshold: 0.5 // Trigger when 50% of the post is visible
+    });
+
+    // Observe all posts (images) within the vertical sections
+    document.querySelectorAll('.image-container').forEach(post => {
+        postObserver.observe(post);
+    });
+
+    // JavaScript to handle click events on posts
+    document.querySelectorAll('.image-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault(); // Prevent default link behavior
+
+            const imageContainer = this.closest('.image-container');
+            const image = imageContainer.querySelector('img');
+            const title = imageContainer.querySelector('.image-title');
+            const postContent = imageContainer.querySelector('.post-content');
+
+            // Toggle visibility
+            if (postContent.style.display === 'block') {
+                // Show the image and title
+                image.style.display = '';
+                title.style.display = '';
+
+                // Show overlays if present
+                const titleOverlay = imageContainer.querySelector('.title-overlay');
+                const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
+                if (titleOverlay) titleOverlay.style.display = '';
+                if (subtitleOverlay) subtitleOverlay.style.display = '';
+
+                // Hide the post content
+                postContent.style.display = 'none';
+            } else {
+                // Hide the image and title
+                image.style.display = 'none';
+                title.style.display = 'none';
+
+                // Hide overlays if present
+                const titleOverlay = imageContainer.querySelector('.title-overlay');
+                const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
+                if (titleOverlay) titleOverlay.style.display = 'none';
+                if (subtitleOverlay) subtitleOverlay.style.display = 'none';
+
+                // Show the post content
+                postContent.style.display = 'block';
+            }
+        });
+    });
+
+    // JavaScript to handle closing the post content
+    document.querySelectorAll('.post-content').forEach(content => {
+        // Close when clicking on the close button
+        const closeButton = content.querySelector('.close-content');
+        closeButton.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent event from bubbling up to the content div
+
+            const postContent = this.parentElement;
+            const imageContainer = postContent.parentElement;
+            const image = imageContainer.querySelector('img');
+            const title = imageContainer.querySelector('.image-title');
+
+            // Show the image and title
+            image.style.display = '';
+            title.style.display = '';
+
+            // Show overlays if present
+            const titleOverlay = imageContainer.querySelector('.title-overlay');
+            const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
+            if (titleOverlay) titleOverlay.style.display = '';
+            if (subtitleOverlay) subtitleOverlay.style.display = '';
+
+            // Hide the post content
+            postContent.style.display = 'none';
+        });
+
+        // Close when clicking anywhere on the post content div
+        content.addEventListener('click', function(e) {
+            const postContent = this;
+            const imageContainer = postContent.parentElement;
+            const image = imageContainer.querySelector('img');
+            const title = imageContainer.querySelector('.image-title');
+
+            // Show the image and title
+            image.style.display = '';
+            title.style.display = '';
+
+            // Show overlays if present
+            const titleOverlay = imageContainer.querySelector('.title-overlay');
+            const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
+            if (titleOverlay) titleOverlay.style.display = '';
+            if (subtitleOverlay) subtitleOverlay.style.display = '';
+
+            // Hide the post content
+            postContent.style.display = 'none';
+        });
+    });
+
 });
+
+
 
 
     // JavaScript to handle click events on posts
