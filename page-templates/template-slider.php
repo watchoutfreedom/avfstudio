@@ -140,23 +140,32 @@ get_header();
     document.addEventListener('DOMContentLoaded', function () {
         const mapToggle = document.getElementById('map-toggle');
         const siteMap = document.getElementById('site-map');
-        
+
         // Toggle map visibility
         mapToggle.addEventListener('click', function () {
-            siteMap.classList.toggle('hidden');
+            siteMap.classList.toggle('hidden'); // Properly toggle the hidden class
         });
 
-        // Handle map slide click to scroll to the corresponding section
+        // Handle map slide click to scroll to the corresponding section and image
         document.querySelectorAll('.map-slide').forEach(slide => {
             slide.addEventListener('click', function () {
-                const targetId = this.getAttribute('data-target');
-                const targetSection = document.getElementById(targetId);
+                const targetSectionId = this.getAttribute('data-target'); // Get section ID
+                const targetSection = document.getElementById(targetSectionId);
 
                 if (targetSection) {
-                    // Scroll to the target section
-                    targetSection.scrollIntoView({ behavior: 'smooth' });
+                    // First scroll to the horizontal section (if applicable)
+                    targetSection.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'start' });
 
-                    // Hide the map after clicking
+                    // After scrolling to the section, scroll vertically to the clicked image within that section
+                    const imageSrc = this.querySelector('img').src; // Get the image source from the clicked map slide
+                    const targetImage = targetSection.querySelector(`img[src="${imageSrc}"]`); // Find the matching image in the section
+
+                    if (targetImage) {
+                        // Scroll to the target image within the section
+                        targetImage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+
+                    // Hide the map after clicking on an image
                     siteMap.classList.add('hidden');
                 }
             });
