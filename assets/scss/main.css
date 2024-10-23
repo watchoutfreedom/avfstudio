@@ -1334,7 +1334,6 @@ body:not(.single-template) {
 @media (max-width: 480px) {
   /* Adjust further for very small screens */
   .map-slide {
-    width: 100%; /* One large image per row for very small screens */
     height: auto;
   }
 }
