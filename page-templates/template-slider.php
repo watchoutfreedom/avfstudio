@@ -121,7 +121,7 @@ get_header();
                                 echo $matches[0];
                             }
                             ?>
-                            <a href="<?php echo get_permalink( $post->ID ); ?>" class="view-more" style="color: black;">View More</a>
+                            <a href="<?php echo get_permalink( $post->ID ); ?>" class="view-more" style="color: black;">Read More</a>
                         </div>
                     </div>
                     <?php
