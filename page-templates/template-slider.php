@@ -34,11 +34,11 @@ get_header();
             'title' => 'Software',
             'subtitle' => '',
         ),
-        array(
-            'slug' => 'wofreedom',
-            'title' => 'WoFreedom',
-            'subtitle' => '',
-        ),
+        // array(
+        //     'slug' => 'wofreedom',
+        //     'title' => 'WoFreedom',
+        //     'subtitle' => '',
+        // ),
         array(
             'slug' => 'production-club',
             'title' => 'Production Club',
