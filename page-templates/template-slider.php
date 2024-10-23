@@ -146,23 +146,18 @@ document.addEventListener('DOMContentLoaded', function () {
         siteMap.classList.toggle('hidden');
     });
 
-    // Function to detect when the horizontal scroll has finished
-    function onHorizontalScrollComplete(targetSection, callback) {
-        const observer = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting) {
-                observer.disconnect(); // Stop observing once we reached the target section
-                callback(); // Perform the vertical scroll callback
-            }
-        }, {
-            root: horizontalContainer, // Observe the scroll inside the horizontal container
-            threshold: 1.0 // Fire only when the section is fully in view
-        });
-        observer.observe(targetSection);
-    }
+    // Close the map when clicking outside of a map-slide
+    siteMap.addEventListener('click', function (event) {
+        // If the click happens directly on the map container and not a map slide
+        if (!event.target.closest('.map-slide')) {
+            siteMap.classList.add('hidden');
+        }
+    });
 
-    // Handle map slide click to scroll to the corresponding section and image
+    // Prevent map from closing when clicking on a map-slide
     document.querySelectorAll('.map-slide').forEach(slide => {
-        slide.addEventListener('click', function () {
+        slide.addEventListener('click', function (event) {
+            event.stopPropagation(); // Prevent the click from closing the map
             const targetSectionId = this.getAttribute('data-target'); // Get section ID
             const targetSection = document.getElementById(targetSectionId);
 
@@ -186,8 +181,20 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
-});
 
+    // Function to detect when the horizontal scroll has finished
+    function onHorizontalScrollComplete(targetSection, callback) {
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                observer.disconnect(); // Stop observing once we reached the target section
+                callback(); // Perform the vertical scroll callback
+            }
+        }, {
+            root: horizontalContainer, // Observe the scroll inside the horizontal container
+            threshold: 1.0 // Fire only when the section is fully in view
+        });
+        observer.observe(targetSection);
+    }
 
     // JavaScript to handle click events on posts
     document.querySelectorAll('.image-link').forEach(link => {
@@ -279,8 +286,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-      // Function to save both horizontal and vertical scroll positions
-      function saveScrollPosition() {
+    // Function to save both horizontal and vertical scroll positions
+    function saveScrollPosition() {
         const horizontalScroll = document.getElementById('horizontal-container').scrollLeft;
         const sections = document.querySelectorAll('.vertical-section');
         let verticalScroll = {};
@@ -323,6 +330,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+});
 
 </script>
 
