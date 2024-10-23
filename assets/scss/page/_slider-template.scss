@@ -6,13 +6,13 @@
 }
 
 :root {
-    --hue: 320; /* change me */
+    --hue: 200; /* change me */
     --bg: oklch(35% .3 var(--hue));
     --text: oklch(85% .1 var(--hue));
     --shadow: oklch(25% .2 var(--hue));
     --highlight: oklch(98% .05 var(--hue));
   }
-  
+
 html, body {
     overflow: hidden;
     width: 100%;
