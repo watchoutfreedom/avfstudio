@@ -156,9 +156,7 @@ body:not(.single-template) {
 }
 
 
-
-
-/* Base Styles */
+/* Base Styles for Map (Desktop) */
 .site-map {
     position: fixed;
     top: 0;
@@ -170,15 +168,14 @@ body:not(.single-template) {
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
 }
 
 .map-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    width: 90%; /* Adjust the width to fit content */
+    max-width: 80%; /* Desktop layout width */
 }
 
 .map-column {
@@ -191,10 +188,9 @@ body:not(.single-template) {
     margin-bottom: 5px;
 }
 
-/* Map slide proportions */
 .map-slide {
-    width: 25vw; /* 25% of the viewport width */
-    height: 25vh; /* 25% of the viewport height */
+    width: 100px;
+    height: 100px;
     margin: 5px;
     cursor: pointer;
 }
@@ -205,25 +201,52 @@ body:not(.single-template) {
     object-fit: cover;
 }
 
-/* Adjust for mobile screens */
+/* Toggle Button */
+.map-toggle {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* Responsive styles for mobile devices */
 @media (max-width: 768px) {
-    .map-slide {
-        width: 45vw; /* Make the slides take more space on smaller screens */
-        height: 45vw; /* Keep the squares proportional */
+    /* Make the map fill more space on smaller screens */
+    .map-container {
+        max-width: 95%; /* Stretch the map to almost full screen width */
+        flex-wrap: wrap;
     }
 
-    .map-container {
-        flex-direction: row;
-        justify-content: space-around;
-        width: 100%; /* Stretch map to full width */
+    .map-slide {
+        width: 30vw; /* Make the squares larger on mobile */
+        height: 30vw; /* Keep them proportional */
+        margin: 5px;
+    }
+
+    .map-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Stretch to cover but maintain proportions */
     }
 }
 
-/* Adjust for very small screens */
 @media (max-width: 480px) {
+    /* Adjust even further for very small screens */
     .map-slide {
-        width: 90vw; /* One slide per row */
-        height: 90vw; /* Keep square proportions */
+        width: 40vw; /* Make each square take more width */
+        height: 40vw; /* Keep the squares proportional */
+    }
+
+    .map-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 }
 
