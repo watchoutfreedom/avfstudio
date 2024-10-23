@@ -1226,21 +1226,7 @@ body:not(.single-template) {
   overflow: hidden; /* Disable scroll for other templates */
 }
 
-/* Toggle Button */
-.map-toggle {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  z-index: 1000;
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 10px;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-/* Map Container */
+/* Base Styles */
 .site-map {
   position: fixed;
   top: 0;
@@ -1252,17 +1238,15 @@ body:not(.single-template) {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
-}
-
-.site-map.hidden {
-  display: none;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 
 .map-container {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  width: 90%; /* Adjust the width to fit content */
 }
 
 .map-column {
@@ -1275,9 +1259,10 @@ body:not(.single-template) {
   margin-bottom: 5px;
 }
 
+/* Map slide proportions */
 .map-slide {
-  width: 100px;
-  height: 100px;
+  width: 25vw; /* 25% of the viewport width */
+  height: 25vh; /* 25% of the viewport height */
   margin: 5px;
   cursor: pointer;
 }
@@ -1289,6 +1274,25 @@ body:not(.single-template) {
      object-fit: cover;
 }
 
+/* Adjust for mobile screens */
+@media (max-width: 768px) {
+  .map-slide {
+    width: 45vw; /* Make the slides take more space on smaller screens */
+    height: 45vw; /* Keep the squares proportional */
+  }
+  .map-container {
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%; /* Stretch map to full width */
+  }
+}
+/* Adjust for very small screens */
+@media (max-width: 480px) {
+  .map-slide {
+    width: 90vw; /* One slide per row */
+    height: 90vw; /* Keep square proportions */
+  }
+}
 .single {
   width: 90%;
   margin: 100px auto;
