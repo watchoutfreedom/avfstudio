@@ -8,35 +8,7 @@ get_header();
 <!-- Map Toggle Button -->
 <button id="map-toggle" class="map-toggle">Map</button>
 
-<!-- Map Container -->
-<div id="site-map" class="site-map hidden">
-    <div class="map-container">
-        <?php foreach ($sections as $index => $section): ?>
-            <div class="map-column">
-                <div class="category-name"><?php echo esc_html($section['title']); ?></div>
-                <?php
-                $args = array(
-                    'category_name' => $section['slug'],
-                    'post_status' => 'publish',
-                    'posts_per_page' => -1,
-                );
-                $posts = new WP_Query($args);
 
-                if ($posts->have_posts()):
-                    foreach ($posts->posts as $post):
-                        setup_postdata($post);
-                        $image_url = get_the_post_thumbnail_url($post->ID, 'thumbnail');
-                        ?>
-                        <div class="map-slide" data-target="section-<?php echo esc_attr($index + 1); ?>">
-                            <img src="<?php echo esc_url($image_url); ?>" alt="<?php the_title_attribute(); ?>">
-                        </div>
-                    <?php endforeach; ?>
-                    <?php wp_reset_postdata(); ?>
-                <?php endif; ?>
-            </div>
-        <?php endforeach; ?>
-    </div>
-</div>
 
 <div class="horizontal-container" id="horizontal-container">
     <?php
@@ -78,7 +50,38 @@ get_header();
             'subtitle' => '',
         ),
     );
+    ?>
+    
+    <!-- Map Container -->
+    <div id="site-map" class="site-map hidden">
+        <div class="map-container">
+            <?php foreach ($sections as $index => $section): ?>
+                <div class="map-column">
+                    <div class="category-name"><?php echo esc_html($section['title']); ?></div>
+                    <?php
+                    $args = array(
+                        'category_name' => $section['slug'],
+                        'post_status' => 'publish',
+                        'posts_per_page' => -1,
+                    );
+                    $posts = new WP_Query($args);
 
+                    if ($posts->have_posts()):
+                        foreach ($posts->posts as $post):
+                            setup_postdata($post);
+                            $image_url = get_the_post_thumbnail_url($post->ID, 'thumbnail');
+                            ?>
+                            <div class="map-slide" data-target="section-<?php echo esc_attr($index + 1); ?>">
+                                <img src="<?php echo esc_url($image_url); ?>" alt="<?php the_title_attribute(); ?>">
+                            </div>
+                        <?php endforeach; ?>
+                        <?php wp_reset_postdata(); ?>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php
     // Loop through sections to generate vertical sliders
     foreach ( $sections as $index => $section ) {
         // Fetch posts from the category
