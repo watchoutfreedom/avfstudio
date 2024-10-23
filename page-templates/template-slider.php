@@ -136,53 +136,58 @@ get_header();
     ?>
 </div>
 <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const mapToggle = document.getElementById('map-toggle');
+    const siteMap = document.getElementById('site-map');
+    const horizontalContainer = document.getElementById('horizontal-container');
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const mapToggle = document.getElementById('map-toggle');
-        const siteMap = document.getElementById('site-map');
-        const horizontalContainer = document.getElementById('horizontal-container'); // Assuming your horizontal container has this ID
+    // Toggle map visibility
+    mapToggle.addEventListener('click', function () {
+        siteMap.classList.toggle('hidden');
+    });
 
-        // Toggle map visibility
-        mapToggle.addEventListener('click', function () {
-            siteMap.classList.toggle('hidden'); // Properly toggle the hidden class
+    // Function to detect when the horizontal scroll has finished
+    function onHorizontalScrollComplete(targetSection, callback) {
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                observer.disconnect(); // Stop observing once we reached the target section
+                callback(); // Perform the vertical scroll callback
+            }
+        }, {
+            root: horizontalContainer, // Observe the scroll inside the horizontal container
+            threshold: 1.0 // Fire only when the section is fully in view
         });
+        observer.observe(targetSection);
+    }
 
-        // Handle map slide click to scroll to the corresponding section and image
-        document.querySelectorAll('.map-slide').forEach(slide => {
-            slide.addEventListener('click', function () {
-                const targetSectionId = this.getAttribute('data-target'); // Get section ID
-                const targetSection = document.getElementById(targetSectionId);
+    // Handle map slide click to scroll to the corresponding section and image
+    document.querySelectorAll('.map-slide').forEach(slide => {
+        slide.addEventListener('click', function () {
+            const targetSectionId = this.getAttribute('data-target'); // Get section ID
+            const targetSection = document.getElementById(targetSectionId);
 
-                if (targetSection) {
-                    // Scroll horizontally to the section first
-                    targetSection.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'start' });
+            if (targetSection) {
+                // Scroll horizontally to the section
+                targetSection.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'start' });
 
-                    // Wait until the horizontal scroll is done, then scroll vertically
-                    let horizontalScrollListener = function () {
-                        // Check if the section is fully visible (in case the horizontal scroll is complete)
-                        if (targetSection.getBoundingClientRect().left === 0) {
-                            const imageSrc = slide.querySelector('img').src; // Get the image source from the clicked map slide
-                            const targetImage = targetSection.querySelector(`img[src="${imageSrc}"]`); // Find the matching image in the section
+                // Once horizontal scroll completes, scroll vertically to the specific image
+                onHorizontalScrollComplete(targetSection, function () {
+                    const imageSrc = slide.querySelector('img').src; // Get the image source from the clicked map slide
+                    const targetImage = targetSection.querySelector(`img[src="${imageSrc}"]`); // Find the matching image in the section
 
-                            if (targetImage) {
-                                // Scroll vertically to the target image
-                                targetImage.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            }
+                    if (targetImage) {
+                        // Scroll vertically to the target image
+                        targetImage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
 
-                            // Hide the map after scrolling
-                            siteMap.classList.add('hidden');
-
-                            // Remove event listener after scrolling is complete
-                            horizontalContainer.removeEventListener('scroll', horizontalScrollListener);
-                        }
-                    };
-
-                    // Add event listener for horizontal scroll
-                    horizontalContainer.addEventListener('scroll', horizontalScrollListener);
-                }
-            });
+                    // Hide the map after scrolling
+                    siteMap.classList.add('hidden');
+                });
+            }
         });
     });
+});
+
 
     // JavaScript to handle click events on posts
     document.querySelectorAll('.image-link').forEach(link => {
