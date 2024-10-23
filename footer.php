@@ -9,7 +9,7 @@
 			<li><a href="https://www.instagram.com/avf_stud" target="_blank">Instagram</a></li>			
 		</ul>
 		<ul class="footer__list">
-			<li class="head">Sobre el evento</li>
+			<li class="head">Contacto</li>
 			<li><a href="" target="_blank">email</a></li>
 			<li><a href="" target="_blank">Teléfono</a></li>
 		</ul>
