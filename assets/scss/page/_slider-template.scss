@@ -155,8 +155,6 @@ body:not(.single-template) {
     overflow: hidden; /* Disable scroll for other templates */
 }
 
-
-
 /* Base Styles for Map (Desktop) */
 .site-map {
     position: fixed;
@@ -242,27 +240,33 @@ body:not(.single-template) {
     }
 
     .map-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Create two equal columns */
+        gap: 10px; /* Space between images */
         width: 100%; /* Stretch the map to full screen width */
     }
 
     .map-slide {
-        width: 45vw; /* Make the squares larger and responsive */
-        height: 45vw; /* Keep the squares proportional */
-        margin: 10px;
+        width: 100%; /* Let grid layout control the width */
+        height: auto;
     }
 
     .map-slide img {
         width: 100%;
-        height: 100%;
+        height: auto; /* Adjust height according to image aspect ratio */
         object-fit: cover; /* Stretch to cover */
     }
 }
 
 @media (max-width: 480px) {
-    /* Adjust even further for very small screens */
+    /* Adjust further for very small screens */
     .map-slide {
-        width: 90vw; /* One large slide per row */
-        height: 90vw;
+        width: 100%; /* One large image per row for very small screens */
+        height: auto;
+    }
+
+    .map-container {
+        grid-template-columns: 1fr; /* One column on very small screens */
     }
 }
 
