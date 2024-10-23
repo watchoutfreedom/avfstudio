@@ -58,7 +58,7 @@ a {
 }
 
 body {
-  font-family: "Inter", sans-serif;
+  font-family: system-ui, sans-serif;
 }
 
 @font-face {
@@ -163,7 +163,7 @@ body {
   flex: 0 1 50%;
 }
 .footer__list li.head {
-  font-family: "Overpass", sans-serif;
+  font-family: system-ui, sans-serif;
   padding-bottom: 8px;
   color: #191919;
 }
@@ -216,7 +216,7 @@ body {
 .hero__menu a {
   text-decoration: none;
   color: white;
-  font-family: "Overpass", sans-serif;
+  font-family: system-ui, sans-serif;
   font-weight: bold;
   font-size: 14px;
   display: inline-block;
@@ -316,7 +316,7 @@ body {
 }
 
 .hero__subtitle {
-  font-family: "Overpass", sans-serif;
+  font-family: system-ui, sans-serif;
   font-weight: bold;
   opacity: 0.5;
   font-size: 15px;
@@ -333,7 +333,7 @@ body {
 }
 
 .hero__title {
-  font-family: "Overpass", sans-serif;
+  font-family: system-ui, sans-serif;
   font-size: 43px;
   max-width: 840px;
   line-height: 52px;
@@ -444,7 +444,7 @@ body {
   display: none;
 }
 .sponsor .sponsor__cat:first-child {
-  font-family: "Overpass", sans-serif;
+  font-family: system-ui, sans-serif;
   display: block;
   flex: 0 1 100%;
   text-align: center;
@@ -556,7 +556,7 @@ body {
 }
 
 .ponentes__title h5 {
-  font-family: "Overpass", sans-serif;
+  font-family: system-ui, sans-serif;
   font-size: 18px;
   margin-bottom: 10px;
 }
@@ -602,7 +602,7 @@ body {
   width: 90%;
   margin: auto;
   padding: 48px 0;
-  font-family: "Overpass", sans-serif;
+  font-family: system-ui, sans-serif;
   display: flex;
   flex-flow: row wrap;
 }
@@ -620,7 +620,7 @@ body {
 }
 
 .pricing__euros {
-  font-family: "Overpass", sans-serif;
+  font-family: system-ui, sans-serif;
   font-size: 62px;
   font-weight: 900;
   margin: 24px 0;
@@ -687,7 +687,7 @@ body {
   flex-flow: row nowrap;
   justify-content: space-between;
   padding: 80px 0 0 0;
-  font-family: "Overpass", sans-serif;
+  font-family: system-ui, sans-serif;
 }
 
 .heading__title, .single__title {
@@ -769,7 +769,7 @@ body {
   }
 }
 .last {
-  font-family: "Overpass", sans-serif;
+  font-family: system-ui, sans-serif;
   background: #191919;
   padding: 124px 0;
   color: white;
@@ -789,7 +789,7 @@ body {
   overflow-x: scroll;
   display: flex;
   justify-content: flex-start;
-  font-family: "Overpass", sans-serif;
+  font-family: system-ui, sans-serif;
   background: #191919;
   color: white;
 }
@@ -802,7 +802,7 @@ body {
 .last__menu a {
   text-decoration: none;
   color: white;
-  font-family: "Overpass", sans-serif;
+  font-family: system-ui, sans-serif;
   font-weight: bold;
   font-size: 12px;
   display: inline-block;
@@ -1022,7 +1022,7 @@ body {
   margin: auto;
   max-width: 840px;
   padding-bottom: 100px;
-  font-family: "Overpass", sans-serif;
+  font-family: system-ui, sans-serif;
 }
 
 .container_box {
@@ -1365,7 +1365,7 @@ body:not(.single-template) {
 }
 
 .single__description {
-  font-family: "Overpass", sans-serif;
+  font-family: system-ui, sans-serif;
   font-size: 20px;
   line-height: 28px;
   opacity: 0.8;
@@ -1375,7 +1375,7 @@ body:not(.single-template) {
   margin: 24px auto;
   max-width: 750px;
   line-height: 26px;
-  font-family: "Overpass", sans-serif;
+  font-family: system-ui, sans-serif;
 }
 .single__content h2,
 .single__content h3,

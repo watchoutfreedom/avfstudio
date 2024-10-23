@@ -3,7 +3,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100..900;1,100..900&display=swap');
 
 body {
-    font-family: "Inter", sans-serif;
+    font-family: system-ui, sans-serif;
 }
 
 
@@ -25,6 +25,6 @@ body {
   font-style: normal;
 }
 
-$font-cereal: "Overpass", sans-serif;
-$font-cereal-m: "Overpass", sans-serif;
+$font-cereal: system-ui, sans-serif;
+$font-cereal-m: system-ui, sans-serif;
 
