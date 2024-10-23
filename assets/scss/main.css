@@ -1307,13 +1307,17 @@ body:not(.single-template) {
     justify-content: flex-start;
     flex-direction: column;
     overflow-y: auto; /* Allow vertical scrolling */
+    overflow-x: auto;
     padding: 20px; /* Padding to avoid content being cut off */
   }
   .map-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Create two equal columns */
-    gap: 10px; /* Space between images */
-    width: 100%; /* Stretch the map to full screen width */
+    display: flex;
+    /* grid-template-columns: 1fr 1fr; */
+    gap: 10px;
+    flex-direction: row;
+    flex: 1;
+    flex-wrap: nowrap;
+    width: auto;
   }
   .map-slide {
     width: 100%; /* Let grid layout control the width */
@@ -1331,9 +1335,6 @@ body:not(.single-template) {
   .map-slide {
     width: 100%; /* One large image per row for very small screens */
     height: auto;
-  }
-  .map-container {
-    grid-template-columns: 1fr; /* One column on very small screens */
   }
 }
 .single {
