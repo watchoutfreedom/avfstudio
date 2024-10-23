@@ -1075,7 +1075,7 @@ html, body {
   overflow: hidden;
   width: 100%;
   height: 100%;
-  font-family: "Montserrat", sans-serif;
+  font-family: system-ui, sans-serif;
 }
 
 /* Horizontal container for sections */
@@ -1123,7 +1123,7 @@ html, body {
   color: white;
   font-weight: bold;
   text-align: center;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 0.15ch 15px var(--shadow), 0 -2px 0 var(--highlight);
 }
 
 .subtitle-overlay {
