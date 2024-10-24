@@ -21,7 +21,7 @@ get_header();
         ),
         array(
             'slug' => 'art',
-            'title' => 'Art',
+            'title' => 'Painting',
             'subtitle' => '',
         ),
         array(
@@ -40,14 +40,14 @@ get_header();
         //     'subtitle' => '',
         // ),
         array(
-            'slug' => 'production-club',
-            'title' => 'Production Club',
-            'subtitle' => 'Lead architect and concept artist',
-        ),
-        array(
             'slug' => 'illustration',
             'title' => 'Illustration',
             'subtitle' => '',
+        ),
+        array(
+            'slug' => 'production-club',
+            'title' => 'Production Club',
+            'subtitle' => 'Work as a lead architect and concept artist in PC',
         ),
     );
     ?>
