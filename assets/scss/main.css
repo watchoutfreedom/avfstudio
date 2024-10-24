@@ -1159,6 +1159,9 @@ html, body {
   color: white;
   font-weight: bold;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+  background-color: black;
+  padding: 5px;
+  line-height: 1.5em;
   top: 60%;
   left: 50%;
   transform: translate(-50%, -50%);
