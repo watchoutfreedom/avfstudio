@@ -100,7 +100,7 @@ get_header();
                     setup_postdata( $post );
                     $image_url = get_the_post_thumbnail_url( $post->ID, 'full' );
                     ?>
-                    <div class="image-container">
+                    <div class="image-container--main">
                         <a href="<?php echo get_permalink( $post->ID ); ?>" class="image-link">
                             <img src="<?php echo esc_url( $image_url ); ?>" alt="<?php the_title_attribute(); ?>">
                             <?php if ( $post === reset( $posts->posts ) ) : ?>
