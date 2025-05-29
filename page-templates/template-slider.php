@@ -6,7 +6,7 @@ get_header();
 ?>
 
 <!-- Map Toggle Button -->
-<!-- <button id="map-toggle" class="map-toggle">Map</button> -->
+<button id="map-toggle" class="map-toggle">Map</button>
 
 
 
@@ -16,7 +16,7 @@ get_header();
     $sections = array(
         array(
             'slug' => 'home',
-            'title' => 'Cosasss',
+            'title' => '',
             'subtitle' => 'Tap or scroll in any direction',
         ),
         array(
@@ -71,11 +71,9 @@ get_header();
                             setup_postdata($post);
                             $image_url = get_the_post_thumbnail_url($post->ID, 'thumbnail');
                             ?>
-                            <a href="<?php echo get_permalink( $post->ID ); ?>" class="image-link">
                             <div class="map-slide" data-target="section-<?php echo esc_attr($index + 1); ?>">
                                 <img src="<?php echo esc_url($image_url); ?>" alt="<?php the_title_attribute(); ?>">
                             </div>
-                            </a>
                         <?php endforeach; ?>
                         <?php wp_reset_postdata(); ?>
                     <?php endif; ?>
@@ -103,6 +101,7 @@ get_header();
                     $image_url = get_the_post_thumbnail_url( $post->ID, 'full' );
                     ?>
                     <div class="image-container">
+                        <a href="#" class="image-link">
                             <img src="<?php echo esc_url( $image_url ); ?>" alt="<?php the_title_attribute(); ?>">
                             <?php if ( $post === reset( $posts->posts ) ) : ?>
                                 <div class="title-overlay"><?php echo esc_html( $section['title'] ); ?></div>
@@ -111,6 +110,7 @@ get_header();
                                 <?php endif; ?>
                             <?php endif; ?>
                             <div class="image-title"><?php the_title(); ?></div>
+                        </a>
                         <div class="post-content" style="color: black;">
                             <button class="close-content" style="color: black;">Close</button>
                             <?php
@@ -137,14 +137,14 @@ get_header();
 </div>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // const mapToggle = document.getElementById('map-toggle');
+    const mapToggle = document.getElementById('map-toggle');
     const siteMap = document.getElementById('site-map');
     const horizontalContainer = document.getElementById('horizontal-container');
 
     // Toggle map visibility
-    // mapToggle.addEventListener('click', function () {
-    //     siteMap.classList.toggle('hidden');
-    // });
+    mapToggle.addEventListener('click', function () {
+        siteMap.classList.toggle('hidden');
+    });
 
     // Close the map when clicking outside of a map-slide
     siteMap.addEventListener('click', function (event) {
@@ -155,32 +155,32 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Prevent map from closing when clicking on a map-slide
-    // document.querySelectorAll('.map-slide').forEach(slide => {
-    //     slide.addEventListener('click', function (event) {
-    //         event.stopPropagation(); // Prevent the click from closing the map
-    //         // const targetSectionId = this.getAttribute('data-target'); // Get section ID
-    //         const targetSection = document.getElementById(targetSectionId);
+    document.querySelectorAll('.map-slide').forEach(slide => {
+        slide.addEventListener('click', function (event) {
+            event.stopPropagation(); // Prevent the click from closing the map
+            const targetSectionId = this.getAttribute('data-target'); // Get section ID
+            const targetSection = document.getElementById(targetSectionId);
 
-    //         if (targetSection) {
-    //             // Scroll horizontally to the section
-    //             targetSection.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'start' });
+            if (targetSection) {
+                // Scroll horizontally to the section
+                targetSection.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'start' });
 
-    //             // Once horizontal scroll completes, scroll vertically to the specific image
-    //             onHorizontalScrollComplete(targetSection, function () {
-    //                 const imageSrc = slide.querySelector('img').src; // Get the image source from the clicked map slide
-    //                 const targetImage = targetSection.querySelector(`img[src="${imageSrc}"]`); // Find the matching image in the section
+                // Once horizontal scroll completes, scroll vertically to the specific image
+                onHorizontalScrollComplete(targetSection, function () {
+                    const imageSrc = slide.querySelector('img').src; // Get the image source from the clicked map slide
+                    const targetImage = targetSection.querySelector(`img[src="${imageSrc}"]`); // Find the matching image in the section
 
-    //                 if (targetImage) {
-    //                     // Scroll vertically to the target image
-    //                     targetImage.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    //                 }
+                    if (targetImage) {
+                        // Scroll vertically to the target image
+                        targetImage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
 
-    //                 // Hide the map after scrolling
-    //                 siteMap.classList.add('hidden');
-    //             });
-    //         }
-    //     });
-    // });
+                    // Hide the map after scrolling
+                    siteMap.classList.add('hidden');
+                });
+            }
+        });
+    });
 
     // Function to detect when the horizontal scroll has finished
     function onHorizontalScrollComplete(targetSection, callback) {
