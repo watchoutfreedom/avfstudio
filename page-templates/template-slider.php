@@ -103,7 +103,6 @@ get_header();
                     $image_url = get_the_post_thumbnail_url( $post->ID, 'full' );
                     ?>
                     <div class="image-container">
-                        <a href="<?php echo get_permalink( $post->ID ); ?>">
                             <img src="<?php echo esc_url( $image_url ); ?>" alt="<?php the_title_attribute(); ?>">
                             <?php if ( $post === reset( $posts->posts ) ) : ?>
                                 <div class="title-overlay"><?php echo esc_html( $section['title'] ); ?></div>
@@ -112,7 +111,6 @@ get_header();
                                 <?php endif; ?>
                             <?php endif; ?>
                             <div class="image-title"><?php the_title(); ?></div>
-                        </a>
                         <div class="post-content" style="color: black;">
                             <button class="close-content" style="color: black;">Close</button>
                             <?php
