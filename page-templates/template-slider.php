@@ -16,7 +16,7 @@ get_header();
     $sections = array(
         array(
             'slug' => 'home',
-            'title' => '',
+            'title' => 'Cosasss',
             'subtitle' => 'Tap or scroll in any direction',
         ),
         array(
