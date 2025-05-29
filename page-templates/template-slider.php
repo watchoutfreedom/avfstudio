@@ -103,7 +103,7 @@ get_header();
                     $image_url = get_the_post_thumbnail_url( $post->ID, 'full' );
                     ?>
                     <div class="image-container">
-                        <a href="<?php echo get_permalink( $post->ID ); ?>" class="image-link">
+                        <a href="<?php echo get_permalink( $post->ID ); ?>">
                             <img src="<?php echo esc_url( $image_url ); ?>" alt="<?php the_title_attribute(); ?>">
                             <?php if ( $post === reset( $posts->posts ) ) : ?>
                                 <div class="title-overlay"><?php echo esc_html( $section['title'] ); ?></div>
