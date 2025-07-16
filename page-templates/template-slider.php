@@ -101,7 +101,7 @@ get_header();
                     $image_url = get_the_post_thumbnail_url( $post->ID, 'full' );
                     ?>
                     <div class="image-container">
-                        <a href="<?php echo get_permalink( $post->ID ); ?>" class="image-link">
+                        <a href="<?php echo get_permalink( $post->ID ); ?>"    class="image-link">
                             <img src="<?php echo esc_url( $image_url ); ?>" alt="<?php the_title_attribute(); ?>">
                             <?php if ( $post === reset( $posts->posts ) ) : ?>
                                 <div class="title-overlay"><?php echo esc_html( $section['title'] ); ?></div>
@@ -196,46 +196,46 @@ document.addEventListener('DOMContentLoaded', function () {
         observer.observe(targetSection);
     }
 
-    // JavaScript to handle click events on posts
-    document.querySelectorAll('.image-link').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault(); // Prevent default link behavior
+    // // JavaScript to handle click events on posts
+    // document.querySelectorAll('.image-link').forEach(link => {
+    //     link.addEventListener('click', function(e) {
+    //         e.preventDefault(); // Prevent default link behavior
 
-            const imageContainer = this.closest('.image-container');
-            const image = imageContainer.querySelector('img');
-            const title = imageContainer.querySelector('.image-title');
-            const postContent = imageContainer.querySelector('.post-content');
+    //         const imageContainer = this.closest('.image-container');
+    //         const image = imageContainer.querySelector('img');
+    //         const title = imageContainer.querySelector('.image-title');
+    //         const postContent = imageContainer.querySelector('.post-content');
 
-            // Toggle visibility
-            if (postContent.style.display === 'block') {
-                // Show the image and title
-                image.style.display = '';
-                title.style.display = '';
+    //         // Toggle visibility
+    //         if (postContent.style.display === 'block') {
+    //             // Show the image and title
+    //             image.style.display = '';
+    //             title.style.display = '';
 
-                // Show overlays if present
-                const titleOverlay = imageContainer.querySelector('.title-overlay');
-                const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
-                if (titleOverlay) titleOverlay.style.display = '';
-                if (subtitleOverlay) subtitleOverlay.style.display = '';
+    //             // Show overlays if present
+    //             const titleOverlay = imageContainer.querySelector('.title-overlay');
+    //             const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
+    //             if (titleOverlay) titleOverlay.style.display = '';
+    //             if (subtitleOverlay) subtitleOverlay.style.display = '';
 
-                // Hide the post content
-                postContent.style.display = 'none';
-            } else {
-                // Hide the image and title
-                image.style.display = 'none';
-                title.style.display = 'none';
+    //             // Hide the post content
+    //             postContent.style.display = 'none';
+    //         } else {
+    //             // Hide the image and title
+    //             image.style.display = 'none';
+    //             title.style.display = 'none';
 
-                // Hide overlays if present
-                const titleOverlay = imageContainer.querySelector('.title-overlay');
-                const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
-                if (titleOverlay) titleOverlay.style.display = 'none';
-                if (subtitleOverlay) subtitleOverlay.style.display = 'none';
+    //             // Hide overlays if present
+    //             const titleOverlay = imageContainer.querySelector('.title-overlay');
+    //             const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
+    //             if (titleOverlay) titleOverlay.style.display = 'none';
+    //             if (subtitleOverlay) subtitleOverlay.style.display = 'none';
 
-                // Show the post content
-                postContent.style.display = 'block';
-            }
-        });
-    });
+    //             // Show the post content
+    //             postContent.style.display = 'block';
+    //         }
+    //     });
+    // });
 
     // JavaScript to handle closing the post content
     document.querySelectorAll('.post-content').forEach(content => {
