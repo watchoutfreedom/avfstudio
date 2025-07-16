@@ -111,18 +111,7 @@ get_header();
                             <?php endif; ?>
                             <div class="image-title"><?php the_title(); ?></div>
                         </a>
-                        <div class="post-content" style="color: black;">
-                            <button class="close-content" style="color: black;">Close</button>
-                            <?php
-                            // Display the first paragraph of the content as an excerpt
-                            $content = apply_filters( 'the_content', $post->post_content );
-                            preg_match('/<p>(.*?)<\/p>/', $content, $matches);
-                            if (isset($matches[0])) {
-                                echo $matches[0];
-                            }
-                            ?>
-                            <a href="<?php echo get_permalink( $post->ID ); ?>" class="view-more" style="color: black;">Read More</a>
-                        </div>
+                        
                     </div>
                     <?php
                 }
@@ -238,52 +227,52 @@ document.addEventListener('DOMContentLoaded', function () {
     // });
 
     // JavaScript to handle closing the post content
-    document.querySelectorAll('.post-content').forEach(content => {
-        // Close when clicking on the close button
-        const closeButton = content.querySelector('.close-content');
-        closeButton.addEventListener('click', function(e) {
-            e.stopPropagation(); // Prevent event from bubbling up to the content div
+    // document.querySelectorAll('.post-content').forEach(content => {
+    //     // Close when clicking on the close button
+    //     const closeButton = content.querySelector('.close-content');
+    //     closeButton.addEventListener('click', function(e) {
+    //         e.stopPropagation(); // Prevent event from bubbling up to the content div
 
-            const postContent = this.parentElement;
-            const imageContainer = postContent.parentElement;
-            const image = imageContainer.querySelector('img');
-            const title = imageContainer.querySelector('.image-title');
+    //         const postContent = this.parentElement;
+    //         const imageContainer = postContent.parentElement;
+    //         const image = imageContainer.querySelector('img');
+    //         const title = imageContainer.querySelector('.image-title');
 
-            // Show the image and title
-            image.style.display = '';
-            title.style.display = '';
+    //         // Show the image and title
+    //         image.style.display = '';
+    //         title.style.display = '';
 
-            // Show overlays if present
-            const titleOverlay = imageContainer.querySelector('.title-overlay');
-            const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
-            if (titleOverlay) titleOverlay.style.display = '';
-            if (subtitleOverlay) subtitleOverlay.style.display = '';
+    //         // Show overlays if present
+    //         const titleOverlay = imageContainer.querySelector('.title-overlay');
+    //         const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
+    //         if (titleOverlay) titleOverlay.style.display = '';
+    //         if (subtitleOverlay) subtitleOverlay.style.display = '';
 
-            // Hide the post content
-            postContent.style.display = 'none';
-        });
+    //         // Hide the post content
+    //         postContent.style.display = 'none';
+    //     });
 
-        // Close when clicking anywhere on the post content div
-        content.addEventListener('click', function(e) {
-            const postContent = this;
-            const imageContainer = postContent.parentElement;
-            const image = imageContainer.querySelector('img');
-            const title = imageContainer.querySelector('.image-title');
+    //     // Close when clicking anywhere on the post content div
+    //     content.addEventListener('click', function(e) {
+    //         const postContent = this;
+    //         const imageContainer = postContent.parentElement;
+    //         const image = imageContainer.querySelector('img');
+    //         const title = imageContainer.querySelector('.image-title');
 
-            // Show the image and title
-            image.style.display = '';
-            title.style.display = '';
+    //         // Show the image and title
+    //         image.style.display = '';
+    //         title.style.display = '';
 
-            // Show overlays if present
-            const titleOverlay = imageContainer.querySelector('.title-overlay');
-            const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
-            if (titleOverlay) titleOverlay.style.display = '';
-            if (subtitleOverlay) subtitleOverlay.style.display = '';
+    //         // Show overlays if present
+    //         const titleOverlay = imageContainer.querySelector('.title-overlay');
+    //         const subtitleOverlay = imageContainer.querySelector('.subtitle-overlay');
+    //         if (titleOverlay) titleOverlay.style.display = '';
+    //         if (subtitleOverlay) subtitleOverlay.style.display = '';
 
-            // Hide the post content
-            postContent.style.display = 'none';
-        });
-    });
+    //         // Hide the post content
+    //         postContent.style.display = 'none';
+    //     });
+    // });
 
 
     // Function to save both horizontal and vertical scroll positions
