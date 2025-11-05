@@ -37,6 +37,7 @@ html, body {
     overflow-y: auto;
     scroll-snap-type: y mandatory;
     position: relative;
+    display: none;
 }
 /* Image container */
 .image-container {
