@@ -1069,7 +1069,6 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  display: none;
 }
 
 :root {
@@ -1106,7 +1105,6 @@ html, body {
   overflow-y: auto;
   scroll-snap-type: y mandatory;
   position: relative;
-  display: none;
 }
 
 /* Image container */
