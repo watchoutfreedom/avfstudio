@@ -11,10 +11,12 @@ get_header();
 <style>
     /* --- Basic Setup & Background --- */
     html, body {
+        
         height: 100%;
         width: 100%;
         margin: 0;
         padding: 0;
+        display: none;
         overflow: hidden; /* Prevents scrollbars on the body */
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
