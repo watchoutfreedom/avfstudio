@@ -25,7 +25,7 @@ get_header();
         width: 100vw;
         position: relative; /* All card positions are relative to this */
         background-color: red;
-        background-image: radial-gradient(ellipse at center, #4a4a4a 0%, #2b2b2b 100%);
+        /* background-image: radial-gradient(ellipse at center, #4a4a4a 0%, #2b2b2b 100%); */
         color: #f0f0f0;
     }
 
