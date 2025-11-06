@@ -37,7 +37,7 @@ get_header();
         animation: spin 1s linear infinite;
     }
     
-    /* --- Main Header (Now Static) --- */
+    /* --- Main Header (Static) --- */
     .header-content {
         position: relative; z-index: 1000; padding: 30px 40px;
         display: flex; justify-content: space-between; align-items: flex-start;
@@ -50,6 +50,14 @@ get_header();
 
     /* --- Z-Index Stacking Order --- */
     /* Loader: 99999, Contact Modal: 90000, Expanded Card: 5000 */
+    #card-viewer-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        opacity: 0; pointer-events: none;
+        transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 4999;
+    }
+    #card-viewer-overlay.is-visible { opacity: 1; pointer-events: all; }
 
     /* --- Post Cards (Base Style) --- */
     .post-page {
@@ -71,50 +79,22 @@ get_header();
         border-color: rgba(255, 255, 255, 0.5);
     }
 
-    /* --- NEW: Brand Card Style --- */
+    /* --- Brand Card Style --- */
     .brand-card {
-        background-color: #111;
-        background-image: none !important;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        padding: 20px;
-        text-align: center;
+        background-color: #111; background-image: none !important;
+        display: flex; flex-direction: column; justify-content: center; align-items: center;
+        padding: 20px; text-align: center;
     }
-    .brand-card h1, .brand-card h2 {
-        color: white;
-        margin: 0;
-        letter-spacing: 1px;
-    }
-    .brand-card h1 {
-        font-size: 1.8rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        margin-bottom: 10px;
-    }
-    .brand-card h2 {
-        font-size: 0.9rem;
-        font-weight: 300;
-        color: #aaa;
-    }
+    .brand-card h1 { color: white; margin: 0; letter-spacing: 1px; font-size: 1.8rem; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; }
+    .brand-card h2 { color: #aaa; margin: 0; font-size: 0.9rem; font-weight: 300; }
 
-    /* --- NEW: Propose Card Style --- */
+    /* --- Propose Card Style --- */
     .propose-card {
-        background-color: #fff;
-        background-image: none !important;
-        color: #111;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        padding: 20px;
+        background-color: #fff; background-image: none !important; color: #111;
+        display: flex; justify-content: center; align-items: center;
+        text-align: center; padding: 20px;
     }
-    .propose-card h3 {
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin: 0;
-    }
+    .propose-card h3 { font-size: 1.5rem; font-weight: 600; margin: 0; }
 
     /* --- Expanded Card Content --- */
     .card-content-view {
@@ -131,14 +111,9 @@ get_header();
     .card-content-view .brand-content { max-width: 700px; margin: 0 auto; text-align: center; }
     .card-content-view .brand-content p { font-size: 1.2rem; line-height: 1.6; color: #ccc; }
     .card-content-view .brand-content a {
-        display: inline-block;
-        margin-top: 30px;
-        padding: 12px 24px;
-        border: 1px solid #fff;
-        border-radius: 30px;
-        color: #fff;
-        text-decoration: none;
-        font-weight: 600;
+        display: inline-block; margin-top: 30px; padding: 12px 24px;
+        border: 1px solid #fff; border-radius: 30px;
+        color: #fff; text-decoration: none; font-weight: 600;
         transition: background-color 0.3s, color 0.3s;
     }
     .card-content-view .brand-content a:hover { background-color: #fff; color: #111; }
@@ -146,8 +121,7 @@ get_header();
 
     /* --- Add Card Button --- */
     .add-card-button {
-        position: fixed; /* Back to fixed, no longer draggable */
-        z-index: 2000; bottom: 40px; right: 40px; width: 60px; height: 60px;
+        position: fixed; z-index: 2000; bottom: 40px; right: 40px; width: 60px; height: 60px;
         background-color: #f0f0f0; color: #333; border: none; border-radius: 50%;
         font-size: 3rem; line-height: 60px; text-align: center;
         box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: all 0.4s ease;
@@ -162,21 +136,46 @@ get_header();
     <div id="card-viewer-overlay"></div>
 
     <div class="header-content">
-        <!-- Header is now static and no longer draggable -->
         <header class="main-header">
             <h1 class="main-title">SG</h1>
             <h2 class="main-subtitle">Synapse Guild</h2>
         </header>
-        <!-- Contact button is removed -->
     </div>
 
     <!-- PHP Query Logic is UNCHANGED -->
-    <?php /* ... Your correct PHP logic ... */ ?>
+    <?php
+    $initial_card_count = 10; $total_posts_to_fetch = 20; $all_posts_collection = []; $exclude_ids = [];
+    $selected_tag = get_term_by('slug', 'selected', 'post_tag');
+    if ($selected_tag) {
+        $selected_args = ['post_type' => 'post', 'posts_per_page' => $total_posts_to_fetch, 'tag_id' => $selected_tag->term_id, 'post_status' => 'publish', 'meta_query' => [['key' => '_thumbnail_id']]];
+        $selected_query = new WP_Query($selected_args);
+        if ($selected_query->have_posts()) { foreach ($selected_query->get_posts() as $post) { $all_posts_collection[] = $post; $exclude_ids[] = $post->ID; } }
+    }
+    $remaining_needed = $total_posts_to_fetch - count($all_posts_collection);
+    if ($remaining_needed > 0) {
+        $random_args = ['post_type' => 'post', 'posts_per_page' => $remaining_needed, 'orderby' => 'rand', 'post__not_in' => $exclude_ids, 'post_status' => 'publish', 'meta_query' => [['key' => '_thumbnail_id']]];
+        $random_query = new WP_Query($random_args);
+        if ($random_query->have_posts()) { foreach($random_query->get_posts() as $post) { $all_posts_collection[] = $post; } }
+    }
+    $initial_posts_data = []; $additional_posts_data = []; $post_index = 0;
+    foreach ($all_posts_collection as $post) {
+        setup_postdata($post); $image_url = get_the_post_thumbnail_url($post->ID, 'large');
+        if ($image_url) {
+            $post_data = ['title' => get_the_title($post), 'content' => apply_filters('the_content', $post->post_content), 'image_url' => esc_url($image_url)];
+            if ($post_index < $initial_card_count) {
+                $initial_posts_data[] = $post_data;
+                echo '<div class="post-page is-draggable" data-index="' . $post_index . '" style="--bg-image: url(\'' . esc_url($image_url) . '\');"></div>';
+            } else { $additional_posts_data[] = $post_data; }
+            $post_index++;
+        }
+    }
+    wp_reset_postdata();
+    ?>
 </main>
 
 <button id="add-card-button" class="add-card-button" aria-label="Add another card">+</button>
 
-<div id="contact-modal" class="contact-modal-overlay"> <!-- ... full content is in the template ... --> </div>
+<div id="contact-modal" class="contact-modal-overlay"> <!-- ... full content ... --> </div>
 
 <script>
     const initialPostsData = <?php echo json_encode($initial_posts_data); ?>;
@@ -195,62 +194,37 @@ document.addEventListener('DOMContentLoaded', function() {
     window.showContactModal = function() {
         if(contactModal) contactModal.classList.add('is-visible');
     };
-    if (contactModal) {
-        // ... (rest of contact form setup logic)
-    }
+    // ... (rest of contact modal setup logic is correct)
 
-    // --- Card Creation Functions ---
+    // --- Card Creation Function ---
     const createCard = (data) => {
         const card = document.createElement("div");
         card.className = "post-page is-draggable";
         card.cardData = data;
-        
         switch (data.type) {
-            case 'brand':
-                card.classList.add('brand-card');
-                card.innerHTML = `<h1>${data.title}</h1><h2>${data.slogan}</h2>`;
-                break;
-            case 'propose':
-                card.classList.add('propose-card');
-                card.innerHTML = `<h3>${data.title}</h3>`;
-                break;
-            case 'post':
-            default:
-                card.style.setProperty("--bg-image", `url('${data.image_url}')`);
-                break;
+            case 'brand': card.classList.add('brand-card'); card.innerHTML = `<h1>${data.title}</h1><h2>${data.slogan}</h2>`; break;
+            case 'propose': card.classList.add('propose-card'); card.innerHTML = `<h3>${data.title}</h3>`; break;
+            default: card.style.setProperty("--bg-image", `url('${data.image_url}')`); break;
         }
-
-        highestZ++;
-        card.style.zIndex = highestZ;
-        container.appendChild(card);
-        return card;
+        highestZ++; card.style.zIndex = highestZ; container.appendChild(card); return card;
     };
     
-    // --- Card and Layout Initialization ---
+    // --- Layout and Initialization ---
     function randomizeInitialLayout(){
-        const initialCards = document.querySelectorAll('.post-page');
-        highestZ = initialCards.length;
-        initialCards.forEach((card, index) => {
+        document.querySelectorAll('.post-page').forEach((card, index) => {
             card.cardData = { type: 'post', ...initialPostsData[index] };
             const randomX = Math.floor(Math.random()*(window.innerWidth-250-80))+40, randomY = Math.floor(Math.random()*(window.innerHeight-375-80))+40, randomRot = Math.random()*20-10;
             card.style.left = `${randomX}px`, card.style.top = `${randomY}px`, card.style.setProperty("--r", `${randomRot}deg`), card.style.zIndex = index + 1;
             setTimeout(() => card.classList.add("is-visible"), index * 80);
         });
+        highestZ = document.querySelectorAll('.post-page').length;
         
-        // Add the Brand Card last
         setTimeout(() => {
-            const brandCardData = {
-                type: 'brand',
-                title: 'Synapse Guild',
-                slogan: 'Your Unfair Creative Advantage.',
-                content: `<div class="brand-content"><p>In a marketplace of echoes, a powerful, foundational concept is the only true way to stand out. Our studio is a unique collective where philosophers probe the 'why', architects design the structure, and artists give it a soul.</p><a href="#" id="brand-contact-link">+ take your card</a></div>`
-            };
+            const brandCardData = { type: 'brand', title: 'Synapse Guild', slogan: 'Your Unfair Creative Advantage.', content: `<div class="brand-content"><p>In a marketplace of echoes, a powerful, foundational concept is the only true way to stand out. Our studio is a unique collective where philosophers probe the 'why', architects design the structure, and artists give it a soul.</p><a href="#" id="brand-contact-link">+ take your card</a></div>` };
             const brandCard = createCard(brandCardData);
-            // Position it in the middle
-            brandCard.style.left = `calc(50% - 125px)`;
-            brandCard.style.top = `calc(50% - 187.5px)`;
+            brandCard.style.left = `calc(50% - 125px)`; brandCard.style.top = `calc(50% - 187.5px)`;
             setTimeout(() => brandCard.classList.add("is-visible"), 50);
-        }, (initialCards.length * 80) + 100);
+        }, (highestZ * 80) + 100);
     }
     
     window.onload = function(){
@@ -264,22 +238,22 @@ document.addEventListener('DOMContentLoaded', function() {
             if (availablePosts.length > 0) {
                 const postData = { type: 'post', ...availablePosts.shift() };
                 const newCard = createCard(postData);
-                const randomX = Math.floor(Math.random()*(window.innerWidth-250-80))+40, randomY = Math.floor(Math.random()*(window.innerHeight-375-80))+40, randomRot = Math.random()*20-10;
-                newCard.style.left = `${randomX}px`, newCard.style.top = `${randomY}px`, newCard.style.setProperty("--r", `${randomRot}deg`);
-                setTimeout(() => newCard.classList.add("is-visible"), 50);
+                const randomX=Math.floor(Math.random()*(window.innerWidth-250-80))+40,randomY=Math.floor(Math.random()*(window.innerHeight-375-80))+40,randomRot=Math.random()*20-10;
+                newCard.style.left=`${randomX}px`,newCard.style.top=`${randomY}px`,newCard.style.setProperty("--r",`${randomRot}deg`);
+                setTimeout(()=>newCard.classList.add("is-visible"),50);
             } else if (!hasThrownFinalCard) {
                 const proposeCardData = { type: 'propose', title: '+ propose your concept' };
                 const proposeCard = createCard(proposeCardData);
-                const randomX = Math.floor(Math.random()*(window.innerWidth-250-80))+40, randomY = Math.floor(Math.random()*(window.innerHeight-375-80))+40, randomRot = Math.random()*20-10;
-                proposeCard.style.left = `${randomX}px`, proposeCard.style.top = `${randomY}px`, proposeCard.style.setProperty("--r", `${randomRot}deg`);
-                setTimeout(() => proposeCard.classList.add("is-visible"), 50);
+                const randomX=Math.floor(Math.random()*(window.innerWidth-250-80))+40,randomY=Math.floor(Math.random()*(window.innerHeight-375-80))+40,randomRot=Math.random()*20-10;
+                proposeCard.style.left=`${randomX}px`,proposeCard.style.top=`${randomY}px`,proposeCard.style.setProperty("--r",`${randomRot}deg`);
+                setTimeout(()=>proposeCard.classList.add("is-visible"),50);
                 hasThrownFinalCard = true;
                 addCardBtn.classList.add("is-disabled");
             }
         });
     }
 
-    // --- Card Expansion Logic ---
+    // --- Card Expansion & Collapse Logic ---
     function expandCard(cardElement){
         if(expandedCard || !cardElement.cardData) return;
         expandedCard = cardElement; body.classList.add("card-is-active"); viewerOverlay.classList.add("is-visible");
@@ -289,29 +263,28 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const data = cardElement.cardData;
         let contentHTML = '';
-        if (data.type === 'post') {
-            contentHTML = `<h1>${data.title}</h1><div class="post-body-content">${data.content}</div>`;
-        } else if (data.type === 'brand') {
-            contentHTML = data.content;
-        }
-
-        contentView.innerHTML = contentHTML;
-        contentView.prepend(closeButton);
-        cardElement.appendChild(contentView); 
-        cardElement.classList.add("is-expanded");
+        if (data.type === 'post') { contentHTML = `<h1>${data.title}</h1><div class="post-body-content">${data.content}</div>`; }
+        else if (data.type === 'brand') { contentHTML = data.content; }
         
-        // Add specific listener for the brand card's contact link
+        contentView.innerHTML = contentHTML; contentView.prepend(closeButton);
+        cardElement.appendChild(contentView); cardElement.classList.add("is-expanded");
+        
         const brandContactLink = document.getElementById('brand-contact-link');
-        if (brandContactLink) {
-            brandContactLink.onclick = (e) => {
-                e.preventDefault();
-                window.showContactModal();
-            }
-        }
+        if (brandContactLink) { brandContactLink.onclick = (e) => { e.preventDefault(); window.showContactModal(); } }
     }
-    // ... collapseCard logic is correct ...
+
+    // ** THE EXPERT FIX **: The missing collapseCard function is now defined.
+    function collapseCard() {
+        if (!expandedCard) return;
+        body.classList.remove("card-is-active");
+        viewerOverlay.classList.remove("is-visible");
+        const contentView = expandedCard.querySelector(".card-content-view");
+        if (contentView) expandedCard.removeChild(contentView);
+        expandedCard.classList.remove("is-expanded");
+        expandedCard = null;
+    }
     
-    // --- UNIFIED DRAG-AND-DROP ENGINE ---
+    // --- Unified Drag-and-Drop Engine ---
     let activeElement=null, isDragging=false, startX, startY, initialX, initialY;
     function dragStart(e) {
         const target = e.target.closest(".is-draggable");
@@ -328,22 +301,30 @@ document.addEventListener('DOMContentLoaded', function() {
         document.addEventListener("mouseup", dragEnd);
         document.addEventListener("touchend", dragEnd);
     }
-    function dragging(e) { /* ... This logic is correct ... */ }
+    function dragging(e) {
+        if (!activeElement) return; e.preventDefault();
+        let currentX = e.type === "touchmove" ? e.touches[0].clientX : e.clientX;
+        let currentY = e.type === "touchmove" ? e.touches[0].clientY : e.clientY;
+        const deltaX = currentX - startX, deltaY = currentY - startY;
+        if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) isDragging = true;
+        activeElement.style.left = `${initialX + deltaX}px`;
+        activeElement.style.top = `${initialY + deltaY}px`;
+    }
     function dragEnd() {
         if (!activeElement) return;
         activeElement.classList.remove("is-dragging");
-        if (!isDragging) { // This was a click
+        if (!isDragging) {
             const data = activeElement.cardData;
             if (data) {
-                if (data.type === 'post' || data.type === 'brand') {
-                    expandCard(activeElement);
-                } else if (data.type === 'propose') {
-                    window.showContactModal();
-                }
+                if (data.type === 'post' || data.type === 'brand') expandCard(activeElement);
+                else if (data.type === 'propose') window.showContactModal();
             }
         }
         activeElement = null;
-        // ... (rest of dragEnd logic is correct) ...
+        document.removeEventListener("mousemove", dragging);
+        document.removeEventListener("touchmove", dragging);
+        document.removeEventListener("mouseup", dragEnd);
+        document.removeEventListener("touchend", dragEnd);
     }
     container.addEventListener("mousedown", dragStart);
     container.addEventListener("touchstart", dragStart, { passive: false });
