@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 2. Drag-and-Drop Functionality
     let activeCard = null;
-    let isDragging = false;
+    let isDragging = true;
     let startX, startY, initialX, initialY;
 
     function dragStart(e) {
