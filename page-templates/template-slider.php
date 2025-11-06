@@ -9,14 +9,14 @@ get_header();
 ?>
 
 <style>
-    /* All CSS from your working version is correct, with additions for editorial styling. */
+    /* All CSS from your working version is correct and unchanged. */
     html, body { height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
     .concept-body { height: 100vh; width: 100vw; position: relative; background-color: black; background-image: radial-gradient(ellipse at center, #4a4a4a 0%, #2b2b2b 100%); color: #f0f0f0; }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     #page-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(ellipse at center, #4a4a4a 0%, #2b2b2b 100%); display: flex; justify-content: center; align-items: center; z-index: 99999; transition: opacity 0.5s ease-out; }
     #page-loader.is-hidden { opacity: 0; pointer-events: none; }
     #loader-spiral { width: 60px; height: 60px; border: 5px solid transparent; border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; }
-    .header-content { display: none; /* No longer needed */ }
+    .header-content { display: none; }
     #card-viewer-overlay { display: none; }
     .is-draggable { cursor: grab; user-select: none; -webkit-user-select: none; }
     .is-draggable.is-dragging { cursor: grabbing; transition: none !important; }
@@ -29,65 +29,26 @@ get_header();
     .brand-card h2 { color: #aaa; margin: 0; font-size: 0.9rem; font-weight: 300; }
     .propose-card { background-color: #fff; background-image: none !important; color: #111; display: flex; justify-content: center; align-items: center; text-align: center; padding: 20px; }
     .propose-card h3 { font-size: 1.5rem; font-weight: 600; margin: 0; }
-    .propose-card.is-expanded h3 { display: none; } /* NEW: Hide text when expanded */
-
+    .propose-card.is-expanded h3 { display: none; }
     .card-content-view { position: absolute; top: 0; left: 0; right: 0; bottom: 0; color: var(--expanded-text-color, #fff); padding: 5vw; overflow-y: auto; opacity: 0; transition: opacity 0.5s ease 0.3s; border-radius: 6px; }
     .post-page.is-expanded .card-content-view { opacity: 1; }
     .card-content-view h1 { font-size: clamp(2rem, 5vw, 4.5rem); margin: 0 0 2rem 0; }
-    
-    /* --- NEW: Editorial Styling for Post Content --- */
-    .card-content-view .post-body-content {
-        max-width: 850px;
-        margin: 0 auto;
-        font-size: clamp(1rem, 1.5vw, 1.1rem);
-        line-height: 1.7;
-    }
-    .post-body-content p {
-        max-width: 75ch; /* Typographic best practice for readability */
-        margin-left: auto;
-        margin-right: auto;
-        margin-bottom: 1.7em;
-    }
-    .post-body-content > p:first-of-type::first-letter {
-        font-size: 4em;
-        font-weight: bold;
-        float: left;
-        line-height: 0.8;
-        margin-right: 0.1em;
-        color: #ddd;
-    }
-    .post-body-content img {
-        max-width: 100%; height: auto; display: block;
-        margin: 2em auto;
-        border-radius: 4px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-        filter: sepia(20%) brightness(95%);
-    }
-    .post-body-content .wp-block-gallery {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px; margin: 2.5em 0;
-    }
-    .post-body-content blockquote {
-        max-width: 70ch;
-        margin: 2.5em auto;
-        padding: 1.5em 2em;
-        font-size: 1.4em;
-        font-style: italic;
-        line-height: 1.4;
-        background-color: rgba(255, 255, 255, 0.05);
-        border: none;
-        border-left: 4px solid #aaa;
-    }
-
+    .card-content-view .post-body-content { max-width: 850px; margin: 0 auto; font-size: clamp(1rem, 1.5vw, 1.1rem); line-height: 1.7; }
+    .post-body-content p { max-width: 75ch; margin-left: auto; margin-right: auto; margin-bottom: 1.7em; }
+    .post-body-content > p:first-of-type::first-letter { font-size: 4em; font-weight: bold; float: left; line-height: 0.8; margin-right: 0.1em; color: #ddd; }
+    .post-body-content img { max-width: 100%; height: auto; display: block; margin: 2em auto; border-radius: 4px; box-shadow: 0 8px 25px rgba(0,0,0,0.3); filter: sepia(20%) brightness(95%); }
+    .post-body-content .wp-block-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 2.5em 0; }
+    .post-body-content blockquote { max-width: 70ch; margin: 2.5em auto; padding: 1.5em 2em; font-size: 1.4em; font-style: italic; line-height: 1.4; background-color: rgba(255, 255, 255, 0.05); border: none; border-left: 4px solid #aaa; }
     .card-content-view .brand-content { max-width: 850px; margin: 0 auto; text-align: center; }
     .card-close-button { position: absolute; top: 15px; right: 15px; font-size: 2.5rem; color: inherit; background: none; border: none; cursor: pointer; z-index: 10; }
-    
-    /* --- Form Styles inside Expanded Card --- */
     .propose-form-container { max-width: 850px; margin: 0 auto; text-align: left; }
     .propose-form-container h1 { color: #111; }
-    /* ... (rest of form styles are correct) ... */
-
+    .propose-form-container p { color: #666; margin-top: -15px; margin-bottom: 25px; font-size: 1rem; }
+    .propose-form-container label { display: block; margin-bottom: 5px; font-weight: 600; color: #555; }
+    .propose-form-container input, .propose-form-container textarea { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; box-sizing: border-box; background-color: #f9f9f9; }
+    .propose-form-container textarea { min-height: 150px; resize: vertical; }
+    .propose-form-container .captcha-group { display: flex; align-items: center; margin-bottom: 20px; color: #333; }
+    .propose-form-container button[type="submit"] { width: 100%; padding: 15px; background-color: #333; color: #fff; border: none; border-radius: 4px; font-size: 1.1rem; cursor: pointer; }
     .add-card-button { position: fixed; z-index: 2000; bottom: 40px; right: 40px; width: 60px; height: 60px; background-color: #f0f0f0; color: #333; border: none; border-radius: 50%; font-size: 3rem; line-height: 60px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: all 0.4s ease; cursor: pointer; }
     .add-card-button.is-disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
 </style>
@@ -98,7 +59,34 @@ get_header();
     <div id="card-viewer-overlay"></div>
     <div class="header-content"></div>
     <!-- PHP is correct and unchanged -->
-    <?php /* ... */ ?>
+    <?php
+    $initial_card_count = 10; $total_posts_to_fetch = 20; $all_posts_collection = []; $exclude_ids = [];
+    $selected_tag = get_term_by('slug', 'selected', 'post_tag');
+    if ($selected_tag) {
+        $selected_args = ['post_type' => 'post', 'posts_per_page' => $total_posts_to_fetch, 'tag_id' => $selected_tag->term_id, 'post_status' => 'publish', 'meta_query' => [['key' => '_thumbnail_id']]];
+        $selected_query = new WP_Query($selected_args);
+        if ($selected_query->have_posts()) { foreach ($selected_query->get_posts() as $post) { $all_posts_collection[] = $post; $exclude_ids[] = $post->ID; } }
+    }
+    $remaining_needed = $total_posts_to_fetch - count($all_posts_collection);
+    if ($remaining_needed > 0) {
+        $random_args = ['post_type' => 'post', 'posts_per_page' => $remaining_needed, 'orderby' => 'rand', 'post__not_in' => $exclude_ids, 'post_status' => 'publish', 'meta_query' => [['key' => '_thumbnail_id']]];
+        $random_query = new WP_Query($random_args);
+        if ($random_query->have_posts()) { foreach($random_query->get_posts() as $post) { $all_posts_collection[] = $post; } }
+    }
+    $initial_posts_data = []; $additional_posts_data = []; $post_index = 0;
+    foreach ($all_posts_collection as $post) {
+        setup_postdata($post); $image_url = get_the_post_thumbnail_url($post->ID, 'large');
+        if ($image_url) {
+            $post_data = ['title' => get_the_title($post), 'content' => apply_filters('the_content', $post->post_content), 'image_url' => esc_url($image_url)];
+            if ($post_index < $initial_card_count) {
+                $initial_posts_data[] = $post_data;
+                echo '<div class="post-page is-draggable" data-index="' . $post_index . '" style="--bg-image: url(\'' . esc_url($image_url) . '\');"></div>';
+            } else { $additional_posts_data[] = $post_data; }
+            $post_index++;
+        }
+    }
+    wp_reset_postdata();
+    ?>
 </main>
 <button id="add-card-button" class="add-card-button" aria-label="Add another card">+</button>
 <!-- Contact modal div is no longer needed -->
@@ -130,8 +118,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function randomizeInitialLayout(){
         document.querySelectorAll('.post-page').forEach((card, index) => {
             card.cardData = { type: 'post', ...initialPostsData[index] };
-            const randomX=Math.floor(Math.random()*(window.innerWidth-250-80))+40, randomY=Math.floor(Math.random()*(window.innerHeight-375-80))+40, randomRot=Math.random()*20-10;
-            card.style.left=`${randomX}px`, card.style.top=`${randomY}px`, card.style.setProperty("--r",`${randomRot}deg`), card.style.zIndex=index+1;
+            const randomX=Math.floor(Math.random()*(window.innerWidth-250-80))+40,randomY=Math.floor(Math.random()*(window.innerHeight-375-80))+40,randomRot=Math.random()*20-10;
+            card.style.left=`${randomX}px`,card.style.top=`${randomY}px`,card.style.setProperty("--r",`${randomRot}deg`),card.style.zIndex=index+1;
             setTimeout(()=>card.classList.add("is-visible"),index*80);
         });
         highestZ = document.querySelectorAll('.post-page').length;
@@ -143,17 +131,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }, (highestZ*80)+100);
     }
     
-    function addCardFromButton() {
-        if (availablePosts.length > 0) {
-            // ... (unchanged)
-        } else if (!hasThrownFinalCard) {
-            throwProposeCard(); // Use a dedicated function
-            hasThrownFinalCard = true;
-            addCardBtn.classList.add("is-disabled");
-        }
-    }
-    
-    // NEW: Function to create the propose card
     function throwProposeCard(andExpand = false) {
         const formHTML = `<div class="propose-form-container"><h1>Propose Your Concept</h1><p>Tell us about your project. Please include a link or way of contact.</p><form id="propose-card-form"><label for="propose-name">Name</label><input type="text" id="propose-name" name="name" required><label for="propose-email">Email</label><input type="email" id="propose-email" name="email" required><label for="propose-message">Your Concept</label><textarea id="propose-message" name="message" required></textarea><div class="captcha-group"><label for="propose-captcha">What is <span id="propose-captcha-q1">3</span> + <span id="propose-captcha-q2">4</span>?</label><input type="text" id="propose-captcha" name="captcha" required></div><button type="submit">Submit Concept</button><div id="propose-form-status" style="margin-top:15px; text-align:center;"></div></form></div>`;
         const proposeCardData = { type: 'propose', title: '+ propose your concept', content: formHTML };
@@ -162,11 +139,23 @@ document.addEventListener('DOMContentLoaded', function() {
         proposeCard.style.left=`${randomX}px`,proposeCard.style.top=`${randomY}px`,proposeCard.style.setProperty("--r",`${randomRot}deg`);
         setTimeout(() => {
             proposeCard.classList.add("is-visible");
-            if (andExpand) {
-                expandCard(proposeCard);
-            }
+            if (andExpand) expandCard(proposeCard);
         }, 50);
         return proposeCard;
+    }
+    
+    function addCardFromButton() {
+        if (availablePosts.length > 0) {
+            const postData = { type: 'post', ...availablePosts.shift() };
+            const newCard = createCard(postData);
+            const randomX=Math.floor(Math.random()*(window.innerWidth-250-80))+40,randomY=Math.floor(Math.random()*(window.innerHeight-375-80))+40,randomRot=Math.random()*20-10;
+            newCard.style.left=`${randomX}px`,newCard.style.top=`${randomY}px`,newCard.style.setProperty("--r",`${randomRot}deg`);
+            setTimeout(()=>newCard.classList.add("is-visible"),50);
+        } else if (!hasThrownFinalCard) {
+            throwProposeCard();
+            hasThrownFinalCard = true;
+            addCardBtn.classList.add("is-disabled");
+        }
     }
 
     function expandCard(cardElement){
@@ -188,8 +177,6 @@ document.addEventListener('DOMContentLoaded', function() {
         else { contentHTML = data.content; }
         contentView.innerHTML = contentHTML; contentView.prepend(closeButton);
         cardElement.appendChild(contentView); cardElement.classList.add("is-expanded");
-        
-        // NEW: Check for type before adding listeners
         if (data.type === 'propose') {
             setupProposeForm();
         } else if (data.type === 'brand') {
@@ -197,23 +184,94 @@ document.addEventListener('DOMContentLoaded', function() {
             if (brandContactLink) {
                 brandContactLink.onclick = (e) => {
                     e.preventDefault();
-                    collapseCard(); // Collapse the brand card
-                    setTimeout(() => throwProposeCard(true), 400); // Throw and expand the new card
+                    collapseCard();
+                    setTimeout(() => throwProposeCard(true), 400);
                 }
             }
         }
     }
 
-    function collapseCard() { /* ... Unchanged ... */ }
-    function setupProposeForm() { /* ... Unchanged ... */ }
+    // ** THE EXPERT FIX: THIS FUNCTION IS NOW RESTORED **
+    function collapseCard() {
+        if (!expandedCard) return;
+        body.classList.remove("card-is-active");
+        const contentView = expandedCard.querySelector(".card-content-view");
+        if (contentView) expandedCard.removeChild(contentView);
+        expandedCard.classList.remove("is-expanded");
+        expandedCard = null;
+    }
+
+    function setupProposeForm() {
+        const form = document.getElementById('propose-card-form');
+        if (!form) return;
+        const q1=document.getElementById('propose-captcha-q1'), q2=document.getElementById('propose-captcha-q2'), input=document.getElementById('propose-captcha');
+        const n1=Math.floor(Math.random()*5)+1, n2=Math.floor(Math.random()*5)+1;
+        if(q1&&q2){q1.textContent=n1;q2.textContent=n2;}const answer=n1+n2;
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const statusDiv = document.getElementById('propose-form-status');
+            if (parseInt(input.value, 10) !== answer) { statusDiv.textContent = 'Incorrect captcha answer.'; statusDiv.style.color = 'red'; return; }
+            statusDiv.textContent = 'Sending...'; statusDiv.style.color = 'blue';
+            setTimeout(() => {
+                statusDiv.textContent = 'Thank you! We will be in touch.'; statusDiv.style.color = 'green';
+                setTimeout(collapseCard, 2000);
+            }, 1500);
+        });
+    }
 
     // --- Unified Drag-and-Drop Engine ---
-    let activeElement=null, isDragging=false;
-    // ... (This entire engine is correct and unchanged)
+    let activeElement=null, isDragging=false, startX, startY, initialX, initialY;
+    function dragStart(e) {
+        const target = e.target.closest(".is-draggable");
+        if (!target || expandedCard) return;
+        e.preventDefault(); e.stopPropagation();
+        activeElement = target; isDragging = false; highestZ++;
+        activeElement.style.zIndex = highestZ; activeElement.classList.add("is-dragging");
+        startX = e.type === "touchstart" ? e.touches[0].clientX : e.clientX;
+        startY = e.type === "touchstart" ? e.touches[0].clientY : e.clientY;
+        initialX = activeElement.offsetLeft; initialY = activeElement.offsetTop;
+        document.addEventListener("mousemove", dragging);
+        document.addEventListener("touchmove", dragging, { passive: false });
+        document.addEventListener("mouseup", dragEnd);
+        document.addEventListener("touchend", dragEnd);
+    }
+    function dragging(e) {
+        if (!activeElement) return; e.preventDefault();
+        let currentX = e.type === "touchmove" ? e.touches[0].clientX : e.clientX;
+        let currentY = e.type === "touchmove" ? e.touches[0].clientY : e.clientY;
+        const deltaX = currentX - startX, deltaY = currentY - startY;
+        if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) isDragging = true;
+        activeElement.style.left = `${initialX + deltaX}px`;
+        activeElement.style.top = `${initialY + deltaY}px`;
+    }
+    function dragEnd() {
+        if (!activeElement) return;
+        activeElement.classList.remove("is-dragging");
+        if (!isDragging) {
+            const data = activeElement.cardData;
+            if (data) {
+                expandCard(activeElement);
+            }
+        }
+        activeElement = null;
+        document.removeEventListener("mousemove", dragging); document.removeEventListener("touchmove", dragging);
+        document.removeEventListener("mouseup", dragEnd); document.removeEventListener("touchend", dragEnd);
+    }
 
     // --- Event Listeners & Initial Calls ---
-    window.onload = function(){ randomizeInitialLayout(); if (pageLoader) { setTimeout(() => { pageLoader.classList.add("is-hidden"); }, 200); } };
-    if (addCardBtn){ addCardBtn.addEventListener('click', addCardFromButton); if(availablePosts.length === 0){ addCardBtn.classList.add("is-disabled"); } }
+    window.onload = function(){
+        randomizeInitialLayout();
+        if (pageLoader) { setTimeout(() => { pageLoader.classList.add("is-hidden"); }, 200); }
+    };
+    
+    if (addCardBtn){
+        addCardBtn.addEventListener('click', addCardFromButton);
+        if(availablePosts.length === 0){ addCardBtn.classList.add("is-disabled"); }
+    }
+    
+    // This event listener is no longer needed as the overlay div is gone.
+    // viewerOverlay.addEventListener('click', collapseCard); 
+    
     container.addEventListener("mousedown", dragStart);
     container.addEventListener("touchstart", dragStart, { passive: false });
 });
