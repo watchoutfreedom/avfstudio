@@ -51,11 +51,48 @@ get_header();
     .propose-form-container button[type="submit"] { width: 100%; padding: 15px; background-color: #333; color: #fff; border: none; border-radius: 4px; font-size: 1.1rem; cursor: pointer; }
     .add-card-button { position: fixed; z-index: 2000; bottom: 40px; right: 40px; width: 60px; height: 60px; background-color: #f0f0f0; color: #333; border: none; border-radius: 50%; font-size: 3rem; line-height: 60px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: all 0.4s ease; cursor: pointer; }
     .add-card-button.is-disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+
+
+        /* --- NEW: Image Lightbox Styling --- */
+    .image-lightbox-overlay {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 6000; /* Above the expanded card */
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        cursor: zoom-out;
+    }
+    .image-lightbox-overlay.is-visible {
+        opacity: 1;
+        pointer-events: all;
+    }
+    .image-lightbox-overlay img {
+        display: block;
+        max-height: 90vh;
+        max-width: 90vw;
+        box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        border-radius: 4px;
+        width: 100%; /* On mobile, take up full width */
+    }
+    /* Desktop-specific sizing */
+    @media (min-width: 769px) {
+        .image-lightbox-overlay img {
+            width: 50%; /* On desktop, take up 50% width */
+        }
+    }
 </style>
 
 <div id="page-loader"><div id="loader-spiral"></div></div>
 
 <main class="concept-body" id="concept-body">
+    <div id="image-lightbox" class="image-lightbox-overlay"></div>
+
     <div id="card-viewer-overlay"></div>
     <div class="header-content"></div>
     <!-- PHP is correct and unchanged -->
@@ -177,6 +214,37 @@ document.addEventListener('DOMContentLoaded', function() {
         else { contentHTML = data.content; }
         contentView.innerHTML = contentHTML; contentView.prepend(closeButton);
         cardElement.appendChild(contentView); cardElement.classList.add("is-expanded");
+
+        // --- INSERT NEW CODE BLOCK HERE ---
+            // After the card is expanded and content is added, make images clickable.
+            const lightbox = document.getElementById('image-lightbox');
+            if (lightbox) {
+                const imagesInPost = cardElement.querySelectorAll('.post-body-content img');
+                imagesInPost.forEach(img => {
+                    img.style.cursor = 'zoom-in'; // Add visual cue
+                    img.onclick = (e) => {
+                        e.stopPropagation(); // Prevent card from thinking it was clicked
+                        
+                        // Create a new image element for the lightbox
+                        const lightboxImg = new Image();
+                        lightboxImg.src = img.src;
+
+                        // Clear any previous image and add the new one
+                        lightbox.innerHTML = ''; 
+                        lightbox.appendChild(lightboxImg);
+                        lightbox.classList.add('is-visible');
+                    };
+                });
+
+                // Add listener to close the lightbox
+                lightbox.onclick = () => {
+                    lightbox.classList.remove('is-visible');
+                };
+            }
+            // --- END OF NEW CODE BLOCK ---
+
+
+
         if (data.type === 'propose') {
             setupProposeForm();
         } else if (data.type === 'brand') {
