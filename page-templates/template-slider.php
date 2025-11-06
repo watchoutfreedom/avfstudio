@@ -15,101 +15,167 @@ get_header();
         width: 100%;
         margin: 0;
         padding: 0;
-        overflow: hidden;
+        overflow: hidden; /* Prevents scrollbars on the body */
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        background-color: #2b2b2b; /* Fallback */
     }
 
     .concept-body {
         height: 100vh;
         width: 100vw;
-        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        /* "lmarena colors" style gradient */
         background-color: #333;
         background-image: radial-gradient(ellipse at center, #4a4a4a 0%, #2b2b2b 100%);
         color: #f0f0f0;
-    }
-
-    /* --- Header & Contact --- */
-    .header-content {
         position: relative;
-        z-index: 1000;
-        padding: 30px 40px;
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        pointer-events: none;
     }
-    .header-content > * {
-        pointer-events: all;
+    
+    /* --- Initial Loading Animation State --- */
+    .concept-body.is-loading .post-page {
+        transform: translateX(-50%) translateY(500px) scale(0.8);
     }
-    .main-header { text-align: left; }
-    .main-title { font-size: 4rem; font-weight: 800; margin: 0; letter-spacing: 2px; text-transform: uppercase; }
-    .main-subtitle { font-size: 1.5rem; font-weight: 300; margin: 0; color: #bbb; }
-    .contact-icon-button { background: none; border: none; cursor: pointer; padding: 10px; }
-    .contact-icon-button svg { width: 32px; height: 32px; fill: #f0f0f0; transition: transform 0.3s ease; }
-    .contact-icon-button:hover svg { transform: scale(1.1); }
 
-    /* --- Post Cards (Tabletop Style) --- */
-    .post-page {
+    /* --- Contact Icon --- */
+    .contact-icon-wrapper {
         position: absolute;
-        width: 250px;
-        height: 375px;
-        cursor: grab;
+        top: 30px;
+        right: 40px;
+        z-index: 100;
+    }
+
+    .contact-icon-button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 10px;
+    }
+
+    .contact-icon-button svg {
+        width: 32px;
+        height: 32px;
+        fill: #f0f0f0;
+        transition: transform 0.3s ease;
+    }
+
+    .contact-icon-button:hover svg {
+        transform: scale(1.1);
+    }
+
+    /* --- Main Title & Subtitle --- */
+    .main-header {
+        text-align: center;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 10;
+        pointer-events: none; /* Allows clicks/hovers to go through to posts below */
+    }
+
+    .main-title {
+        font-size: 4rem;
+        font-weight: 800;
+        margin: 0;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+
+    .main-subtitle {
+        font-size: 1.5rem;
+        font-weight: 300;
+        margin: 0;
+        color: #bbb;
+    }
+
+    /* --- Post Stack (Slide Projector Style) --- */
+    .post-stack-container {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 90%;
+        max-width: 400px;
+        height: 500px; /* Container height for positioning context */
+        transform: translateX(-50%);
+        pointer-events: none; /* Container doesn't capture events */
+    }
+
+    .post-page {
+        /* Card setup */
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 280px;
+        height: 420px; /* Portrait aspect ratio, like a slide */
+        pointer-events: all; /* Cards capture events */
+        text-decoration: none;
+        
+        /* Image styling */
         background-image: var(--bg-image);
         background-size: cover;
         background-position: center;
+        
+        /* Visuals */
         border: 2px solid white;
         border-radius: 8px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-        opacity: 0;
-        transform: scale(0.5);
-        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease, box-shadow 0.3s ease;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        
+        /* Staggering and layering logic */
+        transform-origin: bottom center;
+        z-index: calc(10 - var(--i));
+        
+        /* Resting State: Staggered and half-hidden at the bottom */
+        transform: translateX(-50%) translateY(calc(320px - var(--i) * 20px)) scale(calc(1 - var(--i) * 0.05));
+        
+        /* Animation: Smooth transitions for transform and filter */
+        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                    filter 0.5s ease;
+        transition-delay: calc(var(--i) * 80ms); /* Staggered entry animation */
     }
-    .post-page.is-visible {
-        opacity: 1;
-        transform: scale(1) rotate(var(--r, 0deg));
-    }
-    .post-page:hover {
-        box-shadow: 0 15px 45px rgba(0,0,0,0.5);
-        transform: scale(1.03) rotate(var(--r, 0deg));
-    }
-    .post-page.is-dragging {
-        cursor: grabbing;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-        transform: scale(1.05) rotate(var(--r, 0deg));
-        transition: none;
-    }
-
-    /* --- Add Post Button --- */
-    .add-post-button {
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        width: 60px;
-        height: 60px;
-        background-color: #fff;
-        color: #333;
-        border-radius: 50%;
-        border: none;
-        font-size: 2.5rem;
-        line-height: 60px;
+    
+    .post-page:after { /* Add a subtle title overlay */
+        content: attr(data-title);
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 20px 15px;
+        box-sizing: border-box;
         text-align: center;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        cursor: pointer;
-        z-index: 1001;
-        transition: transform 0.3s ease, background-color 0.3s ease;
-    }
-    .add-post-button:hover {
-        transform: scale(1.1);
-    }
-    .add-post-button:disabled {
-        background-color: #aaa;
-        cursor: not-allowed;
-        transform: scale(1);
+        color: white;
+        font-size: 1rem;
+        font-weight: 600;
+        background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        opacity: 0;
+        transition: opacity 0.5s ease;
     }
 
-    /* --- Contact Modal (Unchanged) --- */
-    .contact-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); display: none; justify-content: center; align-items: center; z-index: 10000; opacity: 0; transition: opacity 0.3s ease; }
+    /* --- Desktop Hover Interaction --- */
+    @media (hover: hover) and (pointer: fine) {
+        .post-page:hover {
+            /* Hover State: Moves up fully into view and scales */
+            transform: translateX(-50%) translateY(-20px) scale(1.05) !important;
+            z-index: 20 !important;
+            cursor: pointer;
+            filter: brightness(1.1); /* Subtle brightening */
+        }
+        .post-page:hover:after {
+            opacity: 1;
+        }
+    }
+
+    /* --- Mobile Touch Interaction --- */
+    .post-page.is-active {
+        /* Active State (for mobile): Moves up fully into view and scales */
+        transform: translateX(-50%) translateY(-20px) scale(1.05);
+        z-index: 20;
+    }
+    .post-page.is-active:after {
+        opacity: 1;
+    }
+    
+    /* --- Contact Modal (No changes) --- */
+    .contact-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); display: none; justify-content: center; align-items: center; z-index: 1000; opacity: 0; transition: opacity 0.3s ease; }
     .contact-modal-overlay.is-visible { display: flex; opacity: 1; }
     .contact-modal-content { background: #fff; color: #333; padding: 40px; border-radius: 8px; width: 90%; max-width: 500px; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transform: scale(0.95); transition: transform 0.3s ease; }
     .contact-modal-overlay.is-visible .contact-modal-content { transform: scale(1); }
@@ -124,259 +190,175 @@ get_header();
 
     /* --- Responsive Adjustments --- */
     @media (max-width: 768px) {
-        .header-content { flex-direction: column-reverse; align-items: center; padding: 20px; }
-        .main-header { text-align: center; margin-top: 15px; }
         .main-title { font-size: 2.5rem; }
         .main-subtitle { font-size: 1.2rem; }
-        .post-page { width: 200px; height: 300px; }
-        .add-post-button { bottom: 20px; right: 20px; width: 50px; height: 50px; font-size: 2rem; line-height: 50px; }
+        .contact-icon-wrapper { top: 15px; right: 15px; }
+        .post-page { width: 240px; height: 360px; transform: translateX(-50%) translateY(calc(280px - var(--i) * 15px)) scale(calc(1 - var(--i) * 0.05));}
+        .post-page.is-active, .post-page:hover { transform: translateX(-50%) translateY(-10px) scale(1.05) !important; }
     }
 </style>
 
-<main class="concept-body" id="concept-body">
+<main class="concept-body">
 
-    <!-- Header Content: Title and Contact Button -->
-    <div class="header-content">
-        <header class="main-header">
-            <h1 class="main-title">avfstudio</h1>
-            <h2 class="main-subtitle">Concept power</h2>
-        </header>
+    <!-- Contact Icon Button -->
+    <div class="contact-icon-wrapper">
         <button id="open-contact-modal" class="contact-icon-button" aria-label="Open contact form">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+            </svg>
         </button>
     </div>
 
-    <!-- "+" Button to Add New Posts -->
-    <button id="add-post-button" class="add-post-button" title="Add a new post">+</button>
+    <!-- Main Title Area -->
+    <header class="main-header">
+        <h1 class="main-title">avfstudio</h1>
+        <h2 class="main-subtitle">Concept power</h2>
+    </header>
 
-    <?php
-    // Fetch ALL available posts and prepare them for JavaScript
-    $all_posts_data = [];
-    $args = array(
-        'post_type'      => 'post',
-        'posts_per_page' => -1, // Fetch ALL posts
-        'post_status'    => 'publish',
-        'meta_query'     => array(
-            array('key' => '_thumbnail_id') // Ensure post has a featured image
-        )
-    );
-    $all_posts_query = new WP_Query($args);
+    <!-- Post Stack -->
+    <div class="post-stack-container" id="post-stack">
+        <?php
+        $args = array(
+            'post_type'      => 'post',
+            'posts_per_page' => 10,
+            'orderby'        => 'rand',
+            'post_status'    => 'publish',
+        );
 
-    if ($all_posts_query->have_posts()) :
-        while ($all_posts_query->have_posts()) : $all_posts_query->the_post();
-            $all_posts_data[] = [
-                'url' => get_the_permalink(),
-                'imageUrl' => get_the_post_thumbnail_url(get_the_ID(), 'large'),
-            ];
-        endwhile;
-        wp_reset_postdata();
-    endif;
-    ?>
+        $random_posts = new WP_Query($args);
+
+        if ($random_posts->have_posts()) :
+            $index = 0;
+            // Reverse the array so the first post is visually at the bottom (higher index)
+            $posts_array = array_reverse($random_posts->posts);
+            foreach ($posts_array as $post) :
+                setup_postdata($post);
+
+                // Only include posts that have a featured image
+                if (has_post_thumbnail()) :
+                    // Use 'large' for a good balance of quality and size
+                    $image_url = get_the_post_thumbnail_url($post->ID, 'large');
+                    ?>
+                    <a href="<?php the_permalink(); ?>" 
+                       class="post-page"
+                       data-title="<?php the_title_attribute(); ?>"
+                       style="--i: <?php echo $index; ?>; --bg-image: url('<?php echo esc_url($image_url); ?>');" 
+                       data-index="<?php echo $index; ?>">
+                    </a>
+                    <?php
+                    $index++;
+                endif; // End if has_post_thumbnail
+            endforeach;
+            wp_reset_postdata();
+        else :
+            ?>
+            <div class="post-page" style="--i: 0; background: #555; display:flex; align-items:center; justify-content:center; color:white; padding: 20px; text-align:center;">
+                No posts with featured images were found.
+            </div>
+        <?php
+        endif;
+        ?>
+    </div>
+
 </main>
 
 <!-- Contact Modal -->
-<div id="contact-modal" class="contact-modal-overlay"><!-- ...modal content... --></div>
+<div id="contact-modal" class="contact-modal-overlay">
+    <div class="contact-modal-content">
+        <button id="close-contact-modal" class="close-button" aria-label="Close contact form">&times;</button>
+        <h3>Contact Us</h3>
+        <form id="contact-form" action="?" method="post">
+            <input type="email" name="email" placeholder="Your Email" required>
+            <textarea name="message" placeholder="Your Message" required></textarea>
+            <div class="captcha-group">
+                <label for="captcha">What is <span id="captcha-q1">3</span> + <span id="captcha-q2">4</span>?</label>
+                <input type="text" id="captcha-input" name="captcha" required>
+            </div>
+            <button type="submit">Send</button>
+            <div id="form-status" style="margin-top:15px; text-align:center;"></div>
+        </form>
+    </div>
+</div>
+
 
 <script>
-    // Pass all post data from PHP to JavaScript in a clean way
-    const allPosts = <?php echo json_encode($all_posts_data); ?>;
-
 document.addEventListener('DOMContentLoaded', function() {
-    
-    // --- Contact Modal Logic (unchanged) ---
-    // ... (This logic remains the same)
-    const openModalBtn=document.getElementById('open-contact-modal');const closeModalBtn=document.getElementById('close-contact-modal');const contactModal=document.getElementById('contact-modal');const captchaQ1=document.getElementById('captcha-q1');const captchaQ2=document.getElementById('captcha-q2');const captchaInput=document.getElementById('captcha-input');let captchaAnswer=7;function showModal(){const n1=Math.floor(Math.random()*5)+1;const n2=Math.floor(Math.random()*5)+1;captchaQ1.textContent=n1;captchaQ2.textContent=n2;captchaAnswer=n1+n2;captchaInput.value='';contactModal.classList.add('is-visible')}function hideModal(){contactModal.classList.remove('is-visible')}if(openModalBtn){openModalBtn.addEventListener('click',showModal)}if(closeModalBtn){closeModalBtn.addEventListener('click',hideModal)}if(contactModal){contactModal.addEventListener('click',function(e){if(e.target===contactModal)hideModal()});const form=document.getElementById('contact-form');if(form)form.addEventListener('submit',function(e){e.preventDefault();const statusDiv=document.getElementById('form-status');if(parseInt(captchaInput.value,10)!==captchaAnswer){statusDiv.textContent='Incorrect captcha answer.';statusDiv.style.color='red';return}statusDiv.textContent='Sending...';statusDiv.style.color='blue';setTimeout(()=>{statusDiv.textContent='Thank you!';statusDiv.style.color='green';setTimeout(hideModal,2000)},1500)})}
 
-
-    // --- Card Layout and Interaction Logic ---
-    const container = document.getElementById('concept-body');
-    const addPostBtn = document.getElementById('add-post-button');
-    let currentPostIndex = 0;
-    let highestZ = 0;
-    let isMobile = window.innerWidth <= 768;
-
-    /**
-     * Creates and adds a single post card to the screen.
-     */
-    function createCard(postData, index) {
-        const card = document.createElement('a');
-        card.href = postData.url;
-        card.className = 'post-page';
-        card.style.setProperty('--bg-image', `url('${postData.imageUrl}')`);
-        card.dataset.index = index;
-        container.appendChild(card);
-        return card;
-    }
-
-    /**
-     * Updates the state of the "+" button (enabled/disabled).
-     */
-    function updateAddButtonState() {
-        if (currentPostIndex >= allPosts.length) {
-            addPostBtn.disabled = true;
-        } else {
-            addPostBtn.disabled = false;
-        }
-    }
-
-    /**
-     * Sets up the initial random layout of cards.
-     */
-    function initializeLayout() {
-        const baseCardCount = 4;
-        const extraCardsPerPixel = 1 / 200; // 1 card every 30px
-        const baseWidth = 480; // Width at which we start adding more cards
-        
-        const cardsToShow = Math.min(
-            allPosts.length,
-            baseCardCount + Math.floor(Math.max(0, window.innerWidth - baseWidth) * extraCardsPerPixel)
-        );
-
-        for (let i = 0; i < cardsToShow; i++) {
-            if (currentPostIndex >= allPosts.length) break;
-
-            const card = createCard(allPosts[currentPostIndex], currentPostIndex);
-            
-            // Wait for the card to be rendered to get its dimensions
-            setTimeout(() => {
-                const cardWidth = card.offsetWidth;
-                const cardHeight = card.offsetHeight;
-                const viewportWidth = window.innerWidth;
-                const viewportHeight = window.innerHeight;
-
-                // On mobile, expand the placement area to go off-screen
-                const xMargin = isMobile ? -cardWidth / 2 : 40;
-                const yMargin = isMobile ? -cardHeight / 3 : 40;
-
-                const minX = xMargin;
-                const maxX = viewportWidth - cardWidth - xMargin;
-                const minY = yMargin;
-                const maxY = viewportHeight - cardHeight - yMargin;
-                
-                const randomX = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
-                const randomY = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
-                const randomRot = Math.random() * 20 - 10;
-
-                card.style.left = `${randomX}px`;
-                card.style.top = `${randomY}px`;
-                card.style.setProperty('--r', `${randomRot}deg`);
-                card.style.zIndex = currentPostIndex + 1;
-
-                setTimeout(() => card.classList.add('is-visible'), 100 + i * 80);
-            }, 0);
-
-            currentPostIndex++;
-            highestZ = currentPostIndex;
-        }
-        updateAddButtonState();
-    }
-    
-    // Add Post Button Click Handler
-    addPostBtn.addEventListener('click', () => {
-        if (currentPostIndex >= allPosts.length) return;
-
-        const card = createCard(allPosts[currentPostIndex], currentPostIndex);
-        
+    // --- Initial "Slide Up" Animation ---
+    const body = document.querySelector('.concept-body');
+    if (body) {
+        // Set initial state for animation
+        body.classList.add('is-loading');
+        // Remove loading state after a tiny delay to trigger CSS transition
         setTimeout(() => {
-            const cardWidth = card.offsetWidth;
-            const cardHeight = card.offsetHeight;
+            body.classList.remove('is-loading');
+        }, 100);
+    }
+    
+    // --- Contact Modal Logic (No changes) ---
+    const openModalBtn = document.getElementById('open-contact-modal');
+    const closeModalBtn = document.getElementById('close-contact-modal');
+    const contactModal = document.getElementById('contact-modal');
+    const captchaQ1 = document.getElementById('captcha-q1');
+    const captchaQ2 = document.getElementById('captcha-q2');
+    const captchaInput = document.getElementById('captcha-input');
+    let captchaAnswer = 7;
+    function showModal() { const n1=Math.floor(Math.random()*5)+1; const n2=Math.floor(Math.random()*5)+1; captchaQ1.textContent=n1; captchaQ2.textContent=n2; captchaAnswer=n1+n2; captchaInput.value=''; contactModal.classList.add('is-visible'); }
+    function hideModal() { contactModal.classList.remove('is-visible'); }
+    openModalBtn.addEventListener('click', showModal);
+    closeModalBtn.addEventListener('click', hideModal);
+    contactModal.addEventListener('click', function(e) { if(e.target===contactModal) hideModal(); });
+    document.getElementById('contact-form').addEventListener('submit', function(e) { e.preventDefault(); const statusDiv=document.getElementById('form-status'); if(parseInt(captchaInput.value,10)!==captchaAnswer){ statusDiv.textContent='Incorrect captcha answer.'; statusDiv.style.color='red'; return; } statusDiv.textContent='Sending...'; statusDiv.style.color='blue'; setTimeout(()=>{ statusDiv.textContent='Thank you!'; statusDiv.style.color='green'; setTimeout(hideModal,2000);}, 1500); });
 
-            // Position new card in the middle of the screen
-            const centerX = window.innerWidth / 2 - cardWidth / 2;
-            const centerY = window.innerHeight / 2 - cardHeight / 2;
-            const randomRot = Math.random() * 20 - 10;
-            
-            card.style.left = `${centerX}px`;
-            card.style.top = `${centerY}px`;
-            card.style.setProperty('--r', `${randomRot}deg`);
-            highestZ++;
-            card.style.zIndex = highestZ;
+    // --- Mobile Post Stack Interaction (No changes) ---
+    const postStack = document.getElementById('post-stack');
+    if (!postStack) return;
 
-            setTimeout(() => card.classList.add('is-visible'), 50);
-        }, 0);
+    const pages = Array.from(postStack.querySelectorAll('.post-page')).reverse();
+    if (pages.length === 0) return;
 
-        currentPostIndex++;
-        updateAddButtonState();
+    let currentIndex = 0;
+    let touchStartY = 0;
+    let isDragging = false;
+    const swipeThreshold = 50;
+
+    function updateActivePage() {
+        pages.forEach((page, index) => {
+            page.classList.toggle('is-active', index === currentIndex);
+        });
+    }
+
+    postStack.addEventListener('touchstart', function(e) {
+        if (e.target.closest('.post-page')) {
+            touchStartY = e.touches[0].clientY;
+            isDragging = true;
+        }
+    }, { passive: true });
+
+    postStack.addEventListener('touchend', function(e) {
+        if (!isDragging) return;
+        isDragging = false;
+        
+        const touchEndY = e.changedTouches[0].clientY;
+        const deltaY = touchEndY - touchStartY;
+
+        if (Math.abs(deltaY) > swipeThreshold) {
+            if (deltaY < 0) { // Swipe Up
+                currentIndex = Math.min(currentIndex + 1, pages.length - 1);
+            } else { // Swipe Down
+                currentIndex = Math.max(currentIndex - 1, 0);
+            }
+            updateActivePage();
+        } else { // Tap
+            const activePage = pages[currentIndex];
+            if (activePage && e.target.closest('.post-page') === activePage) {
+                window.location.href = activePage.href;
+            }
+        }
     });
 
-    // --- Drag-and-Drop Functionality ---
-    let activeCard = null;
-    let isDragging = false;
-    let startX, startY, initialX, initialY;
-
-    function dragStart(e) {
-        if (e.target.classList.contains('post-page')) {
-            activeCard = e.target;
-            isDragging = false; // Reset on every pressdown
-
-            highestZ++;
-            activeCard.style.zIndex = highestZ;
-            
-            if (e.type === 'touchstart') {
-                startX = e.touches[0].clientX;
-                startY = e.touches[0].clientY;
-            } else {
-                e.preventDefault(); // Prevent browser's default image drag
-                startX = e.clientX;
-                startY = e.clientY;
-            }
-
-            initialX = activeCard.offsetLeft;
-            initialY = activeCard.offsetTop;
-
-            document.addEventListener('mousemove', dragging);
-            document.addEventListener('touchmove', dragging, { passive: false });
-            document.addEventListener('mouseup', dragEnd);
-            document.addEventListener('touchend', dragEnd);
-        }
-    }
-
-    function dragging(e) {
-        if (!activeCard) return;
-        
-        // This is where we decide if it's a drag or a click
-        if (!isDragging) {
-            // After moving a few pixels, we classify it as a drag
-            const moveThreshold = 5;
-            let currentX = (e.type === 'touchmove') ? e.touches[0].clientX : e.clientX;
-            let currentY = (e.type === 'touchmove') ? e.touches[0].clientY : e.clientY;
-            if (Math.abs(currentX - startX) > moveThreshold || Math.abs(currentY - startY) > moveThreshold) {
-                isDragging = true;
-                activeCard.classList.add('is-dragging');
-            }
-        }
-        
-        if (isDragging) {
-            e.preventDefault();
-            let currentX = (e.type === 'touchmove') ? e.touches[0].clientX : e.clientX;
-            let currentY = (e.type === 'touchmove') ? e.touches[0].clientY : e.clientY;
-            activeCard.style.left = `${initialX + (currentX - startX)}px`;
-            activeCard.style.top = `${initialY + (currentY - startY)}px`;
-        }
-    }
-
-    function dragEnd(e) {
-        if (!activeCard) return;
-
-        document.removeEventListener('mousemove', dragging);
-        document.removeEventListener('touchmove', dragging);
-        document.removeEventListener('mouseup', dragEnd);
-        document.removeEventListener('touchend', dragEnd);
-
-        // **CRITICAL FIX**: Only navigate if it was NOT a drag
-        if (!isDragging) {
-            window.location.href = activeCard.href;
-        }
-
-        activeCard.classList.remove('is-dragging');
-        activeCard = null;
-    }
-
-    container.addEventListener('mousedown', dragStart);
-    container.addEventListener('touchstart', dragStart, { passive: false });
-    
-    // Kick everything off
-    window.onload = initializeLayout;
+    // Initialize the first page as active
+    updateActivePage();
 });
 </script>
 
