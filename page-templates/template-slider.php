@@ -54,7 +54,19 @@ get_header();
     .propose-card { background-color: #fff; background-image: none !important; color: #111; display: flex; justify-content: center; align-items: center; text-align: center; padding: 20px; }
     .propose-card h3 { font-size: 1.5rem; font-weight: 600; margin: 0; }
     .propose-card.is-expanded h3 { display: none; }
-    .card-content-view { position: absolute; top: 0; left: 0; right: 0; bottom: 0; color: var(--expanded-text-color, #fff); padding: 5vw; overflow-y: auto; opacity: 0; transition: opacity 0.5s ease 0.3s; border-radius: 6px; }
+    .card-content-view {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        color: var(--expanded-text-color, #fff);
+        /* MODIFIED: More vertical padding, less horizontal */
+        padding: 8vh 5vw; 
+        overflow-y: auto;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.3s;
+        border-radius: 6px;
+        box-sizing: border-box; /* Ensures padding is calculated correctly */
+    }    
+    
     .post-page.is-expanded .card-content-view { opacity: 1; }
     .card-content-view h1 { font-size: clamp(2rem, 5vw, 4.5rem); margin: 0 0 2rem 0; }
     .card-content-view .post-body-content { max-width: 850px; margin: 0 auto; font-size: clamp(1rem, 1.5vw, 1.1rem); line-height: 1.7; }
@@ -63,7 +75,11 @@ get_header();
     .post-body-content img { max-width: 100%; height: auto; display: block; margin: 2em auto; border-radius: 4px; box-shadow: 0 8px 25px rgba(0,0,0,0.3); filter: sepia(20%) brightness(95%); }
     .post-body-content .wp-block-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); margin: 2.5em 0; }
     .post-body-content blockquote { max-width: 70ch; margin: 2.5em auto; padding: 1.5em 2em; font-size: 1.4em; font-style: italic; line-height: 1.4; background-color: rgba(255, 255, 255, 0.05); border: none; border-left: 4px solid #aaa; }
-    .card-content-view .brand-content { font-weight: bold; max-width: 850px; margin: 0 auto; text-align: center;  }
+    .card-content-view .brand-content { 
+        font-weight: bold; max-width: 850px; margin: 0 auto; text-align: center;  
+        padding: 100px 20px;
+
+    }
     /* --- NEW: Restored Brand Card Link Style --- */
     .card-content-view .brand-content a {
         display: inline-block; /* Allows padding, margins, and border to work correctly */
@@ -142,6 +158,11 @@ get_header();
 
               padding-top: 50px;
 
+        }
+
+        .card-content-view .brand-content {
+       
+            padding: 100px 20px;
         }
     }
 </style>
@@ -227,7 +248,26 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function throwProposeCard(andExpand = false) {
-        const formHTML = `<div class="propose-form-container"><h1>Propose Your Concept</h1><p>Tell us about your project. Please include a link or way of contact.</p><form id="propose-card-form"><label for="propose-name">Name</label><input type="text" id="propose-name" name="name" required><label for="propose-email">Email</label><input type="email" id="propose-email" name="email" required><label for="propose-message">Your Concept</label><textarea id="propose-message" name="message" required></textarea><div class="captcha-group"><label for="propose-captcha">What is <span id="propose-captcha-q1">3</span> + <span id="propose-captcha-q2">4</span>?</label><input type="text" id="propose-captcha" name="captcha" required></div><button type="submit">Submit Concept</button><div id="propose-form-status" style="margin-top:15px; text-align:center;"></div></form></div>`;
+
+        // Located inside the throwProposeCard function
+        const formHTML = `<div class="propose-form-container">
+            <h1>Request a Concept</h1>
+            <p>Tell us about your challenge. We'll reply to schedule your complimentary session.</p>
+            <form id="propose-card-form">
+                <label for="propose-name">Your Name</label>
+                <input type="text" id="propose-name" name="name" required>
+                <label for="propose-email">Your Email</label>
+                <input type="email" id="propose-email" name="email" required>
+                <label for="propose-message">Describe your challenge or idea</label>
+                <textarea id="propose-message" name="message" required></textarea>
+                <div class="captcha-group">
+                    <label for="propose-captcha">What is <span id="propose-captcha-q1">3</span> + <span id="propose-captcha-q2">4</span>?</label>
+                    <input type="text" id="propose-captcha" name="captcha" required>
+                </div>
+                <button type="submit">Request Concept Session</button>
+                <div id="propose-form-status" style="margin-top:15px; text-align:center;"></div>
+            </form>
+        </div>`;
         const proposeCardData = { type: 'propose', title: '+ take your card', content: formHTML };
         const proposeCard = createCard(proposeCardData);
         const randomX=Math.floor(Math.random()*(window.innerWidth-250-80))+40,randomY=Math.floor(Math.random()*(window.innerHeight-375-80))+40,randomRot=Math.random()*20-10;
