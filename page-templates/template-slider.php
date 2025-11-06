@@ -39,7 +39,7 @@ get_header();
     .post-body-content img { max-width: 100%; height: auto; display: block; margin: 2em auto; border-radius: 4px; box-shadow: 0 8px 25px rgba(0,0,0,0.3); filter: sepia(20%) brightness(95%); }
     .post-body-content .wp-block-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 2.5em 0; }
     .post-body-content blockquote { max-width: 70ch; margin: 2.5em auto; padding: 1.5em 2em; font-size: 1.4em; font-style: italic; line-height: 1.4; background-color: rgba(255, 255, 255, 0.05); border: none; border-left: 4px solid #aaa; }
-    .card-content-view .brand-content { max-width: 850px; margin: 0 auto; text-align: center; }
+    .card-content-view .brand-content { max-width: 850px; margin: 0 auto; text-align: center;  }
     .card-close-button { position: fixed; top: 15px; right: 15px; font-size: 2.5rem; color: inherit; background: none; border: none; cursor: pointer; z-index: 10; }
     .propose-form-container { max-width: 850px; margin: 0 auto; text-align: left; }
     .propose-form-container h1 { color: #111; }
@@ -49,7 +49,15 @@ get_header();
     .propose-form-container textarea { min-height: 150px; resize: vertical; }
     .propose-form-container .captcha-group { display: flex; align-items: center; margin-bottom: 20px; color: #333; }
     .propose-form-container button[type="submit"] { width: 100%; padding: 15px; background-color: #333; color: #fff; border: none; border-radius: 4px; font-size: 1.1rem; cursor: pointer; }
-    .add-card-button { position: fixed; z-index: 2000; bottom: 40px; right: 40px; width: 60px; height: 60px; background-color: #f0f0f0; color: #333; border: none; border-radius: 50%; font-size: 3rem; line-height: 60px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: all 0.4s ease; cursor: pointer; }
+    .add-card-button { position: fixed; z-index: 2000; bottom: 40px; right: 40px; width: 60px; height: 60px; background-color: #f0f0f0; color: #333; border: none; border-radius: 50%; font-size: 3rem; line-height: 60px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: all 0.4s ease; cursor: pointer; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 10px;
+    padding-right: 10px;
+    padding-left: 10px;
+    padding-top: 5px;
+    }
     .add-card-button.is-disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
 
 
