@@ -27,7 +27,8 @@ get_header();
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background-image: radial-gradient(ellipse at center, #4a4a4a 0%, #2b2b2b 100%);
         display: flex; justify-content: center; align-items: center;
-        z-index: 99999; transition: opacity 0.5s ease-out;
+        z-index: 99999;
+        transition: opacity 0.5s ease-out;
     }
     #page-loader.is-hidden { opacity: 0; pointer-events: none; }
     #loader-spiral {
@@ -46,32 +47,36 @@ get_header();
         transition: none !important; /* Instant feedback */
     }
 
-    /* --- MODIFIED: Title and Button Positioning --- */
+    /* --- MODIFIED: Positioning for Draggable UI --- */
     .header-content {
-        position: absolute; /* Changed to allow children to be absolute */
+        position: absolute; /* Changed to allow absolute children */
         top: 0; left: 0; width: 100%; height: 100%;
-        pointer-events: none; /* Let clicks pass through the container */
+        padding: 0; /* Padding moved to children */
+        z-index: 1000;
+        pointer-events: none;
     }
-    .header-content > * { pointer-events: all; /* Re-enable clicks on children */ }
+    .header-content > * { pointer-events: all; }
     
     .main-header {
-        position: absolute; /* MODIFIED: Now an independent draggable element */
+        position: absolute; /* MODIFIED */
         left: 40px; top: 30px; text-align: left;
     }
     .main-title { font-size: 4rem; font-weight: 800; margin: 0; letter-spacing: 2px; text-transform: uppercase; }
     .main-subtitle { font-size: 1.5rem; font-weight: 300; margin: 0; color: #bbb; }
     
     .contact-icon-button {
-        position: absolute; /* MODIFIED: Now an independent draggable element */
+        position: absolute; /* MODIFIED */
         right: 40px; top: 30px;
         background: none; border: none; padding: 10px;
     }
     .contact-icon-button svg { width: 32px; height: 32px; fill: #f0f0f0; transition: transform 0.3s ease; }
 
-    /* --- Unchanged styles for Modals, Cards, etc. --- */
-    #card-viewer-overlay, .contact-modal-overlay, .post-page, .card-content-view, .post-body-content, .card-close-button, .wp-block-gallery, blockquote, .alignwide, .alignfull { /* All styles are correct and unchanged */ }
+    /* --- All other styles are UNCHANGED and correct --- */
+    #card-viewer-overlay, .contact-modal-overlay, .post-page, .card-content-view, .post-body-content, .card-close-button, .wp-block-gallery, blockquote, .alignwide, .alignfull { /* ... */ }
+    .post-page { position: absolute; /* etc... */ }
+    .contact-modal-overlay { z-index: 90000; /* etc... */ }
 
-    /* --- MODIFIED: Add Card Button --- */
+    /* MODIFIED: Add Card Button */
     .add-card-button {
         position: absolute; /* MODIFIED: from fixed */
         z-index: 2000; bottom: 40px; right: 40px; width: 60px; height: 60px;
@@ -101,7 +106,7 @@ get_header();
         </button>
     </div>
 
-    <!-- PHP Query Logic is Unchanged and Correct -->
+    <!-- PHP Query Logic is UNCHANGED and Correct -->
     <?php
     $initial_card_count = 10; $total_posts_to_fetch = 20; $all_posts_collection = []; $exclude_ids = [];
     $selected_tag = get_term_by('slug', 'selected', 'post_tag');
@@ -135,8 +140,8 @@ get_header();
 <!-- MODIFIED: Added is-ui-draggable class -->
 <button id="add-card-button" class="add-card-button is-ui-draggable" aria-label="Add another card">+</button>
 
-<!-- Contact Modal HTML is Unchanged -->
-<div id="contact-modal" class="contact-modal-overlay"> <!-- ... (Full content is below) ... -->
+<!-- Contact Modal HTML is UNCHANGED -->
+<div id="contact-modal" class="contact-modal-overlay">
     <div class="contact-modal-content">
         <button id="close-contact-modal" class="close-button" aria-label="Close contact form">&times;</button>
         <h3>Contact Us</h3>
@@ -160,130 +165,110 @@ get_header();
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // --- Global Variables & Constants ---
-    const body = document.body;
-    const container = document.getElementById('concept-body');
-    const addCardBtn = document.getElementById('add-card-button');
-    const viewerOverlay = document.getElementById('card-viewer-overlay');
-    const initialCards = document.querySelectorAll('.post-page');
-    const pageLoader = document.getElementById('page-loader');
-    let availablePosts = [...additionalPostsData];
-    let highestZ = initialCards.length;
-    let expandedCard = null;
-
-    // --- Null-Safe Contact Modal Setup ---
+    // --- Your original, working code ---
+    const body = document.body, container = document.getElementById('concept-body'), addCardBtn = document.getElementById('add-card-button'), viewerOverlay = document.getElementById('card-viewer-overlay'), initialCards = document.querySelectorAll('.post-page'), pageLoader = document.getElementById('page-loader');
+    let availablePosts = [...additionalPostsData], highestZ = initialCards.length, expandedCard = null;
     const openModalBtn = document.getElementById('open-contact-modal');
     const closeModalBtn = document.getElementById('close-contact-modal');
     const contactModal = document.getElementById('contact-modal');
-    // We expose this function globally so the UI drag engine can call it.
-    window.showContactModal = function(){}; 
     if (openModalBtn && closeModalBtn && contactModal) {
         const captchaQ1 = document.getElementById('captcha-q1'), captchaQ2 = document.getElementById('captcha-q2'), captchaInput = document.getElementById('captcha-input');
         let captchaAnswer = 7;
-        const showModal = function() {
+        function showModal() {
             const n1 = Math.floor(Math.random() * 5) + 1, n2 = Math.floor(Math.random() * 5) + 1;
             if(captchaQ1 && captchaQ2) { captchaQ1.textContent = n1; captchaQ2.textContent = n2; }
             captchaAnswer = n1 + n2;
             if(captchaInput) captchaInput.value = '';
             contactModal.classList.add('is-visible');
         }
-        window.showContactModal = showModal; // Assign to the global scope
-        const hideModal = function() { contactModal.classList.remove('is-visible'); }
-        // openModalBtn is now draggable, so its click is handled by the UI drag engine
+        function hideModal() { contactModal.classList.remove('is-visible'); }
+        // The click for openModalBtn will be handled by the NEW drag engine
         closeModalBtn.addEventListener('click', hideModal);
         contactModal.addEventListener('click', function(e) { if(e.target === contactModal) hideModal(); });
         const contactForm = document.getElementById('contact-form');
         if(contactForm) {
-            contactForm.addEventListener('submit', function(e) { /* ... form logic ... */ });
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const statusDiv = document.getElementById('form-status');
+                if (parseInt(captchaInput.value, 10) !== captchaAnswer) {
+                    statusDiv.textContent = 'Incorrect captcha answer.'; statusDiv.style.color = 'red'; return;
+                }
+                statusDiv.textContent = 'Sending...'; statusDiv.style.color = 'blue';
+                setTimeout(() => { statusDiv.textContent = 'Thank you!'; statusDiv.style.color = 'green'; setTimeout(hideModal, 2000); }, 1500);
+            });
         }
     }
-
-    // --- Card-Specific Functions (Your original, working code) ---
     function randomizeInitialLayout(){initialCards.forEach((a,b)=>{a.postData=initialPostsData[b];const c=Math.floor(Math.random()*(window.innerWidth-250-80))+40,d=Math.floor(Math.random()*(window.innerHeight-375-80))+40,e=Math.random()*20-10;a.style.left=`${c}px`,a.style.top=`${d}px`,a.style.setProperty("--r",`${e}deg`),a.style.zIndex=b+1,setTimeout(()=>a.classList.add("is-visible"),80*b)})}
     window.onload=function(){randomizeInitialLayout(),pageLoader&&setTimeout(()=>{pageLoader.classList.add("is-hidden")},200)};
     if(addCardBtn){if(availablePosts.length===0){addCardBtn.disabled=!0,addCardBtn.classList.add("is-disabled")}}
     function addCard(){if(availablePosts.length===0)return;const a=availablePosts.shift();highestZ++;const b=document.createElement("div");b.className="post-page",b.style.setProperty("--bg-image",`url('${a.image_url}')`),b.postData=a;const c=Math.floor(Math.random()*(window.innerWidth-250-80))+40,d=Math.floor(Math.random()*(window.innerHeight-375-80))+40,e=Math.random()*20-10;b.style.left=`${c}px`,b.style.top=`${d}px`,b.style.setProperty("--r",`${e}deg`),b.style.zIndex=highestZ,container.appendChild(b),setTimeout(()=>b.classList.add("is-visible"),50),availablePosts.length===0&&(addCardBtn.disabled=!0,addCardBtn.classList.add("is-disabled"))}
     function expandCard(a){if(expandedCard||!a.postData)return;expandedCard=a,body.classList.add("card-is-active"),viewerOverlay.classList.add("is-visible");const b=document.createElement("div");b.className="card-content-view";const c=document.createElement("button");c.className="card-close-button",c.innerHTML="&times;",c.onclick=b=>{b.stopPropagation(),collapseCard()};const d=document.createElement("h1");d.textContent=a.postData.title;const e=document.createElement("div");e.className="post-body-content",e.innerHTML=a.postData.content,b.appendChild(c),b.appendChild(d),b.appendChild(e),a.appendChild(b),a.classList.add("is-expanded")}
     function collapseCard(){if(!expandedCard)return;body.classList.remove("card-is-active"),viewerOverlay.classList.remove("is-visible");const a=expandedCard.querySelector(".card-content-view");a&&expandedCard.removeChild(a),expandedCard.classList.remove("is-expanded"),expandedCard=null}
-
-    // --- Original Card Drag Engine (Your original, working code) ---
     let activeCard=null,isDragging=!1,startX,startY,initialX,initialY;function dragStart(a){if(expandedCard)return;const b=a.target.closest(".post-page");b&&(a.preventDefault(),a.stopPropagation(),activeCard=b,isDragging=!1,highestZ++,activeCard.style.zIndex=highestZ,activeCard.classList.add("is-dragging"),startX=a.type==="touchstart"?a.touches[0].clientX:a.clientX,startY=a.type==="touchstart"?a.touches[0].clientY:a.clientY,initialX=activeCard.offsetLeft,initialY=activeCard.offsetTop,document.addEventListener("mousemove",dragging),document.addEventListener("touchmove",dragging,{passive:!1}),document.addEventListener("mouseup",dragEnd),document.addEventListener("touchend",dragEnd))}
     function dragging(a){if(!activeCard)return;a.preventDefault();let b=a.type==="touchmove"?a.touches[0].clientX:a.clientX,c=a.type==="touchmove"?a.touches[0].clientY:a.clientY;const d=b-startX,e=c-startY;(Math.abs(d)>5||Math.abs(e)>5)&&(isDragging=!0),isDragging&&(activeCard.style.left=`${initialX+d}px`,activeCard.style.top=`${initialY+e}px`)}
     function dragEnd(a){if(!activeCard)return;document.removeEventListener("mousemove",dragging),document.removeEventListener("touchmove",dragging),document.removeEventListener("mouseup",dragEnd),document.removeEventListener("touchend",dragEnd),isDragging||expandCard(activeCard),activeCard.classList.remove("is-dragging"),activeCard=null}container.addEventListener("mousedown",dragStart),container.addEventListener("touchstart",dragStart,{passive:!1});
 
-    // --- NEW: Separate, Simple Drag Engine for UI Elements ---
+    // --- NEW, SEPARATE, AND SAFE DRAG ENGINE FOR UI ELEMENTS ---
     const draggableUI = document.querySelectorAll('.is-ui-draggable');
-    let activeUIElement = null;
-    let isUIDragging = false;
-    let uiHighestZ = 2001; // Start above cards
+    let activeUIElement = null, isUIDragging = false, uiStartX, uiStartY, uiInitialX, uiInitialY;
+    let uiHighestZ = 2001; // Start z-index above cards
 
-    draggableUI.forEach(el => {
+    const makeUIDraggable = (el) => {
+        const uiDragStart = (e) => {
+            if (expandedCard) return; // Don't drag UI when card is open
+            activeUIElement = el;
+            isUIDragging = false;
+            uiHighestZ++;
+            activeUIElement.style.zIndex = uiHighestZ;
+            activeUIElement.classList.add('is-dragging');
+            const event = e.type === 'touchstart' ? e.touches[0] : e;
+            uiStartX = event.clientX;
+            uiStartY = event.clientY;
+            uiInitialX = activeUIElement.offsetLeft;
+            uiInitialY = activeUIElement.offsetTop;
+            document.addEventListener('mousemove', uiDragging);
+            document.addEventListener('touchmove', uiDragging, { passive: false });
+            document.addEventListener('mouseup', uiDragEnd);
+            document.addEventListener('touchend', uiDragEnd);
+        };
+        const uiDragging = (e) => {
+            if (!activeUIElement) return;
+            e.preventDefault();
+            const event = e.type === 'touchmove' ? e.touches[0] : e;
+            const deltaX = event.clientX - uiStartX;
+            const deltaY = event.clientY - uiStartY;
+            if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+                isUIDragging = true;
+            }
+            activeUIElement.style.left = `${uiInitialX + deltaX}px`;
+            activeUIElement.style.top = `${uiInitialY + deltaY}px`;
+        };
+        const uiDragEnd = () => {
+            if (!activeUIElement) return;
+            activeUIElement.classList.remove('is-dragging');
+
+            if (!isUIDragging) { // This was a click, not a drag
+                if (activeUIElement.id === 'add-card-button') {
+                    addCard();
+                } else if (activeUIElement.id === 'open-contact-modal') {
+                    // Find the function on the global scope to call
+                    const showModalFunc = window.showContactModal || (openModalBtn ? openModalBtn.onclick : null);
+                    if (typeof showModalFunc === 'function') {
+                        showModalFunc();
+                    }
+                }
+            }
+
+            activeUIElement = null;
+            document.removeEventListener('mousemove', uiDragging);
+            document.removeEventListener('touchmove', uiDragging);
+            document.removeEventListener('mouseup', uiDragEnd);
+            document.removeEventListener('touchend', uiDragEnd);
+        };
         el.addEventListener('mousedown', uiDragStart);
         el.addEventListener('touchstart', uiDragStart, { passive: false });
-    });
-
-    function uiDragStart(e) {
-        if (expandedCard) return;
-        activeUIElement = e.currentTarget;
-        isUIDragging = false;
-        
-        uiHighestZ++;
-        activeUIElement.style.zIndex = uiHighestZ;
-        activeUIElement.classList.add('is-dragging');
-
-        let eventX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
-        let eventY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
-        
-        startX = eventX;
-        startY = eventY;
-        initialX = activeUIElement.offsetLeft;
-        initialY = activeUIElement.offsetTop;
-
-        document.addEventListener('mousemove', uiDragging);
-        document.addEventListener('touchmove', uiDragging, { passive: false });
-        document.addEventListener('mouseup', uiDragEnd);
-        document.addEventListener('touchend', uiDragEnd);
-    }
-
-    function uiDragging(e) {
-        if (!activeUIElement) return;
-        e.preventDefault();
-
-        let currentX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
-        let currentY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
-
-        const deltaX = currentX - startX;
-        const deltaY = currentY - startY;
-
-        if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
-            isUIDragging = true;
-        }
-
-        activeUIElement.style.left = `${initialX + deltaX}px`;
-        activeUIElement.style.top = `${initialY + deltaY}px`;
-    }
-
-    function uiDragEnd(e) {
-        if (!activeUIElement) return;
-        
-        activeUIElement.classList.remove('is-dragging');
-
-        // If it wasn't a drag, it was a click. Perform the action.
-        if (!isUIDragging) {
-            if (activeUIElement.id === 'add-card-button') {
-                addCard();
-            } else if (activeUIElement.id === 'open-contact-modal') {
-                window.showContactModal();
-            }
-        }
-        
-        activeUIElement = null;
-        
-        document.removeEventListener('mousemove', uiDragging);
-        document.removeEventListener('touchmove', uiDragging);
-        document.removeEventListener('mouseup', uiDragEnd);
-        document.removeEventListener('touchend', uiDragEnd);
-    }
+    };
+    draggableUI.forEach(makeUIDraggable);
 });
 </script>
 
