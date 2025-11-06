@@ -168,8 +168,8 @@ get_header();
 
     <div class="header-content">
         <header class="main-header">
-            <h1 class="main-title">avfstudio</h1>
-            <h2 class="main-subtitle">Grow your concept ability</h2>
+            <h1 class="main-title">WOSTUIO</h1>
+            <h2 class="main-subtitle">Concept creation & mentoring</h2>
         </header>
         <button id="open-contact-modal" class="contact-icon-button" aria-label="Open contact form">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
