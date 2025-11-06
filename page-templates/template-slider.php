@@ -119,6 +119,7 @@ get_header();
         cursor: grabbing;
         box-shadow: 0 20px 50px rgba(0,0,0,0.6);
         transform: scale(1.05) rotate(var(--r, 0deg));
+        pointer-events: none;
         transition: none; /* Disable transition while dragging for instant feedback */
     }
 
