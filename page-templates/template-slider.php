@@ -273,7 +273,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 2. Drag-and-Drop Functionality
     let activeCard = null;
-    let isDragging = false;
     let startX, startY, initialX, initialY;
 
     function dragStart(e) {
@@ -281,9 +280,6 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             activeCard = e.target;
             
-            // Differentiate click from drag
-            isDragging = false; 
-
             // Bring card to the top
             highestZ++;
             activeCard.style.zIndex = highestZ;
@@ -326,11 +322,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const deltaX = currentX - startX;
         const deltaY = currentY - startY;
 
-        // If moved more than a few pixels, it's a drag
-        if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
-            isDragging = true;
-        }
-
         // Update position
         activeCard.style.left = `${initialX + deltaX}px`;
         activeCard.style.top = `${initialY + deltaY}px`;
@@ -347,8 +338,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         activeCard.classList.remove('is-dragging');
 
-        // If it was NOT a drag, it's a click/tap
-        if (!isDragging) {
+        // Calculate actual movement distance
+        const movedX = Math.abs(activeCard.offsetLeft - initialX);
+        const movedY = Math.abs(activeCard.offsetTop - initialY);
+
+        // Only trigger click action if movement is within 5px threshold
+        if (movedX <= 5 && movedY <= 5) {
             window.location.href = activeCard.href;
         }
 
