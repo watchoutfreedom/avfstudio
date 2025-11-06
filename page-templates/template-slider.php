@@ -28,10 +28,6 @@ get_header();
         font-display: swap; /* Improves perceived performance */
     }
 
-    /* All CSS from your working version is correct and unchanged. */
-    html, body { height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden; 
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-
 
     /* --- Basic Setup & Background --- */
     html, body {
@@ -67,7 +63,26 @@ get_header();
     .post-body-content img { max-width: 100%; height: auto; display: block; margin: 2em auto; border-radius: 4px; box-shadow: 0 8px 25px rgba(0,0,0,0.3); filter: sepia(20%) brightness(95%); }
     .post-body-content .wp-block-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 2.5em 0; }
     .post-body-content blockquote { max-width: 70ch; margin: 2.5em auto; padding: 1.5em 2em; font-size: 1.4em; font-style: italic; line-height: 1.4; background-color: rgba(255, 255, 255, 0.05); border: none; border-left: 4px solid #aaa; }
-    .card-content-view .brand-content { max-width: 850px; margin: 0 auto; text-align: center;  }
+    .card-content-view .brand-content { font-weight: bold; max-width: 850px; margin: 0 auto; text-align: center;  }
+    /* --- NEW: Restored Brand Card Link Style --- */
+    .card-content-view .brand-content a {
+        display: inline-block; /* Allows padding, margins, and border to work correctly */
+        margin-top: 30px;
+        padding: 12px 24px;
+        border: 1px solid #fff;
+        border-radius: 30px; /* Creates the pill shape */
+        color: #fff;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .card-content-view .brand-content a:hover {
+        background-color: #fff;
+        color: #111; /* Inverts colors for a satisfying hover effect */
+        transform: scale(1.05);
+    }
+    
     .card-close-button { position: fixed; top: 15px; right: 15px; font-size: 2.5rem; color: inherit; background: none; border: none; cursor: pointer; z-index: 10; }
     .propose-form-container { max-width: 850px; margin: 0 auto; text-align: left; }
     .propose-form-container h1 { color: #111; }
