@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         highestZ = document.querySelectorAll('.post-page').length;
         setTimeout(() => {
-            const brandCardData = { type: 'brand', title: 'Synapse Guild', slogan: 'Your Creative Advantage.', content: `<div class="brand-content"><p>In a marketplace of echoes, a powerful, foundational concept is the only true way to stand out. Our studio is a unique collective where philosophers probe the 'why', architects design the structure, and artists give it a soul.</p><a href="#" id="brand-contact-link">+ take your card</a></div>` };
+            const brandCardData = { type: 'brand', title: 'WOSTUDIO', slogan: 'Your Creative Advantage.', content: `<div class="brand-content"><p>In a marketplace of echoes, a powerful, foundational concept is the only true way to stand out. Our studio is a unique collective where philosophers probe the 'why', architects design the structure, and artists give it a soul.</p><a href="#" id="brand-contact-link">+ take your card</a></div>` };
             const brandCard = createCard(brandCardData);
             brandCard.style.left=`calc(50% - 125px)`,brandCard.style.top=`40%`,brandCard.style.setProperty('--r','-2deg');
             setTimeout(()=>brandCard.classList.add("is-visible"),50);
