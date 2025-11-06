@@ -328,7 +328,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // If moved more than a few pixels, it's a drag
         if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
-            isDragging = true;
+            // isDragging = true;
         }
 
         // Update position
