@@ -17,13 +17,14 @@ get_header();
         padding: 0;
         overflow: hidden; /* VERY important for this layout */
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        
     }
 
     .concept-body {
         height: 100vh;
         width: 100vw;
         position: relative; /* All card positions are relative to this */
-        background-color: #333;
+        background-color: red;
         background-image: radial-gradient(ellipse at center, #4a4a4a 0%, #2b2b2b 100%);
         color: #f0f0f0;
     }
