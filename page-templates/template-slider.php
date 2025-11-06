@@ -28,8 +28,7 @@ get_header();
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background-image: radial-gradient(ellipse at center, #4a4a4a 0%, #2b2b2b 100%);
         display: flex; justify-content: center; align-items: center;
-        z-index: 99999;
-        transition: opacity 0.5s ease-out;
+        z-index: 99999; transition: opacity 0.5s ease-out;
     }
     #page-loader.is-hidden { opacity: 0; pointer-events: none; }
     #loader-spiral {
@@ -41,45 +40,30 @@ get_header();
     /* --- Universal Draggable Styles --- */
     .is-draggable {
         cursor: grab;
-        position: relative; /* Allows movement via top/left styles */
-        user-select: none; /* Prevents text selection while dragging */
-        -webkit-user-select: none;
+        position: relative;
+        user-select: none; -webkit-user-select: none;
     }
-    .is-draggable.is-dragging {
-        cursor: grabbing;
-        transition: none !important; /* Instant feedback while dragging */
-    }
+    .is-draggable.is-dragging { cursor: grabbing; transition: none !important; }
 
     /* --- Contact & Main Title Area --- */
     .header-content {
-        position: absolute; /* Changed from relative for positioning context */
-        top: 30px;
-        left: 40px;
-        width: calc(100% - 80px); /* Span width to contain elements */
-        z-index: 1000;
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        pointer-events: none;
-        transition: opacity 0.4s ease;
+        position: absolute; top: 30px; left: 40px;
+        width: calc(100% - 80px);
+        z-index: 1000; display: flex; justify-content: space-between; align-items: flex-start;
+        pointer-events: none; transition: opacity 0.4s ease;
     }
     .header-content > * { pointer-events: all; }
     .main-header { text-align: left; }
     .main-title, .main-subtitle { font-weight: 800; margin: 0; letter-spacing: 2px; }
     .main-title { font-size: 4rem; text-transform: uppercase; }
     .main-subtitle { font-size: 1.5rem; color: #bbb; font-weight: 300; }
-
-    /* NEW: Style for individual draggable letters */
-    .draggable-letter {
-        display: inline-block; /* Make each letter its own block to move */
-        min-width: 0.25em; /* Give spaces some width to be draggable */
-    }
+    .draggable-letter { display: inline-block; min-width: 0.25em; }
     .contact-icon-button { background: none; border: none; padding: 10px; }
     .contact-icon-button svg { width: 32px; height: 32px; fill: #f0f0f0; transition: transform 0.3s ease; }
     .contact-icon-button:hover svg { transform: scale(1.1); }
 
     /* Z-Index Stacking Order */
-    /* Loader: 99999, Contact Modal: 90000, Dragged Item: 5001+, Expanded Card: 5000, Card Viewer Overlay: 4999 */
+    /* Loader: 99999, Contact Modal: 90000, Dragged Item: 5001+, Expanded Card: 5000 */
 
     /* Contact Modal CSS */
     .contact-modal-overlay {
@@ -88,36 +72,35 @@ get_header();
         z-index: 90000; opacity: 0; transition: opacity 0.3s ease;
     }
     .contact-modal-overlay.is-visible { display: flex; opacity: 1; }
-    /* ... (rest of contact modal styles are fine) ... */
+    .contact-modal-content {
+        background: #fff; color: #333; padding: 40px; border-radius: 8px;
+        width: 90%; max-width: 500px; position: relative;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        transform: scale(0.95); transition: transform 0.3s ease;
+    }
+    .contact-modal-overlay.is-visible .contact-modal-content { transform: scale(1); }
+    .contact-modal-content h3 { margin-top: 0; margin-bottom: 20px; }
+    .contact-modal-content .close-button { position: absolute; top: 10px; right: 15px; font-size: 2rem; font-weight: 300; color: #888; background: none; border: none; cursor: pointer; }
+    .contact-modal-content input, .contact-modal-content textarea { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; box-sizing: border-box; }
+    .contact-modal-content textarea { min-height: 120px; resize: vertical; }
+    .contact-modal-content .captcha-group { display: flex; align-items: center; margin-bottom: 20px; }
+    .contact-modal-content button[type="submit"] { width: 100%; padding: 12px; background-color: #333; color: #fff; border: none; border-radius: 4px; font-size: 1.1rem; cursor: pointer; transition: background-color 0.3s ease; }
 
     /* Post Cards */
-    .post-page {
-        position: absolute; width: 250px; height: 375px;
-        /* is-draggable class handles cursor */
-    }
-    .post-page.is-expanded {
-        /* This state is NOT draggable */
-        cursor: default !important;
-        z-index: 5000;
-    }
+    .post-page { position: absolute; width: 250px; height: 375px; }
+    .post-page.is-expanded { cursor: default !important; z-index: 5000; }
     /* ... (rest of post card styles are fine) ... */
 
     /* Add Card Button */
     .add-card-button {
-        position: absolute; /* Changed from fixed to be draggable */
-        bottom: 40px; right: 40px; width: 60px; height: 60px;
+        position: absolute; bottom: 40px; right: 40px; width: 60px; height: 60px;
         background-color: #f0f0f0; color: #333; border: none; border-radius: 50%;
         font-size: 3rem; line-height: 60px; text-align: center;
         box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: all 0.4s ease;
     }
     .add-card-button:disabled { opacity: 0.4; pointer-events: none; }
-    
-    /* Hiding UI when card is active */
-    body.card-is-active .header-content, body.card-is-active .add-card-button {
-        opacity: 0; pointer-events: none;
-    }
+    body.card-is-active .header-content, body.card-is-active .add-card-button { opacity: 0; pointer-events: none; }
 
-    /* ... (All other styles from your previous version are fine) ... */
 </style>
 
 <!-- Loader HTML -->
@@ -128,17 +111,15 @@ get_header();
 
     <div class="header-content">
         <header class="main-header">
-            <!-- These will be populated by JavaScript -->
             <h1 class="main-title">avfstudio</h1>
             <h2 class="main-subtitle">Grow your concept ability</h2>
         </header>
-        <!-- Added is-draggable class -->
         <button id="open-contact-modal" class="contact-icon-button is-draggable" aria-label="Open contact form">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
         </button>
     </div>
 
-    <!-- PHP Query Logic (Unchanged) -->
+    <!-- PHP Query Logic (Unchanged and Correct) -->
     <?php
     $initial_card_count = 10; $total_posts_to_fetch = 20; $all_posts_collection = []; $exclude_ids = [];
     $selected_tag = get_term_by('slug', 'selected', 'post_tag');
@@ -161,7 +142,6 @@ get_header();
             $post_data = ['title' => get_the_title($post), 'content' => apply_filters('the_content', $post->post_content), 'image_url' => esc_url($image_url)];
             if ($post_index < $initial_card_count) {
                 $initial_posts_data[] = $post_data;
-                // Added is-draggable class to cards
                 echo '<div class="post-page is-draggable" data-index="' . $post_index . '" style="--bg-image: url(\'' . esc_url($image_url) . '\');"></div>';
             } else { $additional_posts_data[] = $post_data; }
             $post_index++;
@@ -171,11 +151,25 @@ get_header();
     ?>
 </main>
 
-<!-- Added is-draggable class -->
 <button id="add-card-button" class="add-card-button is-draggable" aria-label="Add another card">+</button>
 
-<!-- Contact Modal HTML (Unchanged) -->
-<div id="contact-modal" class="contact-modal-overlay"> <!-- ... --> </div>
+<!-- FIXED: Full Contact Modal HTML restored -->
+<div id="contact-modal" class="contact-modal-overlay">
+    <div class="contact-modal-content">
+        <button id="close-contact-modal" class="close-button" aria-label="Close contact form">&times;</button>
+        <h3>Contact Us</h3>
+        <form id="contact-form" action="?" method="post">
+            <input type="email" name="email" placeholder="Your Email" required>
+            <textarea name="message" placeholder="Your Message" required></textarea>
+            <div class="captcha-group">
+                <label for="captcha">What is <span id="captcha-q1">3</span> + <span id="captcha-q2">4</span>?</label>
+                <input type="text" id="captcha-input" name="captcha" required>
+            </div>
+            <button type="submit">Send</button>            
+            <div id="form-status" style="margin-top:15px; text-align:center;"></div>
+        </form>
+    </div>
+</div>
 
 <script>
     const initialPostsData = <?php echo json_encode($initial_posts_data); ?>;
@@ -184,18 +178,32 @@ get_header();
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const body = document.body, container = document.getElementById('concept-body');
+    // --- Global Variables & Constants ---
+    const body = document.body;
+    const container = document.getElementById('concept-body');
     const pageLoader = document.getElementById('page-loader');
-    
-    let highestZ = 100; // Start with a base z-index for draggable items
+    const addCardBtn = document.getElementById('add-card-button');
+    const viewerOverlay = document.getElementById('card-viewer-overlay');
+    let availablePosts = [...additionalPostsData];
+    let highestZ = 100;
     let expandedCard = null;
 
-    // --- NEW: Letter Shattering Logic ---
+    // --- Initial Setup ---
+    wrapLettersInSpans('.main-title');
+    wrapLettersInSpans('.main-subtitle');
+    setupContactModal(); // Run the null-safe modal setup
+    
+    window.onload = function() {
+        randomizeInitialLayout();
+        if (pageLoader) { setTimeout(() => { pageLoader.classList.add('is-hidden'); }, 200); }
+    };
+
+    // --- Letter Shattering ---
     function wrapLettersInSpans(selector) {
         const element = document.querySelector(selector);
         if (!element) return;
         const text = element.textContent;
-        element.innerHTML = ''; // Clear original text
+        element.innerHTML = '';
         text.split('').forEach(char => {
             const span = document.createElement('span');
             span.className = 'is-draggable draggable-letter';
@@ -204,46 +212,133 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    wrapLettersInSpans('.main-title');
-    wrapLettersInSpans('.main-subtitle');
+    // --- FIXED: Null-Safe Contact Modal Setup ---
+    function setupContactModal() {
+        const openModalBtn = document.getElementById('open-contact-modal');
+        const closeModalBtn = document.getElementById('close-contact-modal');
+        const contactModal = document.getElementById('contact-modal');
 
+        // This `if` block prevents the "is null" error
+        if (openModalBtn && closeModalBtn && contactModal) {
+            let captchaAnswer = 7;
+            const showModal = function() {
+                const n1 = Math.floor(Math.random() * 5) + 1, n2 = Math.floor(Math.random() * 5) + 1;
+                document.getElementById('captcha-q1').textContent = n1;
+                document.getElementById('captcha-q2').textContent = n2;
+                captchaAnswer = n1 + n2;
+                document.getElementById('captcha-input').value = '';
+                contactModal.classList.add('is-visible');
+            };
+            const hideModal = function() { contactModal.classList.remove('is-visible'); };
+            
+            // This function is now also called by the drag-and-drop engine
+            window.showModal = showModal;
 
-    // --- Loader & Layout Initialization ---
-    window.onload = function() {
-        randomizeInitialLayout();
-        if (pageLoader) { setTimeout(() => { pageLoader.classList.add('is-hidden'); }, 200); }
-    };
-    // ... (randomizeInitialLayout, addCard, expandCard, collapseCard, and contact modal logic are unchanged)
+            closeModalBtn.addEventListener('click', hideModal);
+            contactModal.addEventListener('click', function(e) { if (e.target === contactModal) hideModal(); });
+            document.getElementById('contact-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const statusDiv = document.getElementById('form-status');
+                if (parseInt(document.getElementById('captcha-input').value, 10) !== captchaAnswer) {
+                    statusDiv.textContent = 'Incorrect captcha answer.'; statusDiv.style.color = 'red'; return;
+                }
+                statusDiv.textContent = 'Sending...'; statusDiv.style.color = 'blue';
+                setTimeout(() => { statusDiv.textContent = 'Thank you!'; statusDiv.style.color = 'green'; setTimeout(hideModal, 2000); }, 1500);
+            });
+        }
+    }
 
-    // --- RE-ENGINEERED: Universal Drag & Drop Engine ---
-    let activeCard = null, isDragging = false, startX, startY, initialX, initialY;
+    // --- Card & Layout Functions ---
+    function randomizeInitialLayout() {
+        document.querySelectorAll('.post-page').forEach((card, index) => {
+            card.postData = initialPostsData[index];
+            const randomX = Math.floor(Math.random() * (window.innerWidth - 250 - 80)) + 40;
+            const randomY = Math.floor(Math.random() * (window.innerHeight - 375 - 80)) + 40;
+            const randomRot = Math.random() * 20 - 10;
+            card.style.left = `${randomX}px`;
+            card.style.top = `${randomY}px`;
+            card.style.setProperty('--r', `${randomRot}deg`);
+            card.style.zIndex = index + 1;
+            setTimeout(() => card.classList.add('is-visible'), index * 80);
+        });
+    }
+
+    function addCard() {
+        if (availablePosts.length === 0) return;
+        const postData = availablePosts.shift();
+        highestZ++;
+        const card = document.createElement('div');
+        card.className = "post-page is-draggable";
+        card.style.setProperty('--bg-image', `url('${postData.image_url}')`);
+        card.postData = postData;
+        const randomX = Math.floor(Math.random() * (window.innerWidth - 250 - 80)) + 40;
+        const randomY = Math.floor(Math.random() * (window.innerHeight - 375 - 80)) + 40;
+        const randomRot = Math.random() * 20 - 10;
+        card.style.left = `${randomX}px`;
+        card.style.top = `${randomY}px`;
+        card.style.setProperty('--r', `${randomRot}deg`);
+        card.style.zIndex = highestZ;
+        container.appendChild(card);
+        setTimeout(() => card.classList.add("is-visible"), 50);
+        if (availablePosts.length === 0 && addCardBtn) {
+            addCardBtn.disabled = true;
+        }
+    }
+
+    function expandCard(cardElement) {
+        if (expandedCard || !cardElement.postData) return;
+        expandedCard = cardElement;
+        body.classList.add("card-is-active");
+        viewerOverlay.classList.add("is-visible");
+        const contentView = document.createElement("div");
+        contentView.className = "card-content-view";
+        const closeButton = document.createElement("button");
+        closeButton.className = "card-close-button";
+        closeButton.innerHTML = "&times;";
+        closeButton.onclick = (e) => { e.stopPropagation(); collapseCard(); };
+        const title = document.createElement("h1");
+        title.textContent = cardElement.postData.title;
+        const bodyContent = document.createElement("div");
+        bodyContent.className = "post-body-content";
+        bodyContent.innerHTML = cardElement.postData.content;
+        contentView.appendChild(closeButton);
+        contentView.appendChild(title);
+        contentView.appendChild(bodyContent);
+        cardElement.appendChild(contentView);
+        cardElement.classList.add("is-expanded");
+    }
+
+    function collapseCard() {
+        if (!expandedCard) return;
+        body.classList.remove("card-is-active");
+        viewerOverlay.classList.remove("is-visible");
+        const contentView = expandedCard.querySelector('.card-content-view');
+        if (contentView) expandedCard.removeChild(contentView);
+        expandedCard.classList.remove("is-expanded");
+        expandedCard = null;
+    }
+    viewerOverlay.addEventListener('click', collapseCard);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') collapseCard(); });
+
+    // --- Universal Drag & Drop Engine ---
+    let activeElement = null, isDragging = false, startX, startY, initialX, initialY;
 
     function dragStart(e) {
-        // Find the closest draggable parent
         const target = e.target.closest('.is-draggable');
-
-        // Only start drag if a draggable item is found AND no card is expanded
         if (target && !expandedCard) {
             e.preventDefault();
             e.stopPropagation();
-
-            activeCard = target;
+            activeElement = target;
             isDragging = false;
-            
-            // Bring element to the front
             highestZ++;
-            activeCard.style.zIndex = highestZ;
-            activeCard.classList.add('is-dragging');
-
+            activeElement.style.zIndex = highestZ;
+            activeElement.classList.add('is-dragging');
             startX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
             startY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
-            
-            // Get current computed top/left. This is more robust.
-            const rect = activeCard.getBoundingClientRect();
-            const parentRect = activeCard.parentElement.getBoundingClientRect();
+            const rect = activeElement.getBoundingClientRect();
+            const parentRect = activeElement.parentElement.getBoundingClientRect();
             initialX = rect.left - parentRect.left;
             initialY = rect.top - parentRect.top;
-
             document.addEventListener('mousemove', dragging);
             document.addEventListener('touchmove', dragging, { passive: false });
             document.addEventListener('mouseup', dragEnd);
@@ -252,58 +347,35 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function dragging(e) {
-        if (!activeCard) return;
+        if (!activeElement) return;
         e.preventDefault();
-        
         let currentX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
         let currentY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
-        
         const deltaX = currentX - startX;
         const deltaY = currentY - startY;
-
-        if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
-            isDragging = true;
-        }
-        
-        // Update position by setting style. This works for relative and absolute elements.
-        activeCard.style.left = `${initialX + deltaX}px`;
-        activeCard.style.top = `${initialY + deltaY}px`;
+        if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) isDragging = true;
+        activeElement.style.left = `${initialX + deltaX}px`;
+        activeElement.style.top = `${initialY + deltaY}px`;
     }
 
-    function dragEnd(e) {
-        if (!activeCard) return;
-
+    function dragEnd() {
+        if (!activeElement) return;
         document.removeEventListener('mousemove', dragging);
         document.removeEventListener('touchmove', dragging);
         document.removeEventListener('mouseup', dragEnd);
         document.removeEventListener('touchend', dragEnd);
+        activeElement.classList.remove('is-dragging');
 
-        activeCard.classList.remove('is-dragging');
-
-        // --- NEW: Intelligent Click Handling ---
         if (!isDragging) {
-            if (activeCard.id === 'add-card-button') {
-                addCard();
-            } else if (activeCard.id === 'open-contact-modal') {
-                showModal();
-            } else if (activeCard.classList.contains('post-page')) {
-                expandCard(activeCard);
-            }
-            // If it's a letter, do nothing on click.
+            if (activeElement.id === 'add-card-button') addCard();
+            else if (activeElement.id === 'open-contact-modal' && typeof window.showModal === 'function') window.showModal();
+            else if (activeElement.classList.contains('post-page')) expandCard(activeElement);
         }
-
-        activeCard = null;
+        activeElement = null;
     }
 
-    // Attach listeners to the entire body to catch all elements
     document.body.addEventListener('mousedown', dragStart);
     document.body.addEventListener('touchstart', dragStart, { passive: false });
-
-    // --- (All other helper functions: addCard, expandCard, collapseCard, modal logic, etc.) ---
-    // This minified block contains the correct, unchanged logic for these functions.
-    const addCardBtn = document.getElementById('add-card-button');
-    let availablePosts = [...additionalPostsData];
-    function addCard(){if(availablePosts.length===0)return;const a=availablePosts.shift();highestZ++;const b=document.createElement("div");b.className="post-page is-draggable",b.style.setProperty("--bg-image",`url('${a.image_url}')`),b.postData=a;const c=Math.floor(Math.random()*(window.innerWidth-250-80))+40,d=Math.floor(Math.random()*(window.innerHeight-375-80))+40,e=Math.random()*20-10;b.style.left=`${c}px`,b.style.top=`${d}px`,b.style.setProperty("--r",`${e}deg`),b.style.zIndex=highestZ,container.appendChild(b),setTimeout(()=>b.classList.add("is-visible"),50),availablePosts.length===0&&(addCardBtn.disabled=!0,addCardBtn.classList.add("is-disabled"))}if(addCardBtn){addCardBtn.addEventListener("click",addCard),availablePosts.length===0&&(addCardBtn.disabled=!0,addCardBtn.classList.add("is-disabled"))}const viewerOverlay=document.getElementById("card-viewer-overlay");function expandCard(a){if(expandedCard||!a.postData)return;expandedCard=a,body.classList.add("card-is-active"),viewerOverlay.classList.add("is-visible");const b=document.createElement("div");b.className="card-content-view";const c=document.createElement("button");c.className="card-close-button",c.innerHTML="&times;",c.onclick=b=>{b.stopPropagation(),collapseCard()};const d=document.createElement("h1");d.textContent=a.postData.title;const e=document.createElement("div");e.className="post-body-content",e.innerHTML=a.postData.content,b.appendChild(c),b.appendChild(d),b.appendChild(e),a.appendChild(b),a.classList.add("is-expanded")}function collapseCard(){if(!expandedCard)return;body.classList.remove("card-is-active"),viewerOverlay.classList.remove("is-visible");const a=expandedCard.querySelector(".card-content-view");a&&expandedCard.removeChild(a),expandedCard.classList.remove("is-expanded"),expandedCard=null}viewerOverlay.addEventListener("click",collapseCard),document.addEventListener("keydown",a=>{a.key==="Escape"&&collapseCard()});const openModalBtn=document.getElementById("open-contact-modal"),closeModalBtn=document.getElementById("close-contact-modal"),contactModal=document.getElementById("contact-modal");let captchaAnswer=7;function showModal(){const a=Math.floor(5*Math.random())+1,b=Math.floor(5*Math.random())+1;document.getElementById("captcha-q1").textContent=a,document.getElementById("captcha-q2").textContent=b,captchaAnswer=a+b,document.getElementById("captcha-input").value="",contactModal.classList.add("is-visible")}function hideModal(){contactModal.classList.remove("is-visible")}closeModalBtn.addEventListener("click",hideModal),contactModal.addEventListener("click",function(a){a.target===contactModal&&hideModal()}),document.getElementById("contact-form").addEventListener("submit",function(a){a.preventDefault();const b=document.getElementById("form-status");if(parseInt(document.getElementById("captcha-input").value,10)!==captchaAnswer)return b.textContent="Incorrect captcha answer.",void(b.style.color="red");b.textContent="Sending...",b.style.color="blue",setTimeout(()=>{b.textContent="Thank you!",b.style.color="green",setTimeout(hideModal,2e3)},1500)});function randomizeInitialLayout(){document.querySelectorAll(".post-page").forEach((a,b)=>{a.postData=initialPostsData[b];const c=Math.floor(Math.random()*(window.innerWidth-250-80))+40,d=Math.floor(Math.random()*(window.innerHeight-375-80))+40,e=Math.random()*20-10;a.style.left=`${c}px`,a.style.top=`${d}px`,a.style.setProperty("--r",`${e}deg`),a.style.zIndex=b+1,setTimeout(()=>a.classList.add("is-visible"),80*b)})}
 });
 </script>
 
