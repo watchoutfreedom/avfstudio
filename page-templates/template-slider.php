@@ -225,8 +225,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function showModal() { const n1=Math.floor(Math.random()*5)+1; const n2=Math.floor(Math.random()*5)+1; captchaQ1.textContent=n1; captchaQ2.textContent=n2; captchaAnswer=n1+n2; captchaInput.value=''; contactModal.classList.add('is-visible'); }
     function hideModal() { contactModal.classList.remove('is-visible'); }
     // openModalBtn.addEventListener('click', showModal);
-    closeModalBtn.addEventListener('click', hideModal);
-    contactModal.addEventListener('click', function(e) { if(e.target===contactModal) hideModal(); });
+    // closeModalBtn.addEventListener('click', hideModal);
+    // contactModal.addEventListener('click', function(e) { if(e.target===contactModal) hideModal(); });
     document.getElementById('contact-form').addEventListener('submit', function(e) { e.preventDefault(); const statusDiv=document.getElementById('form-status'); if(parseInt(captchaInput.value,10)!==captchaAnswer){ statusDiv.textContent='Incorrect captcha answer.'; statusDiv.style.color='red'; return; } statusDiv.textContent='Sending...'; statusDiv.style.color='blue'; setTimeout(()=>{ statusDiv.textContent='Thank you!'; statusDiv.style.color='green'; setTimeout(hideModal,2000);}, 1500); });
     
 
