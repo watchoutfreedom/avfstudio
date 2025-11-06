@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
      */
     function initializeLayout() {
         const baseCardCount = 4;
-        const extraCardsPerPixel = 1 / 30; // 1 card every 30px
+        const extraCardsPerPixel = 1 / 200; // 1 card every 30px
         const baseWidth = 480; // Width at which we start adding more cards
         
         const cardsToShow = Math.min(
