@@ -9,8 +9,36 @@ get_header();
 ?>
 
 <style>
+
+
+    /* --- NEW: Custom Font Declaration --- */
+    @font-face {
+        font-family: 'Airbnb Cereal App'; /* You can name this whatever you like */
+        src: url('<?php echo get_stylesheet_directory_uri(); ?>/assets/fonts/AirbnbCereal_W_Bd.otf') format('otf'),
+            url('<?php echo get_stylesheet_directory_uri(); ?>/assets/fonts/AirbnbCereal_W_Md.otf') format('otf'),
+            url('<?php echo get_stylesheet_directory_uri(); ?>/assets/fonts/AirbnbCereal_W_Bk.otf') format('otf'),
+            url('<?php echo get_stylesheet_directory_uri(); ?>/assets/fonts/AirbnbCereal_W_Blk.otf') format('otf'),
+            url('<?php echo get_stylesheet_directory_uri(); ?>/assets/fonts/AirbnbCereal_W_Lt.otf') format('otf'),
+             url('<?php echo get_stylesheet_directory_uri(); ?>/assets/fonts/AirbnbCereal_W_XBd.otf') format('otf');
+
+
+            /* Add more formats if you have them, e.g., .ttf */
+        font-weight: 700; /* 'Bd' usually means Bold, which is 700 */
+        font-style: normal;
+        font-display: swap; /* Improves perceived performance */
+    }
+
     /* All CSS from your working version is correct and unchanged. */
-    html, body { height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    html, body { height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden; 
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+
+
+    /* --- Basic Setup & Background --- */
+    html, body {
+        height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden;
+        font-family: 'Airbnb Cereal App', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; /* MODIFIED: Add the new font first */
+    }
+
     .concept-body { height: 100vh; width: 100vw; position: relative; background-color: black; background-image: radial-gradient(ellipse at center, #4a4a4a 0%, #2b2b2b 100%); color: #f0f0f0; }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     #page-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(ellipse at center, #4a4a4a 0%, #2b2b2b 100%); display: flex; justify-content: center; align-items: center; z-index: 99999; transition: opacity 0.5s ease-out; }
