@@ -280,6 +280,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function dragStart(e) {
         if (e.target.classList.contains('post-page')) {
             e.preventDefault();
+            e.stopPropagation();
             activeCard = e.target;
             
             // Differentiate click from drag
