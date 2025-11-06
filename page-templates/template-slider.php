@@ -64,7 +64,6 @@ get_header();
     #card-viewer-overlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(0, 0, 0, 0.8);
-        z-index: 3000;
         opacity: 0; pointer-events: none;
         transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
