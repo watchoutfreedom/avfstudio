@@ -17,7 +17,6 @@
 <head>
 
   <meta charset="<?php bloginfo('charset'); ?>" />
-  <link rel="stylesheet" href="<?php bloginfo('template_directory'); ?>/assets/scss/main.css" as="styles">
   <link rel="script" href="<?php bloginfo('template_directory'); ?>/components/dist/js/script.js" as="script">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
  

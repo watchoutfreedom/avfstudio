@@ -19,7 +19,6 @@ get_header();
         display: none;
         overflow: hidden; /* Prevents scrollbars on the body */
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: red;
 
     }
 
