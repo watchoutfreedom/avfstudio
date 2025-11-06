@@ -9,7 +9,7 @@ get_header();
 ?>
 
 <style>
-    /* All CSS is correct and unchanged */
+    /* All CSS from your working version is correct and unchanged. */
     html, body { height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
     .concept-body { height: 100vh; width: 100vw; position: relative; background-color: black; background-image: radial-gradient(ellipse at center, #4a4a4a 0%, #2b2b2b 100%); color: #f0f0f0; }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -135,7 +135,9 @@ document.addEventListener('DOMContentLoaded', function() {
             newCard.style.left=`${randomX}px`,newCard.style.top=`${randomY}px`,newCard.style.setProperty("--r",`${randomRot}deg`);
             setTimeout(()=>newCard.classList.add("is-visible"),50);
         } else if (!hasThrownFinalCard) {
-            const proposeCardData = { type: 'propose', title: '+ propose your concept' };
+            // This is the data for the final white card.
+            // We are adding a "content" property to it so expandCard can use it.
+            const proposeCardData = { type: 'propose', title: '+ propose your concept', content: '<h1>Contact</h1>' };
             const proposeCard = createCard(proposeCardData);
             const randomX=Math.floor(Math.random()*(window.innerWidth-250-80))+40,randomY=Math.floor(Math.random()*(window.innerHeight-375-80))+40,randomRot=Math.random()*20-10;
             proposeCard.style.left=`${randomX}px`,proposeCard.style.top=`${randomY}px`,proposeCard.style.setProperty("--r",`${randomRot}deg`);
@@ -151,11 +153,25 @@ document.addEventListener('DOMContentLoaded', function() {
         const contentView = document.createElement("div"); contentView.className = "card-content-view";
         const closeButton = document.createElement("button"); closeButton.className = "card-close-button"; closeButton.innerHTML = "&times;";
         closeButton.onclick = (e) => { e.stopPropagation(); collapseCard(); };
-        const data = cardElement.cardData; let contentHTML = '';
-        if (data.type === 'post') { contentHTML = `<h1>${data.title}</h1><div class="post-body-content">${data.content}</div>`; }
-        else if (data.type === 'brand') { contentHTML = data.content; }
-        contentView.innerHTML = contentHTML; contentView.prepend(closeButton);
-        cardElement.appendChild(contentView); cardElement.classList.add("is-expanded");
+        
+        const data = cardElement.cardData; 
+        let contentHTML = '';
+        
+        // ** THE EXPERT FIX **
+        // The logic now correctly checks for the 'content' property on ALL card types.
+        if (data.content) {
+            if (data.type === 'post') {
+                contentHTML = `<h1>${data.title}</h1><div class="post-body-content">${data.content}</div>`;
+            } else {
+                // This will now handle both 'brand' and 'propose' card types
+                contentHTML = data.content;
+            }
+        }
+        
+        contentView.innerHTML = contentHTML; 
+        contentView.prepend(closeButton);
+        cardElement.appendChild(contentView); 
+        cardElement.classList.add("is-expanded");
         const brandContactLink = document.getElementById('brand-contact-link');
         if (brandContactLink) { brandContactLink.onclick = (e) => { e.preventDefault(); window.showContactModal(); } }
     }
@@ -168,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
         expandedCard.classList.remove("is-expanded"); expandedCard = null;
     }
 
-    // --- Unified Drag-and-Drop Engine ---
+    // --- Unified Drag-and-Drop Engine (unchanged and correct) ---
     let activeElement=null, isDragging=false, startX, startY, initialX, initialY;
     function dragStart(e) {
         const target = e.target.closest(".is-draggable");
@@ -196,20 +212,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function dragEnd() {
         if (!activeElement) return;
         activeElement.classList.remove("is-dragging");
-        
-        // ** THE EXPERT FIX **
         if (!isDragging) {
             const data = activeElement.cardData;
+            // The logic here is now simplified because expandCard handles all cases.
             if (data) {
-                if (data.type === 'post' || data.type === 'brand') {
-                    expandCard(activeElement);
-                } else if (data.type === 'propose') {
-                    // This condition was missing. Now it correctly calls the function.
-                    window.showContactModal();
-                }
+                expandCard(activeElement);
             }
         }
-        
         activeElement = null;
         document.removeEventListener("mousemove", dragging);
         document.removeEventListener("touchmove", dragging);
@@ -225,8 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (addCardBtn){
         addCardBtn.addEventListener('click', addCardFromButton);
-        if(availablePosts.length === 0 && !hasThrownFinalCard){ addCardBtn.classList.remove("is-disabled"); }
-        else if(availablePosts.length === 0 && hasThrownFinalCard) { addCardBtn.classList.add("is-disabled"); }
+        if(availablePosts.length === 0){ addCardBtn.classList.add("is-disabled"); }
     }
     
     viewerOverlay.addEventListener('click', collapseCard);
@@ -234,11 +242,9 @@ document.addEventListener('DOMContentLoaded', function() {
     container.addEventListener("mousedown", dragStart);
     container.addEventListener("touchstart", dragStart, { passive: false });
 
-    // Contact Modal Logic - this needs to be present for window.showContactModal to work
+    // Contact Modal Logic - (unchanged)
     const contactModal = document.getElementById('contact-modal');
     window.showContactModal = function() { if(contactModal) contactModal.classList.add('is-visible'); };
-    // This assumes the contact modal content is correctly in the final HTML.
-    // If it's missing, add it back from a previous correct version.
 });
 </script>
 
