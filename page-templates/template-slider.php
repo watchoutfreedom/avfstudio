@@ -47,13 +47,10 @@ get_header();
     .contact-icon-button svg { width: 32px; height: 32px; fill: #f0f0f0; transition: transform 0.3s ease; }
     .contact-icon-button:hover svg { transform: scale(1.1); }
 
-    /* --- NEW: Overlay for Expanded Card View --- */
+    /* --- Overlay for Expanded Card View --- */
     #card-viewer-overlay {
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(0, 0, 0, 0.8);
         z-index: 4999;
         opacity: 0;
@@ -92,7 +89,7 @@ get_header();
     .post-page:hover { box-shadow: 0 15px 45px rgba(0,0,0,0.5); transform: scale(1.03) rotate(var(--r, 0deg)); z-index: 4000 !important; }
     .post-page.is-dragging { cursor: grabbing; box-shadow: 0 20px 50px rgba(0,0,0,0.6); transform: scale(1.05) rotate(var(--r, 0deg)); pointer-events: none; transition: none; }
 
-    /* --- NEW: Expanded Card State --- */
+    /* --- Expanded Card State --- */
     .post-page.is-expanded {
         top: 50% !important;
         left: 50% !important;
@@ -103,20 +100,20 @@ get_header();
         z-index: 5000;
     }
     .post-page.is-expanded:hover {
-        box-shadow: 0 10px 30px rgba(0,0,0,0.4); /* Revert hover effect */
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
     }
 
-    /* --- NEW: Content Inside Expanded Card --- */
+    /* --- UPDATED: Content Inside Expanded Card --- */
     .card-content-view {
         position: absolute;
         top: 0; left: 0; right: 0; bottom: 0;
-        background: linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.6) 100%);
+        background: transparent; /* MODIFIED: Removed the gradient overlay */
         color: #fff;
         padding: 5vw;
-        overflow-y: auto;
+        overflow-y: auto; /* This enables scrolling inside the card */
         opacity: 0;
-        transition: opacity 0.5s ease 0.3s; /* Fade in after card expands */
-        border-radius: 6px; /* Match parent border-radius */
+        transition: opacity 0.5s ease 0.3s;
+        border-radius: 6px;
     }
     .post-page.is-expanded .card-content-view {
         opacity: 1;
@@ -126,27 +123,25 @@ get_header();
         margin: 0 0 2rem 0;
         font-weight: 800;
         line-height: 1.1;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7); /* ADDED: For readability */
     }
     .post-body-content {
         font-size: clamp(1rem, 1.5vw, 1.2rem);
         line-height: 1.6;
-        max-width: 800px; /* Readability */
+        max-width: 1000px; /* MODIFIED: Wider content area */
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8); /* ADDED: For readability */
     }
     .post-body-content p { margin-bottom: 1.5em; }
 
     .card-close-button {
         position: absolute;
-        top: 15px;
-        right: 15px;
-        font-size: 2.5rem;
-        font-weight: 300;
-        color: #fff;
-        background: none;
-        border: none;
-        cursor: pointer;
-        z-index: 10;
+        top: 15px; right: 15px;
+        font-size: 2.5rem; font-weight: 300;
+        color: #fff; background: none; border: none;
+        cursor: pointer; z-index: 10;
         opacity: 0.7;
         transition: opacity 0.3s, transform 0.3s;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.5); /* ADDED: Shadow for visibility */
     }
     .card-close-button:hover { opacity: 1; transform: scale(1.1); }
 
@@ -162,14 +157,13 @@ get_header();
     .add-card-button:hover { transform: scale(1.1); background-color: #fff; }
     .add-card-button:disabled, .add-card-button.is-disabled { opacity: 0.4; cursor: not-allowed; transform: scale(0.9); pointer-events: none; }
     
-    /* --- Hiding UI when card is expanded --- */
+    /* --- Hiding UI when card is active --- */
     body.card-is-active .header-content,
     body.card-is-active .add-card-button {
         opacity: 0;
         pointer-events: none;
     }
 
-    /* ... (rest of your styles, including modal and responsive, are fine) ... */
     @media (max-width: 768px) {
         .main-title { font-size: 2.5rem; }
         .main-subtitle { font-size: 1.2rem; }
@@ -179,7 +173,6 @@ get_header();
 </style>
 
 <main class="concept-body" id="concept-body">
-    <!-- NEW: Background Overlay -->
     <div id="card-viewer-overlay"></div>
 
     <div class="header-content">
@@ -205,8 +198,6 @@ get_header();
     );
     $all_posts_query = new WP_Query($args);
     
-    // We now need two arrays: one for initial cards, one for additional.
-    // This is because we need to link the initial HTML elements to their full data.
     $initial_posts_data = [];
     $additional_posts_data = [];
     $post_index = 0;
@@ -215,7 +206,6 @@ get_header();
         while ($all_posts_query->have_posts()) : $all_posts_query->the_post();
             $image_url = get_the_post_thumbnail_url(get_the_ID(), 'large');
             if ($image_url) {
-                // Prepare the full data object for each post
                 $post_data = [
                     'title'     => get_the_title(),
                     'content'   => apply_filters('the_content', get_the_content()),
@@ -223,7 +213,6 @@ get_header();
                 ];
 
                 if ($post_index < $initial_card_count) {
-                    // For initial cards, render the HTML and also save the data for JS
                     $initial_posts_data[] = $post_data;
                     ?>
                     <div class="post-page"
@@ -232,7 +221,6 @@ get_header();
                     </div>
                     <?php
                 } else {
-                    // For additional cards, just save the data for JS
                     $additional_posts_data[] = $post_data;
                 }
                 $post_index++;
@@ -245,7 +233,7 @@ get_header();
 
 <button id="add-card-button" class="add-card-button" aria-label="Add another card">+</button>
 
-<!-- Contact Modal remains unchanged -->
+<!-- The rest of the page (contact modal, etc.) remains the same -->
 <!-- ... -->
 
 <script>
@@ -254,10 +242,8 @@ get_header();
 </script>
 
 <script>
+// The JavaScript does not require any changes for these tweaks, so it remains the same.
 document.addEventListener('DOMContentLoaded', function() {
-    // --- Contact Modal Logic is unchanged, safe to ignore ---
-    
-    // --- Card Viewing & Interaction Logic ---
     const body = document.body;
     const container = document.getElementById('concept-body');
     const addCardBtn = document.getElementById('add-card-button');
@@ -266,15 +252,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     let availablePosts = [...additionalPostsData];
     let highestZ = initialCards.length;
-    let expandedCard = null; // Track the currently expanded card
+    let expandedCard = null;
 
-    // 1. Randomize INITIAL Card Positions on Load
     function randomizeInitialLayout() {
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
 
         initialCards.forEach((card, index) => {
-            // Attach the full data object to the element for later use
             card.postData = initialPostsData[index];
 
             const cardWidth = card.offsetWidth; const cardHeight = card.offsetHeight;
@@ -295,7 +279,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     window.onload = randomizeInitialLayout;
 
-    // 2. Function to ADD a NEW card to the DOM
     function addCard() {
         if (availablePosts.length === 0) return;
         
@@ -305,7 +288,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const card = document.createElement('div');
         card.className = 'post-page';
         card.style.setProperty('--bg-image', `url('${postData.image_url}')`);
-        card.postData = postData; // Attach full data object
+        card.postData = postData;
 
         const cardWidth = 250; const cardHeight = 375;
         const randomX = Math.floor(Math.random() * (window.innerWidth - cardWidth - 80)) + 40;
@@ -325,7 +308,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // 3. Setup "+" Button
     if (addCardBtn) {
         addCardBtn.addEventListener('click', addCard);
         if (availablePosts.length === 0) {
@@ -333,17 +315,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // --- NEW: Card Expansion and Collapse Logic ---
     function expandCard(cardElement) {
-        if (expandedCard || !cardElement.postData) return; // Already expanded or no data
+        if (expandedCard || !cardElement.postData) return;
         
         expandedCard = cardElement;
         
-        // Hide other UI elements
         body.classList.add('card-is-active');
         viewerOverlay.classList.add('is-visible');
 
-        // Create and inject content
         const contentView = document.createElement('div');
         contentView.className = 'card-content-view';
 
@@ -364,29 +343,24 @@ document.addEventListener('DOMContentLoaded', function() {
         contentView.appendChild(bodyContent);
         cardElement.appendChild(contentView);
 
-        // Expand the card
         cardElement.classList.add('is-expanded');
     }
 
     function collapseCard() {
         if (!expandedCard) return;
 
-        // Show UI elements
         body.classList.remove('card-is-active');
         viewerOverlay.classList.remove('is-visible');
         
-        // Remove the injected content
         const contentView = expandedCard.querySelector('.card-content-view');
         if (contentView) {
             expandedCard.removeChild(contentView);
         }
 
-        // Collapse the card and clear the reference
         expandedCard.classList.remove('is-expanded');
         expandedCard = null;
     }
 
-    // Add listeners for collapsing
     viewerOverlay.addEventListener('click', collapseCard);
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
@@ -394,11 +368,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // --- Drag-and-Drop Logic (Modified for Expansion) ---
     let activeCard = null, isDragging = false, startX, startY, initialX, initialY;
 
     function dragStart(e) {
-        // Do not allow dragging if a card is already expanded
         if (expandedCard) return;
 
         if (e.target.classList.contains('post-page')) {
@@ -448,7 +420,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.removeEventListener('mouseup', dragEnd);
         document.removeEventListener('touchend', dragEnd);
 
-        // **CORE LOGIC CHANGE**: On click (not drag), expand the card
         if (!isDragging) {
             expandCard(activeCard);
         }
