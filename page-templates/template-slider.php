@@ -55,7 +55,6 @@ get_header();
         background: rgba(0, 0, 0, 0.8);
         opacity: 0; pointer-events: none;
         transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        z-index: 4999;
     }
     #card-viewer-overlay.is-visible { opacity: 1; pointer-events: all; }
 
