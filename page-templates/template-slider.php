@@ -24,8 +24,8 @@ get_header();
         height: 100vh;
         width: 100vw;
         position: relative; /* All card positions are relative to this */
-        background-color: red;
-        /* background-image: radial-gradient(ellipse at center, #4a4a4a 0%, #2b2b2b 100%); */
+        background-color: black;
+        background-image: radial-gradient(ellipse at center, #4a4a4a 0%, #2b2b2b 100%);
         color: #f0f0f0;
     }
 
@@ -226,9 +226,9 @@ document.addEventListener('DOMContentLoaded', function() {
     let captchaAnswer = 7;
     function showModal() { const n1=Math.floor(Math.random()*5)+1; const n2=Math.floor(Math.random()*5)+1; captchaQ1.textContent=n1; captchaQ2.textContent=n2; captchaAnswer=n1+n2; captchaInput.value=''; contactModal.classList.add('is-visible'); }
     function hideModal() { contactModal.classList.remove('is-visible'); }
-    // openModalBtn.addEventListener('click', showModal);
-    // closeModalBtn.addEventListener('click', hideModal);
-    // contactModal.addEventListener('click', function(e) { if(e.target===contactModal) hideModal(); });
+    openModalBtn.addEventListener('click', showModal);
+    closeModalBtn.addEventListener('click', hideModal);
+    contactModal.addEventListener('click', function(e) { if(e.target===contactModal) hideModal(); });
     document.getElementById('contact-form').addEventListener('submit', function(e) { e.preventDefault(); const statusDiv=document.getElementById('form-status'); if(parseInt(captchaInput.value,10)!==captchaAnswer){ statusDiv.textContent='Incorrect captcha answer.'; statusDiv.style.color='red'; return; } statusDiv.textContent='Sending...'; statusDiv.style.color='blue'; setTimeout(()=>{ statusDiv.textContent='Thank you!'; statusDiv.style.color='green'; setTimeout(hideModal,2000);}, 1500); });
     
 
@@ -275,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 2. Drag-and-Drop Functionality
     let activeCard = null;
-    let isDragging = true;
+    let isDragging = false;
     let startX, startY, initialX, initialY;
 
     function dragStart(e) {
@@ -285,7 +285,7 @@ document.addEventListener('DOMContentLoaded', function() {
             activeCard = e.target;
             
             // Differentiate click from drag
-            isDragging = true; 
+            isDragging = false; 
 
             // Bring card to the top
             highestZ++;
@@ -352,7 +352,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // If it was NOT a drag, it's a click/tap
         if (!isDragging) {
 
-            // window.location.href = activeCard.href;
+            window.location.href = activeCard.href;
 
         }
 
