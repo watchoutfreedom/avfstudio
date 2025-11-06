@@ -122,7 +122,7 @@ get_header();
         transition: none; /* Disable transition while dragging for instant feedback */
     }
 
-    /* --- NEW: Add Card Button --- */
+    /* --- Add Card Button --- */
     .add-card-button {
         position: fixed;
         bottom: 40px;
@@ -138,10 +138,10 @@ get_header();
         line-height: 60px; /* Vertically center the '+' */
         text-align: center;
         cursor: pointer;
-        z-index: 2000; /* Above header, below modal */
+        z-index: 2000;
         box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         transition: transform 0.3s ease, background-color 0.3s ease, opacity 0.3s ease;
-        -webkit-tap-highlight-color: transparent; /* For mobile */
+        -webkit-tap-highlight-color: transparent;
     }
 
     .add-card-button:hover {
@@ -154,7 +154,7 @@ get_header();
         opacity: 0.4;
         cursor: not-allowed;
         transform: scale(0.9);
-        pointer-events: none; /* Extra safety */
+        pointer-events: none;
     }
 
     /* --- Contact Modal (No changes) --- */
@@ -197,14 +197,16 @@ get_header();
         </button>
     </div>
 
-    <!-- 
-        Post Cards are no longer rendered here directly.
-        PHP gathers the data, and JavaScript creates the cards dynamically.
-    -->
+    <!-- PHP renders the INITIAL cards and prepares ADDITIONAL card data for JavaScript -->
     <?php
+    $initial_card_count = 10;
+    // Fetch more posts than we need initially, so the "+" button has a supply.
+    // Let's fetch 20 total: 10 for the start, 10 for the button.
+    $total_posts_to_fetch = 20; 
+
     $args = array(
         'post_type'      => 'post',
-        'posts_per_page' => 10, // You can set this to -1 to get all posts
+        'posts_per_page' => $total_posts_to_fetch,
         'orderby'        => 'rand',
         'post_status'    => 'publish',
         'meta_query'     => array(
@@ -212,16 +214,33 @@ get_header();
         )
     );
     $all_posts_query = new WP_Query($args);
-    $posts_data = [];
+    $additional_posts_data = [];
+    $post_index = 0;
 
     if ($all_posts_query->have_posts()) :
         while ($all_posts_query->have_posts()) : $all_posts_query->the_post();
             $image_url = get_the_post_thumbnail_url(get_the_ID(), 'large');
-            if ($image_url) { // Double-check that we have a URL
-                $posts_data[] = [
-                    'permalink' => get_the_permalink(),
-                    'image_url' => esc_url($image_url),
-                ];
+
+            if ($image_url) { // Make sure we have an image
+                // Logic to split the posts:
+                // 1. First 10 (or $initial_card_count) are rendered as HTML.
+                // 2. The rest are stored in an array for JavaScript.
+                if ($post_index < $initial_card_count) {
+                    // RENDER a card directly onto the page
+                    ?>
+                    <a href="<?php the_permalink(); ?>" 
+                       class="post-page"
+                       style="--bg-image: url('<?php echo esc_url($image_url); ?>');">
+                    </a>
+                    <?php
+                } else {
+                    // STORE data for later use by the "+" button
+                    $additional_posts_data[] = [
+                        'permalink' => get_the_permalink(),
+                        'image_url' => esc_url($image_url),
+                    ];
+                }
+                $post_index++;
             }
         endwhile;
         wp_reset_postdata();
@@ -229,7 +248,7 @@ get_header();
     ?>
 </main>
 
-<!-- NEW: Add Card Button -->
+<!-- Add Card Button -->
 <button id="add-card-button" class="add-card-button" aria-label="Add another card">+</button>
 
 <!-- Contact Modal -->
@@ -244,15 +263,15 @@ get_header();
                 <label for="captcha">What is <span id="captcha-q1">3</span> + <span id="captcha-q2">4</span>?</label>
                 <input type="text" id="captcha-input" name="captcha" required>
             </div>
-            <button type="submit">Send</button>            
+            <button type="submit">Send</button>
             <div id="form-status" style="margin-top:15px; text-align:center;"></div>
         </form>
     </div>
 </div>
 
-<!-- This script tag passes the post data from PHP to JavaScript -->
+<!-- This script tag passes the ADDITIONAL post data from PHP to JavaScript -->
 <script>
-    const allPostsData = <?php echo json_encode($posts_data); ?>;
+    const additionalPostsData = <?php echo json_encode($additional_posts_data); ?>;
 </script>
 
 <script>
@@ -273,95 +292,106 @@ document.addEventListener('DOMContentLoaded', function() {
     contactModal.addEventListener('click', function(e) { if(e.target===contactModal) hideModal(); });
     document.getElementById('contact-form').addEventListener('submit', function(e) { e.preventDefault(); const statusDiv=document.getElementById('form-status'); if(parseInt(captchaInput.value,10)!==captchaAnswer){ statusDiv.textContent='Incorrect captcha answer.'; statusDiv.style.color='red'; return; } statusDiv.textContent='Sending...'; statusDiv.style.color='blue'; setTimeout(()=>{ statusDiv.textContent='Thank you!'; statusDiv.style.color='green'; setTimeout(hideModal,2000);}, 1500); });
     
-
-    // --- REVISED: Card Layout and Dragging Logic ---
+    
+    // --- UPDATED Card Layout and Adding Logic ---
     const container = document.getElementById('concept-body');
     const addCardBtn = document.getElementById('add-card-button');
-    let availablePosts = [...allPostsData]; // Create a mutable copy of the posts
-    let highestZ = 0;
+    const initialCards = document.querySelectorAll('.post-page');
+    let availablePosts = [...additionalPostsData]; // Posts for the "+" button
+    let highestZ = initialCards.length;
 
-    // 1. Function to add a single card to the DOM
+    // 1. Randomize INITIAL Card Positions on Load
+    function randomizeInitialLayout() {
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        initialCards.forEach((card, index) => {
+            const cardWidth = card.offsetWidth;
+            const cardHeight = card.offsetHeight;
+
+            const maxX = viewportWidth - cardWidth - 40;
+            const maxY = viewportHeight - cardHeight - 40;
+            const minX = 40;
+            const minY = 40;
+            
+            const randomX = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
+            const randomY = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
+            const randomRot = Math.random() * 20 - 10;
+
+            card.style.left = `${randomX}px`;
+            card.style.top = `${randomY}px`;
+            card.style.setProperty('--r', `${randomRot}deg`);
+            card.style.zIndex = index + 1;
+
+            // Animate them into view with a stagger
+            setTimeout(() => {
+                card.classList.add('is-visible');
+            }, index * 80);
+        });
+    }
+    
+    // Use window.onload to ensure images are loaded and cards have dimensions
+    window.onload = randomizeInitialLayout;
+
+    // 2. Function to add a NEW card to the DOM from the `availablePosts` array
     function addCard() {
-        if (availablePosts.length === 0) {
-            console.log("No more posts to add.");
-            return; // Safety net
-        }
+        if (availablePosts.length === 0) return; // Safety net
         
-        const postData = availablePosts.shift(); // Get and remove the next post from the array
+        const postData = availablePosts.shift(); // Get and remove the next post
         highestZ++;
 
-        // Create the card element
         const card = document.createElement('a');
         card.href = postData.permalink;
         card.className = 'post-page';
         card.style.setProperty('--bg-image', `url('${postData.image_url}')`);
 
-        // Calculate a random position and rotation
-        const cardWidth = 250; // Corresponds to CSS width
-        const cardHeight = 375; // Corresponds to CSS height
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
-        const maxX = viewportWidth - cardWidth - 40;
-        const maxY = viewportHeight - cardHeight - 40;
-        const minX = 40;
-        const minY = 40;
+        const cardWidth = 250; const cardHeight = 375;
+        const viewportWidth = window.innerWidth; const viewportHeight = window.innerHeight;
+        const maxX = viewportWidth - cardWidth - 40; const maxY = viewportHeight - cardHeight - 40;
+        const minX = 40; const minY = 40;
         const randomX = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
         const randomY = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
-        const randomRot = Math.random() * 20 - 10; // -10 to +10 degrees
+        const randomRot = Math.random() * 20 - 10;
 
-        // Apply styles
         card.style.left = `${randomX}px`;
         card.style.top = `${randomY}px`;
         card.style.setProperty('--r', `${randomRot}deg`);
         card.style.zIndex = highestZ;
 
-        // Add to the page and animate in
         container.appendChild(card);
-        setTimeout(() => {
-            card.classList.add('is-visible');
-        }, 50); // Small delay to allow transition to work
+        setTimeout(() => card.classList.add('is-visible'), 50);
 
-        // Check if the button should be disabled
+        // Disable button if no more posts are available
         if (availablePosts.length === 0) {
             addCardBtn.disabled = true;
             addCardBtn.classList.add('is-disabled');
         }
     }
 
-    // 2. Setup initial state and button listener
+    // 3. Setup "+" Button Listener and Initial State
     if (addCardBtn) {
         addCardBtn.addEventListener('click', addCard);
 
+        // Disable the button from the start if there are no additional posts
         if (availablePosts.length === 0) {
-            // No posts were found at all
             addCardBtn.disabled = true;
             addCardBtn.classList.add('is-disabled');
-        } else {
-            // Add the very first card on page load
-            addCard();
         }
     }
 
-
-    // 3. Drag-and-Drop Functionality (Works on dynamically added cards)
-    let activeCard = null;
-    let isDragging = false;
-    let startX, startY, initialX, initialY;
+    // 4. Drag-and-Drop Functionality (works for ALL cards, initial and new)
+    let activeCard = null, isDragging = false, startX, startY, initialX, initialY;
 
     function dragStart(e) {
         if (e.target.classList.contains('post-page')) {
             e.preventDefault();
             e.stopPropagation();
             activeCard = e.target;
-            
-            isDragging = false; 
-
-            // Bring card to the top
+            isDragging = false;
             highestZ++;
             activeCard.style.zIndex = highestZ;
             activeCard.classList.add('is-dragging');
 
-            // Get initial position
             if (e.type === 'touchstart') {
                 startX = e.touches[0].clientX;
                 startY = e.touches[0].clientY;
@@ -382,8 +412,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function dragging(e) {
         if (!activeCard) return;
-        e.preventDefault(); // Prevent scrolling on mobile
-
+        e.preventDefault();
         let currentX, currentY;
         if (e.type === 'touchmove') {
             currentX = e.touches[0].clientX;
@@ -392,7 +421,6 @@ document.addEventListener('DOMContentLoaded', function() {
             currentX = e.clientX;
             currentY = e.clientY;
         }
-
         const deltaX = currentX - startX;
         const deltaY = currentY - startY;
 
@@ -400,8 +428,7 @@ document.addEventListener('DOMContentLoaded', function() {
             isDragging = true;
         }
         
-        // Update position only if it's a drag
-        if(isDragging) {
+        if (isDragging) {
             activeCard.style.left = `${initialX + deltaX}px`;
             activeCard.style.top = `${initialY + deltaY}px`;
         }
@@ -415,7 +442,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.removeEventListener('mouseup', dragEnd);
         document.removeEventListener('touchend', dragEnd);
 
-        // If it was NOT a drag (i.e., just a click/tap), follow the link
         if (!isDragging) {
             window.location.href = activeCard.href;
         }
@@ -424,7 +450,6 @@ document.addEventListener('DOMContentLoaded', function() {
         activeCard = null;
     }
 
-    // Attach initial event listener to the container. This delegate handles all current and future cards.
     container.addEventListener('mousedown', dragStart);
     container.addEventListener('touchstart', dragStart, { passive: false });
 });
