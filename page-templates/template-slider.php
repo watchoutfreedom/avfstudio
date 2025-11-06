@@ -17,7 +17,6 @@ get_header();
         padding: 0;
         overflow: hidden; /* VERY important for this layout */
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        
     }
 
     .concept-body {
@@ -123,6 +122,41 @@ get_header();
         transition: none; /* Disable transition while dragging for instant feedback */
     }
 
+    /* --- NEW: Add Card Button --- */
+    .add-card-button {
+        position: fixed;
+        bottom: 40px;
+        right: 40px;
+        width: 60px;
+        height: 60px;
+        background-color: #f0f0f0;
+        color: #333;
+        border: none;
+        border-radius: 50%;
+        font-size: 3rem;
+        font-weight: 300;
+        line-height: 60px; /* Vertically center the '+' */
+        text-align: center;
+        cursor: pointer;
+        z-index: 2000; /* Above header, below modal */
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        transition: transform 0.3s ease, background-color 0.3s ease, opacity 0.3s ease;
+        -webkit-tap-highlight-color: transparent; /* For mobile */
+    }
+
+    .add-card-button:hover {
+        transform: scale(1.1);
+        background-color: #fff;
+    }
+
+    .add-card-button:disabled,
+    .add-card-button.is-disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        transform: scale(0.9);
+        pointer-events: none; /* Extra safety */
+    }
+
     /* --- Contact Modal (No changes) --- */
     .contact-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); display: none; justify-content: center; align-items: center; z-index: 10000; opacity: 0; transition: opacity 0.3s ease; }
     .contact-modal-overlay.is-visible { display: flex; opacity: 1; }
@@ -144,6 +178,7 @@ get_header();
         .main-title { font-size: 2.5rem; }
         .main-subtitle { font-size: 1.2rem; }
         .post-page { width: 200px; height: 300px; }
+        .add-card-button { bottom: 20px; right: 20px; width: 50px; height: 50px; font-size: 2.5rem; line-height: 48px; }
     }
 </style>
 
@@ -153,7 +188,7 @@ get_header();
     <div class="header-content">
         <header class="main-header">
             <h1 class="main-title">avfstudio</h1>
-            <h2 class="main-subtitle">Concept power</h2>
+            <h2 class="main-subtitle">Grow your concept ability</h2>
         </header>
         <button id="open-contact-modal" class="contact-icon-button" aria-label="Open contact form">
             <svg viewBox="0 0 24 24" fill="currentColor">
@@ -162,40 +197,43 @@ get_header();
         </button>
     </div>
 
-    <!-- Post Cards are injected here from PHP -->
+    <!-- 
+        Post Cards are no longer rendered here directly.
+        PHP gathers the data, and JavaScript creates the cards dynamically.
+    -->
     <?php
     $args = array(
         'post_type'      => 'post',
-        'posts_per_page' => 10,
+        'posts_per_page' => 10, // You can set this to -1 to get all posts
         'orderby'        => 'rand',
         'post_status'    => 'publish',
         'meta_query'     => array(
             array('key' => '_thumbnail_id') // Ensure post has a featured image
         )
     );
-    $random_posts = new WP_Query($args);
+    $all_posts_query = new WP_Query($args);
+    $posts_data = [];
 
-    if ($random_posts->have_posts()) :
-        $index = 0;
-        while ($random_posts->have_posts()) : $random_posts->the_post();
+    if ($all_posts_query->have_posts()) :
+        while ($all_posts_query->have_posts()) : $all_posts_query->the_post();
             $image_url = get_the_post_thumbnail_url(get_the_ID(), 'large');
-            ?>
-            <a href="<?php the_permalink(); ?>" 
-               class="post-page"
-               data-index="<?php echo $index; ?>"
-               style="--bg-image: url('<?php echo esc_url($image_url); ?>');">
-            </a>
-            <?php
-            $index++;
+            if ($image_url) { // Double-check that we have a URL
+                $posts_data[] = [
+                    'permalink' => get_the_permalink(),
+                    'image_url' => esc_url($image_url),
+                ];
+            }
         endwhile;
         wp_reset_postdata();
     endif;
     ?>
 </main>
 
+<!-- NEW: Add Card Button -->
+<button id="add-card-button" class="add-card-button" aria-label="Add another card">+</button>
+
 <!-- Contact Modal -->
 <div id="contact-modal" class="contact-modal-overlay">
-    <!-- ... Modal content is unchanged ... -->
     <div class="contact-modal-content">
         <button id="close-contact-modal" class="close-button" aria-label="Close contact form">&times;</button>
         <h3>Contact Us</h3>
@@ -206,17 +244,21 @@ get_header();
                 <label for="captcha">What is <span id="captcha-q1">3</span> + <span id="captcha-q2">4</span>?</label>
                 <input type="text" id="captcha-input" name="captcha" required>
             </div>
-            <button type="submit">Send</button>
+            <button type="submit">Send</button>            
             <div id="form-status" style="margin-top:15px; text-align:center;"></div>
         </form>
     </div>
 </div>
 
+<!-- This script tag passes the post data from PHP to JavaScript -->
+<script>
+    const allPostsData = <?php echo json_encode($posts_data); ?>;
+</script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
     // --- Contact Modal Logic (unchanged) ---
-    // ... (This logic remains the same, it's safe to keep it collapsed for brevity)
     const openModalBtn = document.getElementById('open-contact-modal');
     const closeModalBtn = document.getElementById('close-contact-modal');
     const contactModal = document.getElementById('contact-modal');
@@ -232,48 +274,76 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('contact-form').addEventListener('submit', function(e) { e.preventDefault(); const statusDiv=document.getElementById('form-status'); if(parseInt(captchaInput.value,10)!==captchaAnswer){ statusDiv.textContent='Incorrect captcha answer.'; statusDiv.style.color='red'; return; } statusDiv.textContent='Sending...'; statusDiv.style.color='blue'; setTimeout(()=>{ statusDiv.textContent='Thank you!'; statusDiv.style.color='green'; setTimeout(hideModal,2000);}, 1500); });
     
 
-    // --- Card Layout and Dragging Logic ---
+    // --- REVISED: Card Layout and Dragging Logic ---
     const container = document.getElementById('concept-body');
-    const cards = document.querySelectorAll('.post-page');
-    let highestZ = cards.length;
+    const addCardBtn = document.getElementById('add-card-button');
+    let availablePosts = [...allPostsData]; // Create a mutable copy of the posts
+    let highestZ = 0;
 
-    // 1. Randomize Card Positions on Load
-    function randomizeLayout() {
+    // 1. Function to add a single card to the DOM
+    function addCard() {
+        if (availablePosts.length === 0) {
+            console.log("No more posts to add.");
+            return; // Safety net
+        }
+        
+        const postData = availablePosts.shift(); // Get and remove the next post from the array
+        highestZ++;
+
+        // Create the card element
+        const card = document.createElement('a');
+        card.href = postData.permalink;
+        card.className = 'post-page';
+        card.style.setProperty('--bg-image', `url('${postData.image_url}')`);
+
+        // Calculate a random position and rotation
+        const cardWidth = 250; // Corresponds to CSS width
+        const cardHeight = 375; // Corresponds to CSS height
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
+        const maxX = viewportWidth - cardWidth - 40;
+        const maxY = viewportHeight - cardHeight - 40;
+        const minX = 40;
+        const minY = 40;
+        const randomX = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
+        const randomY = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
+        const randomRot = Math.random() * 20 - 10; // -10 to +10 degrees
 
-        cards.forEach((card, index) => {
-            const cardWidth = card.offsetWidth;
-            const cardHeight = card.offsetHeight;
+        // Apply styles
+        card.style.left = `${randomX}px`;
+        card.style.top = `${randomY}px`;
+        card.style.setProperty('--r', `${randomRot}deg`);
+        card.style.zIndex = highestZ;
 
-            // Define a "safe area" to avoid cards being completely off-screen
-            const maxX = viewportWidth - cardWidth - 40; // 40px padding
-            const maxY = viewportHeight - cardHeight - 40;
-            const minX = 40;
-            const minY = 40;
-            
-            // Random position and rotation
-            const randomX = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
-            const randomY = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
-            const randomRot = Math.random() * 20 - 10; // -10 to +10 degrees
+        // Add to the page and animate in
+        container.appendChild(card);
+        setTimeout(() => {
+            card.classList.add('is-visible');
+        }, 50); // Small delay to allow transition to work
 
-            card.style.left = `${randomX}px`;
-            card.style.top = `${randomY}px`;
-            card.style.setProperty('--r', `${randomRot}deg`);
-            card.style.zIndex = index + 1;
-
-            // Animate them into view with a stagger
-            setTimeout(() => {
-                card.classList.add('is-visible');
-            }, index * 80);
-        });
+        // Check if the button should be disabled
+        if (availablePosts.length === 0) {
+            addCardBtn.disabled = true;
+            addCardBtn.classList.add('is-disabled');
+        }
     }
-    
-    // We use window.onload to ensure images are loaded and cards have dimensions
-    window.onload = randomizeLayout;
+
+    // 2. Setup initial state and button listener
+    if (addCardBtn) {
+        addCardBtn.addEventListener('click', addCard);
+
+        if (availablePosts.length === 0) {
+            // No posts were found at all
+            addCardBtn.disabled = true;
+            addCardBtn.classList.add('is-disabled');
+        } else {
+            // Add the very first card on page load
+            addCard();
+        }
+    }
 
 
-    // 2. Drag-and-Drop Functionality
+    // 3. Drag-and-Drop Functionality (Works on dynamically added cards)
     let activeCard = null;
     let isDragging = false;
     let startX, startY, initialX, initialY;
@@ -284,7 +354,6 @@ document.addEventListener('DOMContentLoaded', function() {
             e.stopPropagation();
             activeCard = e.target;
             
-            // Differentiate click from drag
             isDragging = false; 
 
             // Bring card to the top
@@ -301,11 +370,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 startY = e.clientY;
             }
 
-            // Get the card's current top/left
             initialX = activeCard.offsetLeft;
             initialY = activeCard.offsetTop;
 
-            // Add move and end listeners to the whole document
             document.addEventListener('mousemove', dragging);
             document.addEventListener('touchmove', dragging, { passive: false });
             document.addEventListener('mouseup', dragEnd);
@@ -329,39 +396,35 @@ document.addEventListener('DOMContentLoaded', function() {
         const deltaX = currentX - startX;
         const deltaY = currentY - startY;
 
-        // If moved more than a few pixels, it's a drag
         if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
             isDragging = true;
         }
-
-        // Update position
-        activeCard.style.left = `${initialX + deltaX}px`;
-        activeCard.style.top = `${initialY + deltaY}px`;
+        
+        // Update position only if it's a drag
+        if(isDragging) {
+            activeCard.style.left = `${initialX + deltaX}px`;
+            activeCard.style.top = `${initialY + deltaY}px`;
+        }
     }
 
     function dragEnd(e) {
         if (!activeCard) return;
 
-        // Remove document-level listeners
         document.removeEventListener('mousemove', dragging);
         document.removeEventListener('touchmove', dragging);
         document.removeEventListener('mouseup', dragEnd);
         document.removeEventListener('touchend', dragEnd);
 
-
-        // If it was NOT a drag, it's a click/tap
+        // If it was NOT a drag (i.e., just a click/tap), follow the link
         if (!isDragging) {
-
             window.location.href = activeCard.href;
-
         }
 
         activeCard.classList.remove('is-dragging');
-
         activeCard = null;
     }
 
-    // Attach initial event listener to the container
+    // Attach initial event listener to the container. This delegate handles all current and future cards.
     container.addEventListener('mousedown', dragStart);
     container.addEventListener('touchstart', dragStart, { passive: false });
 });
