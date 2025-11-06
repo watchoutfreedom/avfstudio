@@ -349,11 +349,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // If it was NOT a drag, it's a click/tap
         if (!isDragging) {
 
-            window.location.href = activeCard.href;
+            // window.location.href = activeCard.href;
 
         }
 
-           activeCard.classList.remove('is-dragging');
+        activeCard.classList.remove('is-dragging');
 
         activeCard = null;
     }
