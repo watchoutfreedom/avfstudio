@@ -52,6 +52,12 @@ get_header();
     .brand-card { background-color: #111; background-image: none !important; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; text-align: center; }
     .brand-card h1 { color: white; margin: 0; letter-spacing: 1px; font-size: 2.5rem; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; }
     .brand-card h2 { color: #aaa; margin: 0; font-size: 0.9rem; font-weight: 300; }
+    /* --- NEW: Hides the title/slogan on the expanded Brand Card --- */
+    .brand-card.is-expanded h1,
+    .brand-card.is-expanded h2 {
+        display: none;
+    }
+    
     .propose-card { background-color: #fff; background-image: none !important; color: #111; display: flex; justify-content: center; align-items: center; text-align: center; padding: 20px; }
     .propose-card h3 { font-size: 1.5rem; font-weight: 600; margin: 0; }
     .propose-card.is-expanded h3 { display: none; }
@@ -254,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         highestZ = document.querySelectorAll('.post-page').length;
         setTimeout(() => {
-            const brandCardData = { type: 'brand', title: 'Synapse Guild', slogan: 'Your Unfair Creative Advantage.', content: `<div class="brand-content"><p>In a marketplace of echoes, a powerful, foundational concept is the only true way to stand out. Our studio is a unique collective where philosophers probe the 'why', architects design the structure, and artists give it a soul.</p><a href="#" id="brand-contact-link">+ take your card</a></div><div class="brand-card-footer"><h1>Synapse Guild</h1><h2>Your Unfair Creative Advantage.</h2></div>` };
+            const brandCardData = { type: 'brand', title: 'AVF', slogan: 'Your Unfair Creative Advantage.', content: `<div class="brand-content"><p>In a marketplace of echoes, a powerful, foundational concept is the only true way to stand out. Our studio is a unique collective where philosophers probe the 'why', architects design the structure, and artists give it a soul.</p><a href="#" id="brand-contact-link">+ take your card</a></div><div class="brand-card-footer"><h1>AVF</h1><h2>Your Unfair Creative Advantage.</h2></div>` };
             const brandCard = createCard(brandCardData);
             brandCard.style.left=`calc(50% - 125px)`,brandCard.style.top=`40%`,brandCard.style.setProperty('--r','-2deg');
             setTimeout(()=>brandCard.classList.add("is-visible"),50);
