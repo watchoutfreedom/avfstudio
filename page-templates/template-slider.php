@@ -12,22 +12,15 @@ get_header();
 <style>
 
 
-    /* --- NEW: Custom Font Declaration --- */
-    @font-face {
-        font-family: 'Airbnb Cereal App'; /* You can name this whatever you like */
-        src: url('<?php echo get_stylesheet_directory_uri(); ?>/assets/fonts/AirbnbCereal_W_Bd.otf') format('otf'),
-            url('<?php echo get_stylesheet_directory_uri(); ?>/assets/fonts/AirbnbCereal_W_Md.otf') format('otf'),
-            url('<?php echo get_stylesheet_directory_uri(); ?>/assets/fonts/AirbnbCereal_W_Bk.otf') format('otf'),
-            url('<?php echo get_stylesheet_directory_uri(); ?>/assets/fonts/AirbnbCereal_W_Blk.otf') format('otf'),
-            url('<?php echo get_stylesheet_directory_uri(); ?>/assets/fonts/AirbnbCereal_W_Lt.otf') format('otf'),
-             url('<?php echo get_stylesheet_directory_uri(); ?>/assets/fonts/AirbnbCereal_W_XBd.otf') format('otf');
-
-
-            /* Add more formats if you have them, e.g., .ttf */
-        font-weight: 700; /* 'Bd' usually means Bold, which is 700 */
-        font-style: normal;
-        font-display: swap; /* Improves perceived performance */
-    }
+@font-face {
+    font-family: 'Airbnb Cereal App';
+    src: url('<?php echo get_stylesheet_directory_uri(); ?>/assets/fonts/AirbnbCereal_W_Bd.woff2') format('woff2'),
+         url('<?php echo get_stylesheet_directory_uri(); ?>/assets/fonts/AirbnbCereal_W_Bd.woff') format('woff'),
+         url('<?php echo get_stylesheet_directory_uri(); ?>/assets/fonts/AirbnbCereal_W_Bd.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
 
 
     /* --- Basic Setup & Background --- */
