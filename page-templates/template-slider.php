@@ -215,6 +215,26 @@ get_header();
         color: #fff;
     }
 
+        /* --- NEW: Services Card Title Style --- */
+    .services-card-title {
+        color: #fff;
+        font-size: 1.2rem;
+        font-weight: 600;
+        text-align: center;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        word-wrap: break-word;
+        overflow: hidden;
+    }
+
+    /* Ensure the title is hidden when expanded */
+    .services-card.is-expanded .services-card-title {
+        display: none;
+    }
+
     /* Desktop-specific sizing */
     @media (min-width: 769px) {
 
@@ -401,7 +421,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function throwProposeCard(andExpand = false){
         const formHTML = `<div class="propose-form-container"><h1>This is your Blank Card</h1><p>Tell us about your challenge. We'll reply to schedule your complimentary session.</p><form id="propose-card-form"><label for="propose-name">Your Name</label><input type="text" id="propose-name" name="name" required><label for="propose-email">Your Email</label><input type="email" id="propose-email" name="email" required><label for="propose-message">Describe your challenge or idea</label><textarea id="propose-message" name="message" required></textarea><div class="captcha-group"><label for="propose-captcha">What is <span id="propose-captcha-q1">3</span> + <span id="propose-captcha-q2">4</span>?</label><input type="text" id="propose-captcha" name="captcha" required></div><button type="submit">Request Concept Session</button><div id="propose-form-status" style="margin-top:15px; text-align:center;"></div></form></div>`;
-        const proposeCardData = { type: 'propose', title: 'Choose your card', content: formHTML };
+        const proposeCardData = { type: 'propose', title: 'Start a card', content: formHTML };
         const proposeCard = createCard(proposeCardData);
         const randomX=Math.floor(Math.random()*(window.innerWidth-250-80))+40,randomY=Math.floor(Math.random()*(window.innerHeight-375-80))+40,randomRot=Math.random()*20-10;
         proposeCard.style.left=`${randomX}px`,proposeCard.style.top=`${randomY}px`,proposeCard.style.setProperty("--r",`${randomRot}deg`);
@@ -608,8 +628,7 @@ function setupProposeForm() {
         document.removeEventListener("mouseup", dragEnd); 
         document.removeEventListener("touchend", dragEnd);
     }
-
-    function createServicesCards() {
+function createServicesCards() {
     if (!servicesPostsData || servicesPostsData.length === 0) return;
     
     // Close the brand card first
@@ -630,6 +649,11 @@ function setupProposeForm() {
             
             const serviceCard = createCard(serviceCardData);
             serviceCard.classList.add('services-card');
+            
+            // ADDED: Display title on the card when not expanded
+            serviceCard.innerHTML = `<div class="services-card-title">${serviceData.title}</div>`;
+            serviceCard.style.backgroundImage = 'none';
+            serviceCard.style.backgroundColor = '#000';
             
             // Position cards in a grid-like pattern
             const cardsPerRow = Math.min(3, servicesPostsData.length);
