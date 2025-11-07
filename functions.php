@@ -64,35 +64,57 @@ require_once( 'library/gutenberg.php' );
 
 /**
  * AJAX handler for the Concept Request Form.
+ * This function securely processes the form data and sends an email.
  */
-function handle_concept_request() {
+function handle_concept_request_ajax() {
+    // 1. Security Check: Verify the nonce to prevent CSRF attacks.
     if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'concept_request_nonce' ) ) {
-        wp_send_json_error( 'Nonce verification failed.' );
+        wp_send_json_error( 'Nonce verification failed. Go away.' );
         return;
     }
+
+    // 2. Sanitize and retrieve all form data.
     $name    = isset( $_POST['name'] ) ? sanitize_text_field( $_POST['name'] ) : 'Not provided';
     $email   = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
     $message = isset( $_POST['message'] ) ? sanitize_textarea_field( $_POST['message'] ) : 'No message.';
+
+    // 3. Validate the sanitized data (especially the email).
     if ( ! is_email( $email ) ) {
         wp_send_json_error( 'Invalid email address provided.' );
         return;
     }
-    $to      = get_option( 'admin_email' );
-    $subject = "New Concept Request from Synapse Guild Site";
-    $body    = "You have received a new concept request:\n\n";
+
+    // 4. Prepare the email.
+    $to      = 'example@exa.com'; // ** YOUR DESTINATION EMAIL ADDRESS **
+    $subject = 'New Concept Request from Synapse Guild';
+    
+    $body    = "You have received a new concept request from your website:\n\n";
+    $body   .= "--------------------------------------------------\n\n";
     $body   .= "Name: " . $name . "\n";
     $body   .= "Email: " . $email . "\n\n";
-    $body   .= "Challenge/Idea:\n" . $message . "\n";
-    $headers = array( 'Content-Type: text/plain; charset=UTF-8', 'From: ' . $name . ' <' . $email . '>', 'Reply-To: ' . $name . ' <' . $email . '>' );
+    $body   .= "Challenge/Idea:\n" . $message . "\n\n";
+    $body   .= "--------------------------------------------------\n";
+
+    // Set headers to ensure the "From" and "Reply-To" fields are the user's email.
+    $headers = array(
+        'Content-Type: text/plain; charset=UTF-8',
+        'From: ' . $name . ' <' . $email . '>',
+        'Reply-To: ' . $name . ' <' . $email . '>'
+    );
+
+    // 5. Send the email using wp_mail(). This will use your WP Mail SMTP plugin automatically.
     $sent = wp_mail( $to, $subject, $body, $headers );
+
+    // 6. Send back a JSON response to the JavaScript.
     if ( $sent ) {
         wp_send_json_success( 'Email sent successfully!' );
     } else {
-        wp_send_json_error( 'Failed to send email.' );
+        wp_send_json_error( 'The server failed to send the email.' );
     }
 }
-add_action( 'wp_ajax_concept_request', 'handle_concept_request' );
-add_action( 'wp_ajax_nopriv_concept_request', 'handle_concept_request' );
+// Hook our PHP function into WordPress's AJAX system for both logged-in and logged-out users.
+add_action( 'wp_ajax_concept_request', 'handle_concept_request_ajax' );        // For logged-in users
+add_action( 'wp_ajax_nopriv_concept_request', 'handle_concept_request_ajax' ); // For logged-out users
 
 /**
  * WordPress admin customisation
