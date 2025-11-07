@@ -9,7 +9,7 @@ get_header();
 ?>
 
 <style>
-    /* All CSS from your working version is correct, with additions for the new layout. */
+    /* All CSS is correct and unchanged from your last working version with the editorial styles. */
     html, body { height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
     .concept-body { height: 100vh; width: 100vw; position: relative; background-color: black; background-image: radial-gradient(ellipse at center, #4a4a4a 0%, #2b2b2b 100%); color: #f0f0f0; }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -40,7 +40,6 @@ get_header();
     .post-body-content .wp-block-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 2.5em 0; }
     .post-body-content blockquote { max-width: 70ch; margin: 2.5em auto; padding: 1.5em 2em; font-size: 1.4em; font-style: italic; line-height: 1.4; background-color: rgba(255, 255, 255, 0.05); border: none; border-left: 4px solid #aaa; }
     .card-content-view .brand-content { max-width: 850px; margin: 0 auto; text-align: center; }
-    /* NEW: Footer for Brand Card Title */
     .brand-card-footer { margin-top: 40px; opacity: 0.7; }
     .card-close-button { position: absolute; top: 15px; right: 15px; font-size: 2.5rem; color: inherit; background: none; border: none; cursor: pointer; z-index: 10; }
     .propose-form-container { max-width: 850px; margin: 0 auto; text-align: left; }
@@ -78,20 +77,12 @@ get_header();
     $initial_posts_data = []; $additional_posts_data = []; $post_index = 0;
     foreach ($all_posts_collection as $post) {
         setup_postdata($post); 
-        // OPTIMIZATION: Get two different image sizes
         $thumb_url_raw = get_the_post_thumbnail_url($post->ID, 'medium_large');
         $large_url_raw = get_the_post_thumbnail_url($post->ID, 'large');
-
         $image_url = $thumb_url_raw ? str_replace('http://', 'https://', $thumb_url_raw) : false;
         $large_image_url = $large_url_raw ? str_replace('http://', 'https://', $large_url_raw) : false;
-
         if ($image_url && $large_image_url) {
-            $post_data = [
-                'title' => get_the_title($post), 
-                'content' => apply_filters('the_content', $post->post_content), 
-                'image_url' => esc_url($image_url), // This is the smaller thumbnail
-                'large_image_url' => esc_url($large_image_url) // This is the full-res image for preloading
-            ];
+            $post_data = [ 'title' => get_the_title($post), 'content' => apply_filters('the_content', $post->post_content), 'image_url' => esc_url($image_url), 'large_image_url' => esc_url($large_image_url) ];
             if ($post_index < $initial_card_count) {
                 $initial_posts_data[] = $post_data;
                 echo '<div class="post-page is-draggable" data-index="' . $post_index . '" style="--bg-image: url(\'' . esc_url($image_url) . '\');"></div>';
@@ -103,46 +94,90 @@ get_header();
     ?>
 </main>
 <button id="add-card-button" class="add-card-button" aria-label="Add another card">+</button>
-<!-- The contact modal div is no longer needed -->
+<!-- Contact modal div is no longer needed -->
 
 <script>
     const initialPostsData = <?php echo json_encode($initial_posts_data); ?>;
     const additionalPostsData = <?php echo json_encode($additional_posts_data); ?>;
-    // Pass AJAX URL and nonce from WordPress to JavaScript
     const ajax_object = <?php echo json_encode(array( 'ajax_url' => admin_url( 'admin-ajax.php' ), 'nonce' => wp_create_nonce( 'concept_request_nonce' ) )); ?>;
 </script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // --- Global Variables ---
     const body = document.body, container = document.getElementById('concept-body'), addCardBtn = document.getElementById('add-card-button'), pageLoader = document.getElementById('page-loader');
     let availablePosts = [...(additionalPostsData || [])];
     let highestZ = 0, expandedCard = null, hasThrownFinalCard = false;
     let hoverTimeout = null;
 
-    // --- Preloading Engine ---
+    // --- Core Function Definitions ---
+    
     const preloadImage = (url) => { if (!url) return; const img = new Image(); img.src = url; };
     const preloadPostContent = (postData) => {
         if (!postData || postData.preloaded || postData.type !== 'post') return;
-        preloadImage(postData.large_image_url); // Preload the large featured image
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = postData.content;
+        preloadImage(postData.large_image_url);
+        const tempDiv = document.createElement('div'); tempDiv.innerHTML = postData.content;
         tempDiv.querySelectorAll('img').forEach(img => preloadImage(img.src));
         postData.preloaded = true;
     };
     
-    // --- Core Function Definitions ---
-    const createCard = (data) => { /* ... (Unchanged) ... */ };
-    function randomizeInitialLayout(){ /* ... (Unchanged) ... */ }
-    function addCardFromButton() { /* ... (Unchanged) ... */ }
-    function throwProposeCard(andExpand = false) { /* ... (Unchanged) ... */ }
-    function collapseCard() { /* ... (Unchanged) ... */ }
+    const createCard = (data) => {
+        const card = document.createElement("div"); card.className = "post-page is-draggable"; card.cardData = data;
+        switch (data.type) {
+            case 'brand': card.classList.add('brand-card'); card.innerHTML = `<h1>${data.title}</h1><h2>${data.slogan}</h2>`; break;
+            case 'propose': card.classList.add('propose-card'); card.innerHTML = `<h3>${data.title}</h3>`; break;
+            default: card.style.setProperty("--bg-image", `url('${data.image_url}')`); break;
+        }
+        highestZ++; card.style.zIndex = highestZ; container.appendChild(card); return card;
+    };
+    
+    function randomizeInitialLayout(){
+        document.querySelectorAll('.post-page').forEach((card, index) => {
+            card.cardData = { type: 'post', ...initialPostsData[index] };
+            const randomX=Math.floor(Math.random()*(window.innerWidth-250-80))+40, randomY=Math.floor(Math.random()*(window.innerHeight-375-80))+40, randomRot=Math.random()*20-10;
+            card.style.left=`${randomX}px`, card.style.top=`${randomY}px`, card.style.setProperty("--r",`${randomRot}deg`), card.style.zIndex=index+1;
+            setTimeout(()=>card.classList.add("is-visible"),index*80);
+        });
+        highestZ = document.querySelectorAll('.post-page').length;
+        setTimeout(() => {
+            const brandCardData = { type: 'brand', title: 'Synapse Guild', slogan: 'Your Unfair Creative Advantage.', content: `<div class="brand-content"><p>In a marketplace of echoes, a powerful, foundational concept is the only true way to stand out. Our studio is a unique collective where philosophers probe the 'why', architects design the structure, and artists give it a soul.</p><a href="#" id="brand-contact-link">+ take your card</a></div><div class="brand-card-footer"><h1>Synapse Guild</h1><h2>Your Unfair Creative Advantage.</h2></div>` };
+            const brandCard = createCard(brandCardData);
+            brandCard.style.left=`calc(50% - 125px)`,brandCard.style.top=`40%`,brandCard.style.setProperty('--r','-2deg');
+            setTimeout(()=>brandCard.classList.add("is-visible"),50);
+        }, (highestZ*80)+100);
+    }
+    
+    function addCardFromButton() {
+        if (availablePosts.length > 0) {
+            const postData = { type: 'post', ...availablePosts.shift() };
+            const newCard = createCard(postData);
+            const randomX=Math.floor(Math.random()*(window.innerWidth-250-80))+40,randomY=Math.floor(Math.random()*(window.innerHeight-375-80))+40,randomRot=Math.random()*20-10;
+            newCard.style.left=`${randomX}px`,newCard.style.top=`${randomY}px`,newCard.style.setProperty("--r",`${randomRot}deg`);
+            setTimeout(()=>newCard.classList.add("is-visible"),50);
+        } else if (!hasThrownFinalCard) {
+            throwProposeCard();
+            hasThrownFinalCard = true;
+            addCardBtn.classList.add("is-disabled");
+        }
+    }
+    
+    function throwProposeCard(andExpand = false){
+        const formHTML = `<div class="propose-form-container"><h1>Request a Concept</h1><p>Tell us about your challenge. We'll reply to schedule your complimentary session.</p><form id="propose-card-form"><label for="propose-name">Your Name</label><input type="text" id="propose-name" name="name" required><label for="propose-email">Your Email</label><input type="email" id="propose-email" name="email" required><label for="propose-message">Describe your challenge or idea</label><textarea id="propose-message" name="message" required></textarea><div class="captcha-group"><label for="propose-captcha">What is <span id="propose-captcha-q1">3</span> + <span id="propose-captcha-q2">4</span>?</label><input type="text" id="propose-captcha" name="captcha" required></div><button type="submit">Request Concept Session</button><div id="propose-form-status" style="margin-top:15px; text-align:center;"></div></form></div>`;
+        const proposeCardData = { type: 'propose', title: '+ propose your concept', content: formHTML };
+        const proposeCard = createCard(proposeCardData);
+        const randomX=Math.floor(Math.random()*(window.innerWidth-250-80))+40,randomY=Math.floor(Math.random()*(window.innerHeight-375-80))+40,randomRot=Math.random()*20-10;
+        proposeCard.style.left=`${randomX}px`,proposeCard.style.top=`${randomY}px`,proposeCard.style.setProperty("--r",`${randomRot}deg`);
+        setTimeout(() => {
+            proposeCard.classList.add("is-visible");
+            if (andExpand) expandCard(proposeCard);
+        }, 50);
+        return proposeCard;
+    }
 
-    // MODIFIED: `expandCard` now handles the new Brand Card layout
     function expandCard(cardElement){
         if(expandedCard || !cardElement.cardData) return;
         expandedCard = cardElement; body.classList.add("card-is-active");
         const data = cardElement.cardData; 
-        
         if (data.type === 'propose') {
             cardElement.style.setProperty('--expanded-bg', '#fff');
             cardElement.style.setProperty('--expanded-text-color', '#111');
@@ -150,24 +185,14 @@ document.addEventListener('DOMContentLoaded', function() {
             cardElement.style.setProperty('--expanded-bg', 'rgba(30, 30, 30, 0.97)');
             cardElement.style.setProperty('--expanded-text-color', '#fff');
         }
-
         const contentView = document.createElement("div"); contentView.className = "card-content-view";
         const closeButton = document.createElement("button"); closeButton.className = "card-close-button"; closeButton.innerHTML = "&times;";
         closeButton.onclick = (e) => { e.stopPropagation(); collapseCard(); };
-        
         let contentHTML = '';
-        if (data.type === 'post') {
-            contentHTML = `<h1>${data.title}</h1><div class="post-body-content">${data.content}</div>`;
-        } else if (data.type === 'brand') {
-            // NEW layout for the brand card
-            contentHTML = `<div class="brand-content"><p>In a marketplace of echoes, a powerful, foundational concept is the only true way to stand out. Our studio is a unique collective where philosophers probe the 'why', architects design the structure, and artists give it a soul.</p><a href="#" id="brand-contact-link">+ take your card</a></div><div class="brand-card-footer"><h1>${data.title}</h1><h2>${data.slogan}</h2></div>`;
-        } else {
-            contentHTML = data.content;
-        }
-        
+        if (data.type === 'post') { contentHTML = `<h1>${data.title}</h1><div class="post-body-content">${data.content}</div>`; }
+        else { contentHTML = data.content; }
         contentView.innerHTML = contentHTML; contentView.prepend(closeButton);
         cardElement.appendChild(contentView); cardElement.classList.add("is-expanded");
-        
         if (data.type === 'propose') {
             setupProposeForm();
         } else if (data.type === 'brand') {
@@ -182,31 +207,30 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // MODIFIED: `setupProposeForm` now uses AJAX
+    function collapseCard() {
+        if (!expandedCard) return;
+        body.classList.remove("card-is-active");
+        const contentView = expandedCard.querySelector(".card-content-view");
+        if (contentView) expandedCard.removeChild(contentView);
+        expandedCard.classList.remove("is-expanded");
+        expandedCard = null;
+    }
+
     function setupProposeForm() {
         const form = document.getElementById('propose-card-form');
         if (!form) return;
-        const q1 = document.getElementById('propose-captcha-q1'), q2 = document.getElementById('propose-captcha-q2'), input = document.getElementById('propose-captcha');
-        const n1 = Math.floor(Math.random() * 5) + 1, n2 = Math.floor(Math.random() * 5) + 1;
-        if(q1 && q2){ q1.textContent = n1; q2.textContent = n2; }
-        const answer = n1 + n2;
-
+        const q1=document.getElementById('propose-captcha-q1'), q2=document.getElementById('propose-captcha-q2'), input=document.getElementById('propose-captcha');
+        const n1=Math.floor(Math.random()*5)+1, n2=Math.floor(Math.random()*5)+1;
+        if(q1&&q2){q1.textContent=n1;q2.textContent=n2;}const answer=n1+n2;
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const statusDiv = document.getElementById('propose-form-status');
-            if (parseInt(input.value, 10) !== answer) {
-                statusDiv.textContent = 'Incorrect captcha answer.'; statusDiv.style.color = 'red'; return;
-            }
+            if (parseInt(input.value, 10) !== answer) { statusDiv.textContent = 'Incorrect captcha answer.'; statusDiv.style.color = 'red'; return; }
             statusDiv.textContent = 'Sending...'; statusDiv.style.color = 'blue';
-
             const formData = new FormData(form);
-            formData.append('action', 'concept_request'); // The name of our PHP AJAX action
-            formData.append('nonce', ajax_object.nonce); // Security token
-
-            fetch(ajax_object.ajax_url, {
-                method: 'POST',
-                body: formData
-            })
+            formData.append('action', 'concept_request');
+            formData.append('nonce', ajax_object.nonce);
+            fetch(ajax_object.ajax_url, { method: 'POST', body: formData })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -235,14 +259,8 @@ document.addEventListener('DOMContentLoaded', function() {
         clearTimeout(hoverTimeout);
         e.preventDefault(); e.stopPropagation();
         activeElement = target; isDragging = false; highestZ++;
-        activeElement.style.zIndex = highestZ;
-        activeElement.classList.add("is-dragging");
-        
-        // ** Preload full assets on drag start **
-        if (activeElement.cardData) {
-            preloadPostContent(activeElement.cardData);
-        }
-
+        activeElement.style.zIndex = highestZ; activeElement.classList.add("is-dragging");
+        if (activeElement.cardData) { preloadPostContent(activeElement.cardData); }
         startX = e.type === "touchstart" ? e.touches[0].clientX : e.clientX;
         startY = e.type === "touchstart" ? e.touches[0].clientY : e.clientY;
         initialX = activeElement.offsetLeft; initialY = activeElement.offsetTop;
@@ -252,8 +270,31 @@ document.addEventListener('DOMContentLoaded', function() {
         document.addEventListener("touchend", dragEnd);
     }
     
-    function dragging(e) { /* ... (Unchanged) ... */ }
-    function dragEnd() { /* ... (Unchanged) ... */ }
+    function dragging(e) {
+        if (!activeElement) return; e.preventDefault();
+        let currentX = e.type === "touchmove" ? e.touches[0].clientX : e.clientX;
+        let currentY = e.type === "touchmove" ? e.touches[0].clientY : e.clientY;
+        const deltaX = currentX - startX, deltaY = currentY - startY;
+        if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) isDragging = true;
+        if (isDragging) {
+            activeElement.style.left = `${initialX + deltaX}px`;
+            activeElement.style.top = `${initialY + deltaY}px`;
+        }
+    }
+
+    function dragEnd() {
+        if (!activeElement) return;
+        activeElement.classList.remove("is-dragging");
+        if (!isDragging) {
+            const data = activeElement.cardData;
+            if (data) { expandCard(activeElement); }
+        }
+        activeElement = null;
+        document.removeEventListener("mousemove", dragging); 
+        document.removeEventListener("touchmove", dragging);
+        document.removeEventListener("mouseup", dragEnd); 
+        document.removeEventListener("touchend", dragEnd);
+    }
 
     // --- Event Listeners & Initial Calls ---
     window.onload = function(){
@@ -266,8 +307,19 @@ document.addEventListener('DOMContentLoaded', function() {
         if(availablePosts.length === 0){ addCardBtn.classList.add("is-disabled"); }
     }
     
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && expandedCard) { collapseCard(); } });
     container.addEventListener("mousedown", dragStart);
     container.addEventListener("touchstart", dragStart, { passive: false });
+    
+    container.addEventListener('mouseover', (e) => {
+        const targetCard = e.target.closest(".post-page");
+        if (targetCard && targetCard.cardData) {
+            clearTimeout(hoverTimeout);
+            hoverTimeout = setTimeout(() => {
+                preloadPostContent(targetCard.cardData);
+            }, 100);
+        }
+    });
+    container.addEventListener('mouseout', () => { clearTimeout(hoverTimeout); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && expandedCard) { collapseCard(); } });
 });
 </script>
