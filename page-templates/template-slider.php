@@ -313,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function throwProposeCard(andExpand = false){
         const formHTML = `<div class="propose-form-container"><h1>Request a Card</h1><p>Tell us about your challenge. We'll reply to schedule your complimentary session.</p><form id="propose-card-form"><label for="propose-name">Your Name</label><input type="text" id="propose-name" name="name" required><label for="propose-email">Your Email</label><input type="email" id="propose-email" name="email" required><label for="propose-message">Describe your challenge or idea</label><textarea id="propose-message" name="message" required></textarea><div class="captcha-group"><label for="propose-captcha">What is <span id="propose-captcha-q1">3</span> + <span id="propose-captcha-q2">4</span>?</label><input type="text" id="propose-captcha" name="captcha" required></div><button type="submit">Request Concept Session</button><div id="propose-form-status" style="margin-top:15px; text-align:center;"></div></form></div>`;
-        const proposeCardData = { type: 'propose', title: '+ request your card', content: formHTML };
+        const proposeCardData = { type: 'propose', title: 'Choose your card', content: formHTML };
         const proposeCard = createCard(proposeCardData);
         const randomX=Math.floor(Math.random()*(window.innerWidth-250-80))+40,randomY=Math.floor(Math.random()*(window.innerHeight-375-80))+40,randomRot=Math.random()*20-10;
         proposeCard.style.left=`${randomX}px`,proposeCard.style.top=`${randomY}px`,proposeCard.style.setProperty("--r",`${randomRot}deg`);
@@ -395,40 +395,70 @@ document.addEventListener('DOMContentLoaded', function() {
         expandedCard.classList.remove("is-expanded");
         expandedCard = null;
     }
-
-    function setupProposeForm() {
-        const form = document.getElementById('propose-card-form');
-        if (!form) return;
-        const q1=document.getElementById('propose-captcha-q1'), q2=document.getElementById('propose-captcha-q2'), input=document.getElementById('propose-captcha');
-        const n1=Math.floor(Math.random()*5)+1, n2=Math.floor(Math.random()*5)+1;
-        if(q1&&q2){q1.textContent=n1;q2.textContent=n2;}const answer=n1+n2;
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const statusDiv = document.getElementById('propose-form-status');
-            if (parseInt(input.value, 10) !== answer) { statusDiv.textContent = 'Incorrect captcha answer.'; statusDiv.style.color = 'red'; return; }
-            statusDiv.textContent = 'Sending...'; statusDiv.style.color = 'blue';
-            const formData = new FormData(form);
-            formData.append('action', 'concept_request');
-            formData.append('nonce', ajax_object.nonce);
-            fetch(ajax_object.ajax_url, { method: 'POST', body: formData })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    statusDiv.textContent = 'Thank you! We will be in touch.';
-                    statusDiv.style.color = 'green';
-                    setTimeout(collapseCard, 2500);
-                } else {
-                    statusDiv.textContent = 'An error occurred. Please try again.';
-                    statusDiv.style.color = 'red';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                statusDiv.textContent = 'A network error occurred. Please try again.';
-                statusDiv.style.color = 'red';
-            });
-        });
+function setupProposeForm() {
+    const form = document.getElementById('propose-card-form');
+    if (!form) return;
+    
+    // Generate random numbers for captcha
+    const q1 = document.getElementById('propose-captcha-q1'), 
+          q2 = document.getElementById('propose-captcha-q2'), 
+          input = document.getElementById('propose-captcha');
+    const n1 = Math.floor(Math.random() * 5) + 1, 
+          n2 = Math.floor(Math.random() * 5) + 1;
+    
+    if (q1 && q2) {
+        q1.textContent = n1;
+        q2.textContent = n2;
     }
+    const answer = n1 + n2;
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const statusDiv = document.getElementById('propose-form-status');
+        
+        // Validate captcha
+        if (parseInt(input.value, 10) !== answer) { 
+            statusDiv.textContent = 'Incorrect captcha answer.'; 
+            statusDiv.style.color = 'red'; 
+            return; 
+        }
+        
+        // Show sending status
+        statusDiv.textContent = 'Sending...'; 
+        statusDiv.style.color = 'blue';
+        
+        // Create form data
+        const formData = new FormData(form);
+        formData.append('action', 'concept_request');
+        formData.append('nonce', ajax_object.nonce);
+        
+        // Make AJAX request
+        fetch(ajax_object.ajax_url, {
+            method: 'POST',
+            body: formData,
+            credentials: 'same-origin',
+            headers: {
+                'Accept': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                statusDiv.textContent = 'Thank you! We will be in touch.';
+                statusDiv.style.color = 'green';
+                form.reset(); // Reset the form
+            } else {
+                statusDiv.textContent = data.data || 'An error occurred. Please try again.';
+                statusDiv.style.color = 'red';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            statusDiv.textContent = 'A network error occurred. Please try again.';
+            statusDiv.style.color = 'red';
+        });
+    });
+}
 
 
     // --- Unified Drag-and-Drop Engine ---

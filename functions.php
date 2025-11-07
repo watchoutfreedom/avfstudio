@@ -68,20 +68,16 @@ require_once( 'library/gutenberg.php' );
  */
 function handle_concept_request_ajax() {
     // 1. Security Check: Verify the nonce to prevent CSRF attacks.
-    if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'concept_request_nonce' ) ) {
-        wp_send_json_error( 'Nonce verification failed. Go away.' );
-        return;
-    }
+    check_ajax_referer('concept_request_nonce', 'nonce');
 
     // 2. Sanitize and retrieve all form data.
-    $name    = isset( $_POST['name'] ) ? sanitize_text_field( $_POST['name'] ) : 'Not provided';
-    $email   = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
-    $message = isset( $_POST['message'] ) ? sanitize_textarea_field( $_POST['message'] ) : 'No message.';
+    $name    = isset($_POST['name']) ? sanitize_text_field($_POST['name']) : 'Not provided';
+    $email   = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
+    $message = isset($_POST['message']) ? sanitize_textarea_field($_POST['message']) : 'No message.';
 
     // 3. Validate the sanitized data (especially the email).
-    if ( ! is_email( $email ) ) {
-        wp_send_json_error( 'Invalid email address provided.' );
-        return;
+    if (!is_email($email)) {
+        wp_send_json_error('Invalid email address provided.');
     }
 
     // 4. Prepare the email.
@@ -95,26 +91,44 @@ function handle_concept_request_ajax() {
     $body   .= "Challenge/Idea:\n" . $message . "\n\n";
     $body   .= "--------------------------------------------------\n";
 
-    // Set headers to ensure the "From" and "Reply-To" fields are the user's email.
+    // Set headers
     $headers = array(
         'Content-Type: text/plain; charset=UTF-8',
         'From: ' . $name . ' <' . $email . '>',
         'Reply-To: ' . $name . ' <' . $email . '>'
     );
 
-    // 5. Send the email using wp_mail(). This will use your WP Mail SMTP plugin automatically.
-    $sent = wp_mail( $to, $subject, $body, $headers );
+    // 5. Send the email using wp_mail()
+    $sent = wp_mail($to, $subject, $body, $headers);
 
     // 6. Send back a JSON response to the JavaScript.
-    if ( $sent ) {
-        wp_send_json_success( 'Email sent successfully!' );
+    if ($sent) {
+        wp_send_json_success('Email sent successfully!');
     } else {
-        wp_send_json_error( 'The server failed to send the email.' );
+        wp_send_json_error('The server failed to send the email. ' . print_r(error_get_last(), true));
     }
+    
+    wp_die(); // Always include this at the end of AJAX functions
 }
-// Hook our PHP function into WordPress's AJAX system for both logged-in and logged-out users.
-add_action( 'wp_ajax_concept_request', 'handle_concept_request_ajax' );        // For logged-in users
-add_action( 'wp_ajax_nopriv_concept_request', 'handle_concept_request_ajax' ); // For logged-out users
+add_action('wp_ajax_concept_request', 'handle_concept_request_ajax');
+add_action('wp_ajax_nopriv_concept_request', 'handle_concept_request_ajax');
+
+error_log('Form submission received');
+error_log('Name: ' . $name);
+error_log('Email: ' . $email);
+error_log('Message: ' . $message);
+
+// Enqueue your script and localize it
+function enqueue_custom_scripts() {
+    wp_enqueue_script('your-script-handle', get_template_directory_uri() . '/js/your-script.js', array('jquery'), null, true);
+    
+    wp_localize_script('your-script-handle', 'ajax_object', array(
+        'ajax_url' => admin_url('admin-ajax.php'),
+        'nonce'    => wp_create_nonce('concept_request_nonce')
+    ));
+}
+add_action('wp_enqueue_scripts', 'enqueue_custom_scripts');
+
 
 /**
  * WordPress admin customisation
