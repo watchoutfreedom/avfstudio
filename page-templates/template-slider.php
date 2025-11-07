@@ -289,7 +289,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         highestZ = document.querySelectorAll('.post-page').length;
         setTimeout(() => {
-            const brandCardData = { type: 'brand', title: 'AVF', slogan: 'Play Your Creation Card.', content: `<div class="brand-content"><p>In a marketplace of echoes, a powerful, foundational concept is the only true way to stand out. Our studio is a unique collective where philosophers probe the 'why', architects design the structure, and artists give it a soul.</p><a href="#" id="brand-contact-link">+ request your card</a></div><div class="brand-card-footer"><h1>AVF</h1><h2>Your Unfair Creative Advantage.</h2></div>` };
+            const brandCardData = { type: 'brand', title: 'AVF', slogan: 'Play Your Creation Card.', content: `<div class="brand-content"><p>In a marketplace of echoes, a powerful, foundational concept is the only true way to stand out. Contact us and you'll have a multidisciplinary team giving you the best grounding ideas to build your projects.</p><a href="#" id="brand-contact-link">+ request your card</a></div><div class="brand-card-footer"><h1>AVF</h1><h2>Your Unfair Creative Advantage.</h2></div>` };
             const brandCard = createCard(brandCardData);
             brandCard.style.left=`calc(50% - 125px)`,brandCard.style.top=`40%`,brandCard.style.setProperty('--r','-2deg');
             setTimeout(()=>brandCard.classList.add("is-visible"),50);
