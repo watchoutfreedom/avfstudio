@@ -66,52 +66,50 @@ require_once( 'library/gutenberg.php' );
  * AJAX handler for the Concept Request Form.
  * This function securely processes the form data and sends an email.
  */
+add_action( 'wp_ajax_concept_request', 'handle_concept_request_ajax' );
+add_action( 'wp_ajax_nopriv_concept_request', 'handle_concept_request_ajax' );
+
 function handle_concept_request_ajax() {
-    // 1. Security Check: Verify the nonce to prevent CSRF attacks.
-    check_ajax_referer('concept_request_nonce', 'nonce');
-
-    // 2. Sanitize and retrieve all form data.
-    $name    = isset($_POST['name']) ? sanitize_text_field($_POST['name']) : 'Not provided';
-    $email   = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
-    $message = isset($_POST['message']) ? sanitize_textarea_field($_POST['message']) : 'No message.';
-
-    // 3. Validate the sanitized data (especially the email).
-    if (!is_email($email)) {
-        wp_send_json_error('Invalid email address provided.');
+    // nonce
+    if ( empty( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'concept_request_nonce' ) ) {
+        wp_send_json_error( 'Nonce verification failed.' );
     }
 
-    // 4. Prepare the email.
-    $to      = 'example@exa.com'; // ** YOUR DESTINATION EMAIL ADDRESS **
-    $subject = 'New Concept Request from Synapse Guild';
-    
-    $body    = "You have received a new concept request from your website:\n\n";
-    $body   .= "--------------------------------------------------\n\n";
-    $body   .= "Name: " . $name . "\n";
-    $body   .= "Email: " . $email . "\n\n";
-    $body   .= "Challenge/Idea:\n" . $message . "\n\n";
-    $body   .= "--------------------------------------------------\n";
+    $name    = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : 'Not provided';
+    $email   = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
+    $message = isset( $_POST['message'] ) ? sanitize_textarea_field( wp_unslash( $_POST['message'] ) ) : '';
 
-    // Set headers
+    if ( ! is_email( $email ) ) {
+        wp_send_json_error( 'Invalid email address provided.' );
+    }
+
+    $to      = 'example@exa.com'; // change to your destination
+    $subject = 'New Concept Request from ' . $name;
+    $body    = "Name: $name\nEmail: $email\n\nMessage:\n$message\n";
+
+    // Use a verified from address (site admin). Put user as Reply-To.
+    $from_email = get_option( 'admin_email' );
     $headers = array(
+        'From: ' . get_bloginfo( 'name' ) . ' <' . $from_email . '>',
+        'Reply-To: ' . $name . ' <' . $email . '>',
         'Content-Type: text/plain; charset=UTF-8',
-        'From: ' . $name . ' <' . $email . '>',
-        'Reply-To: ' . $name . ' <' . $email . '>'
     );
 
-    // 5. Send the email using wp_mail()
-    $sent = wp_mail($to, $subject, $body, $headers);
+    $sent = wp_mail( $to, $subject, $body, $headers );
 
-    // 6. Send back a JSON response to the JavaScript.
-    if ($sent) {
-        wp_send_json_success('Email sent successfully!');
+    if ( $sent ) {
+        wp_send_json_success( 'Email sent successfully.' );
     } else {
-        wp_send_json_error('The server failed to send the email. ' . print_r(error_get_last(), true));
+        wp_send_json_error( 'The server failed to send the email.' );
     }
-    
-    wp_die(); // Always include this at the end of AJAX functions
 }
-add_action('wp_ajax_concept_request', 'handle_concept_request_ajax');
-add_action('wp_ajax_nopriv_concept_request', 'handle_concept_request_ajax');
+
+// Optional: log mail failures (helpful for debugging)
+add_action( 'wp_mail_failed', 'my_log_wp_mail_failed', 10, 1 );
+function my_log_wp_mail_failed( $wp_error ) {
+    error_log( 'wp_mail failed: ' . print_r( $wp_error, true ) );
+}
+
 
 error_log('Form submission received');
 error_log('Name: ' . $name);
