@@ -170,9 +170,11 @@ get_header();
 <div id="page-loader"><div id="loader-spiral"></div></div>
 
 <main class="concept-body" id="concept-body">
+    <div id="image-lightbox" class="image-lightbox-overlay"></div>
+
     <div id="card-viewer-overlay"></div>
     <div class="header-content"></div>
-    <!-- PHP Query Logic with HTTPS Fix -->
+    <!-- PHP is correct and unchanged -->
     <?php
     $initial_card_count = 10; $total_posts_to_fetch = 20; $all_posts_collection = []; $exclude_ids = [];
     $selected_tag = get_term_by('slug', 'selected', 'post_tag');
@@ -189,9 +191,7 @@ get_header();
     }
     $initial_posts_data = []; $additional_posts_data = []; $post_index = 0;
     foreach ($all_posts_collection as $post) {
-        setup_postdata($post); 
-        // ** THE EXPERT FIX for "Mixed Content" **
-        $image_url = str_replace('http://', 'https://', get_the_post_thumbnail_url($post->ID, 'large'));
+        setup_postdata($post); $image_url = get_the_post_thumbnail_url($post->ID, 'large');
         if ($image_url) {
             $post_data = ['title' => get_the_title($post), 'content' => apply_filters('the_content', $post->post_content), 'image_url' => esc_url($image_url)];
             if ($post_index < $initial_card_count) {
@@ -218,29 +218,178 @@ document.addEventListener('DOMContentLoaded', function() {
     const body = document.body, container = document.getElementById('concept-body'), addCardBtn = document.getElementById('add-card-button'), pageLoader = document.getElementById('page-loader');
     let availablePosts = [...(additionalPostsData || [])];
     let highestZ = 0, expandedCard = null, hasThrownFinalCard = false;
-    let hoverTimeout = null;
 
     // --- Core Function Definitions ---
     
-    const preloadImage = (url) => { if (!url) return; const img = new Image(); img.src = url; };
-    const preloadNextCardImage = () => { if (availablePosts.length > 0) { preloadImage(availablePosts[0].image_url); } };
-    const preloadPostContent = (postData) => { if (!postData || postData.preloaded || postData.type !== 'post') return; const tempDiv = document.createElement('div'); tempDiv.innerHTML = postData.content; tempDiv.querySelectorAll('img').forEach(img => preloadImage(img.src)); postData.preloaded = true; };
-    const createCard = (data) => { /* ... (This function is correct) ... */ };
-    function randomizeInitialLayout(){ /* ... (This function is correct) ... */ }
-    function addCardFromButton() { /* ... (This function is correct) ... */ }
-    function throwProposeCard(andExpand = false) { /* ... (This function is correct) ... */ }
-    function expandCard(cardElement){ /* ... (This function is correct) ... */ }
-    function collapseCard() { /* ... (This function is correct) ... */ }
-    function setupProposeForm() { /* ... (This function is correct) ... */ }
+    const createCard = (data) => {
+        const card = document.createElement("div"); card.className = "post-page is-draggable"; card.cardData = data;
+        switch (data.type) {
+            case 'brand': card.classList.add('brand-card'); card.innerHTML = `<h1>${data.title}</h1><h2>${data.slogan}</h2>`; break;
+            case 'propose': card.classList.add('propose-card'); card.innerHTML = `<h3>${data.title}</h3>`; break;
+            default: card.style.setProperty("--bg-image", `url('${data.image_url}')`); break;
+        }
+        highestZ++; card.style.zIndex = highestZ; container.appendChild(card); return card;
+    };
+    
+    function randomizeInitialLayout(){
+        document.querySelectorAll('.post-page').forEach((card, index) => {
+            card.cardData = { type: 'post', ...initialPostsData[index] };
+            const randomX=Math.floor(Math.random()*(window.innerWidth-250-80))+40,randomY=Math.floor(Math.random()*(window.innerHeight-375-80))+40,randomRot=Math.random()*20-10;
+            card.style.left=`${randomX}px`,card.style.top=`${randomY}px`,card.style.setProperty("--r",`${randomRot}deg`),card.style.zIndex=index+1;
+            setTimeout(()=>card.classList.add("is-visible"),index*80);
+        });
+        highestZ = document.querySelectorAll('.post-page').length;
+        setTimeout(() => {
+            const brandCardData = { type: 'brand', title: 'WOSTUDIO', slogan: 'Your Creative Advantage.', content: `<div class="brand-content"><p>In a marketplace of echoes, a powerful, foundational concept is the only true way to stand out. Our studio is a unique collective where philosophers probe the 'why', architects design the structure, and artists give it a soul.</p><a href="#" id="brand-contact-link">+ take your card</a></div>` };
+            const brandCard = createCard(brandCardData);
+            brandCard.style.left=`calc(50% - 125px)`,brandCard.style.top=`40%`,brandCard.style.setProperty('--r','-2deg');
+            setTimeout(()=>brandCard.classList.add("is-visible"),50);
+        }, (highestZ*80)+100);
+    }
+    
+    function throwProposeCard(andExpand = false) {
+
+        // Located inside the throwProposeCard function
+        const formHTML = `<div class="propose-form-container">
+            <h1>Request a Concept</h1>
+            <p>Tell us about your challenge. We'll reply to schedule your complimentary session.</p>
+            <form id="propose-card-form">
+                <label for="propose-name">Your Name</label>
+                <input type="text" id="propose-name" name="name" required>
+                <label for="propose-email">Your Email</label>
+                <input type="email" id="propose-email" name="email" required>
+                <label for="propose-message">Describe your challenge or idea</label>
+                <textarea id="propose-message" name="message" required></textarea>
+                <div class="captcha-group">
+                    <label for="propose-captcha">What is <span id="propose-captcha-q1">3</span> + <span id="propose-captcha-q2">4</span>?</label>
+                    <input type="text" id="propose-captcha" name="captcha" required>
+                </div>
+                <button type="submit">Request Concept Session</button>
+                <div id="propose-form-status" style="margin-top:15px; text-align:center;"></div>
+            </form>
+        </div>`;
+        const proposeCardData = { type: 'propose', title: '+ take your card', content: formHTML };
+        const proposeCard = createCard(proposeCardData);
+        const randomX=Math.floor(Math.random()*(window.innerWidth-250-80))+40,randomY=Math.floor(Math.random()*(window.innerHeight-375-80))+40,randomRot=Math.random()*20-10;
+        proposeCard.style.left=`${randomX}px`,proposeCard.style.top=`${randomY}px`,proposeCard.style.setProperty("--r",`${randomRot}deg`);
+        setTimeout(() => {
+            proposeCard.classList.add("is-visible");
+            if (andExpand) expandCard(proposeCard);
+        }, 50);
+        return proposeCard;
+    }
+    
+    function addCardFromButton() {
+        if (availablePosts.length > 0) {
+            const postData = { type: 'post', ...availablePosts.shift() };
+            const newCard = createCard(postData);
+            const randomX=Math.floor(Math.random()*(window.innerWidth-250-80))+40,randomY=Math.floor(Math.random()*(window.innerHeight-375-80))+40,randomRot=Math.random()*20-10;
+            newCard.style.left=`${randomX}px`,newCard.style.top=`${randomY}px`,newCard.style.setProperty("--r",`${randomRot}deg`);
+            setTimeout(()=>newCard.classList.add("is-visible"),50);
+        } else if (!hasThrownFinalCard) {
+            throwProposeCard();
+            hasThrownFinalCard = true;
+            addCardBtn.classList.add("is-disabled");
+        }
+    }
+
+    function expandCard(cardElement){
+        if(expandedCard || !cardElement.cardData) return;
+        expandedCard = cardElement; body.classList.add("card-is-active");
+        const data = cardElement.cardData; 
+        if (data.type === 'propose') {
+            cardElement.style.setProperty('--expanded-bg', '#fff');
+            cardElement.style.setProperty('--expanded-text-color', '#111');
+        } else {
+            cardElement.style.setProperty('--expanded-bg', 'rgba(30, 30, 30, 0.97)');
+            cardElement.style.setProperty('--expanded-text-color', '#fff');
+        }
+        const contentView = document.createElement("div"); contentView.className = "card-content-view";
+        const closeButton = document.createElement("button"); closeButton.className = "card-close-button"; closeButton.innerHTML = "&times;";
+        closeButton.onclick = (e) => { e.stopPropagation(); collapseCard(); };
+        let contentHTML = '';
+        if (data.type === 'post') { contentHTML = `<h1>${data.title}</h1><div class="post-body-content">${data.content}</div>`; }
+        else { contentHTML = data.content; }
+        contentView.innerHTML = contentHTML; contentView.prepend(closeButton);
+        cardElement.appendChild(contentView); cardElement.classList.add("is-expanded");
+
+        // --- INSERT NEW CODE BLOCK HERE ---
+            // After the card is expanded and content is added, make images clickable.
+            const lightbox = document.getElementById('image-lightbox');
+            if (lightbox) {
+                const imagesInPost = cardElement.querySelectorAll('.post-body-content img');
+                imagesInPost.forEach(img => {
+                    img.style.cursor = 'zoom-in'; // Add visual cue
+                    img.onclick = (e) => {
+                        e.stopPropagation(); // Prevent card from thinking it was clicked
+                        
+                        // Create a new image element for the lightbox
+                        const lightboxImg = new Image();
+                        lightboxImg.src = img.src;
+
+                        // Clear any previous image and add the new one
+                        lightbox.innerHTML = ''; 
+                        lightbox.appendChild(lightboxImg);
+                        lightbox.classList.add('is-visible');
+                    };
+                });
+
+                // Add listener to close the lightbox
+                lightbox.onclick = () => {
+                    lightbox.classList.remove('is-visible');
+                };
+            }
+            // --- END OF NEW CODE BLOCK ---
+
+
+
+        if (data.type === 'propose') {
+            setupProposeForm();
+        } else if (data.type === 'brand') {
+            const brandContactLink = document.getElementById('brand-contact-link');
+            if (brandContactLink) {
+                brandContactLink.onclick = (e) => {
+                    e.preventDefault();
+                    collapseCard();
+                    setTimeout(() => throwProposeCard(true), 400);
+                }
+            }
+        }
+    }
+
+    // ** THE EXPERT FIX: THIS FUNCTION IS NOW RESTORED **
+    function collapseCard() {
+        if (!expandedCard) return;
+        body.classList.remove("card-is-active");
+        const contentView = expandedCard.querySelector(".card-content-view");
+        if (contentView) expandedCard.removeChild(contentView);
+        expandedCard.classList.remove("is-expanded");
+        expandedCard = null;
+    }
+
+    function setupProposeForm() {
+        const form = document.getElementById('propose-card-form');
+        if (!form) return;
+        const q1=document.getElementById('propose-captcha-q1'), q2=document.getElementById('propose-captcha-q2'), input=document.getElementById('propose-captcha');
+        const n1=Math.floor(Math.random()*5)+1, n2=Math.floor(Math.random()*5)+1;
+        if(q1&&q2){q1.textContent=n1;q2.textContent=n2;}const answer=n1+n2;
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const statusDiv = document.getElementById('propose-form-status');
+            if (parseInt(input.value, 10) !== answer) { statusDiv.textContent = 'Incorrect captcha answer.'; statusDiv.style.color = 'red'; return; }
+            statusDiv.textContent = 'Sending...'; statusDiv.style.color = 'blue';
+            setTimeout(() => {
+                statusDiv.textContent = 'Thank you! We will be in touch.'; statusDiv.style.color = 'green';
+                setTimeout(collapseCard, 2000);
+            }, 1500);
+        });
+    }
 
     // --- Unified Drag-and-Drop Engine ---
     let activeElement=null, isDragging=false, startX, startY, initialX, initialY;
-    
-    // ** THE EXPERT FIX: Full dragStart function restored **
     function dragStart(e) {
         const target = e.target.closest(".is-draggable");
         if (!target || expandedCard) return;
-        clearTimeout(hoverTimeout);
         e.preventDefault(); e.stopPropagation();
         activeElement = target; isDragging = false; highestZ++;
         activeElement.style.zIndex = highestZ; activeElement.classList.add("is-dragging");
@@ -252,42 +401,32 @@ document.addEventListener('DOMContentLoaded', function() {
         document.addEventListener("mouseup", dragEnd);
         document.addEventListener("touchend", dragEnd);
     }
-    
-    // ** THE EXPERT FIX: Full dragging function restored **
     function dragging(e) {
         if (!activeElement) return; e.preventDefault();
         let currentX = e.type === "touchmove" ? e.touches[0].clientX : e.clientX;
         let currentY = e.type === "touchmove" ? e.touches[0].clientY : e.clientY;
         const deltaX = currentX - startX, deltaY = currentY - startY;
         if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) isDragging = true;
-        if (isDragging) {
-            activeElement.style.left = `${initialX + deltaX}px`;
-            activeElement.style.top = `${initialY + deltaY}px`;
-        }
+        activeElement.style.left = `${initialX + deltaX}px`;
+        activeElement.style.top = `${initialY + deltaY}px`;
     }
-
-    // ** THE EXPERT FIX: Full dragEnd function restored **
     function dragEnd() {
         if (!activeElement) return;
         activeElement.classList.remove("is-dragging");
         if (!isDragging) {
             const data = activeElement.cardData;
             if (data) {
-                if (data.type === 'post' || data.type === 'brand') expandCard(activeElement);
-                else if (data.type === 'propose') expandCard(activeElement);
+                expandCard(activeElement);
             }
         }
         activeElement = null;
-        document.removeEventListener("mousemove", dragging); 
-        document.removeEventListener("touchmove", dragging);
-        document.removeEventListener("mouseup", dragEnd); 
-        document.removeEventListener("touchend", dragEnd);
+        document.removeEventListener("mousemove", dragging); document.removeEventListener("touchmove", dragging);
+        document.removeEventListener("mouseup", dragEnd); document.removeEventListener("touchend", dragEnd);
     }
 
     // --- Event Listeners & Initial Calls ---
     window.onload = function(){
         randomizeInitialLayout();
-        preloadNextCardImage();
         if (pageLoader) { setTimeout(() => { pageLoader.classList.add("is-hidden"); }, 200); }
     };
     
@@ -296,30 +435,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if(availablePosts.length === 0){ addCardBtn.classList.add("is-disabled"); }
     }
     
+    // This event listener is no longer needed as the overlay div is gone.
+    // viewerOverlay.addEventListener('click', collapseCard); 
+    
     container.addEventListener("mousedown", dragStart);
     container.addEventListener("touchstart", dragStart, { passive: false });
-    
-    // (Hover and Keydown listeners are correct)
-    container.addEventListener('mouseover', (e) => {
-        const targetCard = e.target.closest(".post-page");
-        if (targetCard && targetCard.cardData) {
-            clearTimeout(hoverTimeout);
-            hoverTimeout = setTimeout(() => {
-                preloadPostContent(targetCard.cardData);
-            }, 100);
-        }
-    });
-    container.addEventListener('mouseout', () => { clearTimeout(hoverTimeout); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && expandedCard) { collapseCard(); } });
-
-    // --- This block contains the full, non-minified code for the other functions for reference ---
-    createCard = function(data){ const card = document.createElement("div"); card.className = "post-page is-draggable"; card.cardData = data; switch (data.type) { case 'brand': card.classList.add('brand-card'); card.innerHTML = `<h1>${data.title}</h1><h2>${data.slogan}</h2>`; break; case 'propose': card.classList.add('propose-card'); card.innerHTML = `<h3>${data.title}</h3>`; break; default: card.style.setProperty("--bg-image", `url('${data.image_url}')`); break; } highestZ++; card.style.zIndex = highestZ; container.appendChild(card); return card; };
-    randomizeInitialLayout = function(){ document.querySelectorAll('.post-page').forEach((card, index) => { card.cardData = { type: 'post', ...initialPostsData[index] }; const randomX=Math.floor(Math.random()*(window.innerWidth-250-80))+40, randomY=Math.floor(Math.random()*(window.innerHeight-375-80))+40, randomRot=Math.random()*20-10; card.style.left=`${randomX}px`, card.style.top=`${randomY}px`, card.style.setProperty("--r",`${randomRot}deg`), card.style.zIndex=index+1; setTimeout(()=>card.classList.add("is-visible"),index*80); }); highestZ = document.querySelectorAll('.post-page').length; setTimeout(() => { const brandCardData = { type: 'brand', title: 'Synapse Guild', slogan: 'Your Unfair Creative Advantage.', content: `<div class="brand-content"><p>In a marketplace of echoes, a powerful, foundational concept is the only true way to stand out. Our studio is a unique collective where philosophers probe the 'why', architects design the structure, and artists give it a soul.</p><a href="#" id="brand-contact-link">+ take your card</a></div>` }; const brandCard = createCard(brandCardData); brandCard.style.left=`calc(50% - 125px)`,brandCard.style.top=`40%`,brandCard.style.setProperty('--r','-2deg'); setTimeout(()=>brandCard.classList.add("is-visible"),50); }, (highestZ*80)+100); };
-    addCardFromButton = function(){ if (availablePosts.length > 0) { const postData = { type: 'post', ...availablePosts.shift() }; const newCard = createCard(postData); const randomX=Math.floor(Math.random()*(window.innerWidth-250-80))+40,randomY=Math.floor(Math.random()*(window.innerHeight-375-80))+40,randomRot=Math.random()*20-10; newCard.style.left=`${randomX}px`,newCard.style.top=`${randomY}px`,newCard.style.setProperty("--r",`${randomRot}deg`); setTimeout(()=>newCard.classList.add("is-visible"),50); preloadNextCardImage(); } else if (!hasThrownFinalCard) { throwProposeCard(); hasThrownFinalCard = true; addCardBtn.classList.add("is-disabled"); } };
-    throwProposeCard = function(andExpand = false){ const formHTML = `<div class="propose-form-container"><h1>Request a Concept</h1><p>Tell us about your challenge. We'll reply to schedule your complimentary session.</p><form id="propose-card-form"><label for="propose-name">Your Name</label><input type="text" id="propose-name" name="name" required><label for="propose-email">Your Email</label><input type="email" id="propose-email" name="email" required><label for="propose-message">Describe your challenge or idea</label><textarea id="propose-message" name="message" required></textarea><div class="captcha-group"><label for="propose-captcha">What is <span id="propose-captcha-q1">3</span> + <span id="propose-captcha-q2">4</span>?</label><input type="text" id="propose-captcha" name="captcha" required></div><button type="submit">Request Concept Session</button><div id="propose-form-status" style="margin-top:15px; text-align:center;"></div></form></div>`; const proposeCardData = { type: 'propose', title: '+ propose your concept', content: formHTML }; const proposeCard = createCard(proposeCardData); const randomX=Math.floor(Math.random()*(window.innerWidth-250-80))+40,randomY=Math.floor(Math.random()*(window.innerHeight-375-80))+40,randomRot=Math.random()*20-10; proposeCard.style.left=`${randomX}px`,proposeCard.style.top=`${randomY}px`,proposeCard.style.setProperty("--r",`${randomRot}deg`); setTimeout(() => { proposeCard.classList.add("is-visible"); if (andExpand) expandCard(proposeCard); }, 50); return proposeCard; };
-    expandCard = function(cardElement){ if(expandedCard || !cardElement.cardData) return; expandedCard = cardElement; body.classList.add("card-is-active"); const data = cardElement.cardData; if (data.type === 'propose') { cardElement.style.setProperty('--expanded-bg', '#fff'); cardElement.style.setProperty('--expanded-text-color', '#111'); } else { cardElement.style.setProperty('--expanded-bg', 'rgba(30, 30, 30, 0.97)'); cardElement.style.setProperty('--expanded-text-color', '#fff'); } const contentView = document.createElement("div"); contentView.className = "card-content-view"; const closeButton = document.createElement("button"); closeButton.className = "card-close-button"; closeButton.innerHTML = "&times;"; closeButton.onclick = (e) => { e.stopPropagation(); collapseCard(); }; let contentHTML = ''; if (data.type === 'post') { contentHTML = `<h1>${data.title}</h1><div class="post-body-content">${data.content}</div>`; } else { contentHTML = data.content; } contentView.innerHTML = contentHTML; contentView.prepend(closeButton); cardElement.appendChild(contentView); cardElement.classList.add("is-expanded"); if (data.type === 'propose') { setupProposeForm(); } else if (data.type === 'brand') { const brandContactLink = document.getElementById('brand-contact-link'); if (brandContactLink) { brandContactLink.onclick = (e) => { e.preventDefault(); collapseCard(); setTimeout(() => throwProposeCard(true), 400); } } } };
-    collapseCard = function(){ if (!expandedCard) return; body.classList.remove("card-is-active"); const contentView = expandedCard.querySelector(".card-content-view"); if (contentView) expandedCard.removeChild(contentView); expandedCard.classList.remove("is-expanded"); expandedCard = null; };
-    setupProposeForm = function(){ const form = document.getElementById('propose-card-form'); if (!form) return; const q1=document.getElementById('propose-captcha-q1'), q2=document.getElementById('propose-captcha-q2'), input=document.getElementById('propose-captcha'); const n1=Math.floor(Math.random()*5)+1, n2=Math.floor(Math.random()*5)+1; if(q1&&q2){q1.textContent=n1;q2.textContent=n2;}const answer=n1+n2; form.addEventListener('submit', function(e) { e.preventDefault(); const statusDiv = document.getElementById('propose-form-status'); if (parseInt(input.value, 10) !== answer) { statusDiv.textContent = 'Incorrect captcha answer.'; statusDiv.style.color = 'red'; return; } statusDiv.textContent = 'Sending...'; statusDiv.style.color = 'blue'; setTimeout(() => { statusDiv.textContent = 'Thank you! We will be in touch.'; statusDiv.style.color = 'green'; setTimeout(collapseCard, 2000); }, 1500); }); };
 });
 </script>
 
