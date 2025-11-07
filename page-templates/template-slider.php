@@ -199,7 +199,7 @@ get_header();
 
     /* --- NEW: Services Card Style --- */
     .services-card {
-        background-color: #000 !important;
+        background-color: #111;
         background-image: none !important;
         color: #fff;
     }
