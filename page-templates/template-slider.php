@@ -127,7 +127,7 @@ get_header();
     }
     
     .card-close-button { position: fixed; top: 15px; right: 15px; font-size: 2.5rem; color: inherit; background: none; border: none; cursor: pointer; z-index: 10; }
-    .propose-form-container { max-width: 850px; margin: 0 auto; text-align: left; }
+    .propose-form-container { max-width: 850px; margin: 0 auto; text-align: left; padding: 10px;}
     .propose-form-container h1 { color: #111; }
     .propose-form-container p { color: #666; margin-top: -15px; margin-bottom: 25px; font-size: 1rem; }
     .propose-form-container label { display: block; margin-bottom: 5px; font-weight: 600; color: #555; }
