@@ -63,6 +63,59 @@ require_once( 'library/gutenberg.php' );
 @ini_set( 'max_execution_time', '300' );
 
 /**
+ * AJAX handler for the Concept Request Form.
+ */
+function handle_concept_request() {
+    // 1. Security Check: Verify the nonce
+    if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'concept_request_nonce' ) ) {
+        wp_send_json_error( 'Nonce verification failed.' );
+        return;
+    }
+
+    // 2. Sanitize and retrieve form data
+    $name    = isset( $_POST['name'] ) ? sanitize_text_field( $_POST['name'] ) : 'Not provided';
+    $email   = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
+    $message = isset( $_POST['message'] ) ? sanitize_textarea_field( $_POST['message'] ) : 'No message.';
+
+    // 3. Validate data (especially email)
+    if ( ! is_email( $email ) ) {
+        wp_send_json_error( 'Invalid email address provided.' );
+        return;
+    }
+
+    // 4. Prepare the email
+    $to      = get_option( 'admin_email' ); // Sends to the site's admin email
+    $subject = "New Concept Request from Synapse Guild Site";
+    $body    = "You have received a new concept request:\n\n";
+    $body   .= "Name: " . $name . "\n";
+    $body   .= "Email: " . $email . "\n\n";
+    $body   .= "Challenge/Idea:\n" . $message . "\n";
+    $headers = array( 'Content-Type: text/plain; charset=UTF-8', 'From: ' . $name . ' <' . $email . '>', 'Reply-To: ' . $name . ' <' . $email . '>' );
+
+    // 5. Send the email using wp_mail()
+    $sent = wp_mail( $to, $subject, $body, $headers );
+
+    // 6. Send back a JSON response to the JavaScript
+    if ( $sent ) {
+        wp_send_json_success( 'Email sent successfully!' );
+    } else {
+        wp_send_json_error( 'Failed to send email.' );
+    }
+}
+// Hook our function to WordPress's AJAX system for logged-in and logged-out users
+add_action( 'wp_ajax_concept_request', 'handle_concept_request' );
+add_action( 'wp_ajax_nopriv_concept_request', 'handle_concept_request' );
+
+/**
+ * Note: Your page template needs access to the AJAX URL and nonce.
+ * If you have a main script file enqueued via functions.php, you would use wp_localize_script there.
+ * Since all your JS is in the template, the wp_localize_script data is printed directly in the template file.
+ * This is less standard but will work for this single-page setup.
+ */
+
+ 
+
+/**
  * WordPress admin customisation
  */
 function my_login_logo() { ?>
