@@ -57,6 +57,32 @@ get_header();
     .brand-card.is-expanded h2 {
         display: none;
     }
+
+
+    /* --- NEW: Hand Animation Keyframes --- */
+    @keyframes handTap {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(8px); }
+    }
+
+    /* --- NEW: Style for the Animated Hand Icon --- */
+    .hand-icon-anim {
+        width: 40px;
+        height: 40px;
+        margin-top: 15px; /* Space below the subtitle */
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M10.933 3.424a1 1 0 0 1 1.134 0l7.5 5.25a1 1 0 0 1 .433.876v9.3a1 1 0 0 1-1 1h-16a1 1 0 0 1-1-1v-9.3a1 1 0 0 1 .433-.876l7.5-5.25Z"/><path d="M12.5 14a.5.5 0 0 1-1 0V9.5a.5.5 0 0 1 1 0V14Z"/></svg>');
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        animation: handTap 1.5s ease-in-out infinite;
+    }
+
+    /* --- MODIFIED: Also hide the hand on expand --- */
+    .brand-card.is-expanded h1,
+    .brand-card.is-expanded h2,
+    .brand-card.is-expanded .hand-icon-anim {
+        display: none;
+    }
     
     .propose-card { background-color: #fff; background-image: none !important; color: #111; display: flex; justify-content: center; align-items: center; text-align: center; padding: 20px; }
     .propose-card h3 { font-size: 1.5rem; font-weight: 600; margin: 0; }
@@ -247,7 +273,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const createCard = (data) => {
         const card = document.createElement("div"); card.className = "post-page is-draggable"; card.cardData = data;
         switch (data.type) {
-            case 'brand': card.classList.add('brand-card'); card.innerHTML = `<h1>${data.title}</h1><h2>${data.slogan}</h2>`; break;
+            case 'brand': card.classList.add('brand-card'); card.innerHTML = `<h1>${data.title}</h1><h2>${data.slogan}</h2><div class="hand-icon-anim"></div>`; break;
             case 'propose': card.classList.add('propose-card'); card.innerHTML = `<h3>${data.title}</h3>`; break;
             default: card.style.setProperty("--bg-image", `url('${data.image_url}')`); break;
         }
@@ -263,7 +289,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         highestZ = document.querySelectorAll('.post-page').length;
         setTimeout(() => {
-            const brandCardData = { type: 'brand', title: 'AVF', slogan: 'Play Your Creation Card.', content: `<div class="brand-content"><p>In a marketplace of echoes, a powerful, foundational concept is the only true way to stand out. Our studio is a unique collective where philosophers probe the 'why', architects design the structure, and artists give it a soul.</p><a href="#" id="brand-contact-link">+ take your card</a></div><div class="brand-card-footer"><h1>AVF</h1><h2>Your Unfair Creative Advantage.</h2></div>` };
+            const brandCardData = { type: 'brand', title: 'AVF', slogan: 'Play Your Creation Card.', content: `<div class="brand-content"><p>In a marketplace of echoes, a powerful, foundational concept is the only true way to stand out. Our studio is a unique collective where philosophers probe the 'why', architects design the structure, and artists give it a soul.</p><a href="#" id="brand-contact-link">+ request your card</a></div><div class="brand-card-footer"><h1>AVF</h1><h2>Your Unfair Creative Advantage.</h2></div>` };
             const brandCard = createCard(brandCardData);
             brandCard.style.left=`calc(50% - 125px)`,brandCard.style.top=`40%`,brandCard.style.setProperty('--r','-2deg');
             setTimeout(()=>brandCard.classList.add("is-visible"),50);
