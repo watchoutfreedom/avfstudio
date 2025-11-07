@@ -181,6 +181,40 @@ get_header();
         border-radius: 4px;
         width: 100%; /* On mobile, take up full width */
     }
+
+        /* --- NEW: Services Button Style --- */
+    .services-button {
+        display: block;
+        margin: 20px auto 0;
+        padding: 12px 24px;
+        background: transparent;
+        border: 1px solid #fff;
+        border-radius: 30px;
+        color: #fff;
+        font-family: inherit;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .services-button:hover {
+        background-color: #fff;
+        color: #111;
+        transform: scale(1.05);
+    }
+
+    /* --- NEW: Services Card Style --- */
+    .services-card {
+        background-color: #000 !important;
+        background-image: none !important;
+        color: #fff;
+    }
+
+    .services-card .card-content-view {
+        color: #fff;
+    }
+
     /* Desktop-specific sizing */
     @media (min-width: 769px) {
 
@@ -211,19 +245,67 @@ get_header();
     <div class="header-content"></div>
     <!-- PHP with Image Optimization -->
     <?php
+    $services_tag = get_term_by('slug', 'services', 'post_tag');
+    $exclude_services_ids = array();
+
+    if ($services_tag) {
+        $services_args = array(
+            'post_type' => 'post', 
+            'posts_per_page' => -1, 
+            'tag_id' => $services_tag->term_id,
+            'fields' => 'ids'
+        );
+        $services_query = new WP_Query($services_args);
+        if ($services_query->have_posts()) {
+            $exclude_services_ids = $services_query->posts;
+        }
+    }
+
     $initial_card_count = 10; $total_posts_to_fetch = 20; $all_posts_collection = []; $exclude_ids = [];
     $selected_tag = get_term_by('slug', 'selected', 'post_tag');
+
     if ($selected_tag) {
-        $selected_args = ['post_type' => 'post', 'posts_per_page' => $total_posts_to_fetch, 'tag_id' => $selected_tag->term_id, 'post_status' => 'publish', 'meta_query' => [['key' => '_thumbnail_id']]];
+        $selected_args = ['post_type' => 'post', 'posts_per_page' => $total_posts_to_fetch, 'tag_id' => $selected_tag->term_id, 'post_status' => 'publish', 'meta_query' => [['key' => '_thumbnail_id']],'post__not_in' => $exclude_services_ids ];
         $selected_query = new WP_Query($selected_args);
         if ($selected_query->have_posts()) { foreach ($selected_query->get_posts() as $post) { $all_posts_collection[] = $post; $exclude_ids[] = $post->ID; } }
     }
     $remaining_needed = $total_posts_to_fetch - count($all_posts_collection);
     if ($remaining_needed > 0) {
-        $random_args = ['post_type' => 'post', 'posts_per_page' => $remaining_needed, 'orderby' => 'rand', 'post__not_in' => $exclude_ids, 'post_status' => 'publish', 'meta_query' => [['key' => '_thumbnail_id']]];
+        $random_args = ['post_type' => 'post', 'posts_per_page' => $remaining_needed, 'orderby' => 'rand', 'post__not_in' => array_merge($exclude_ids, $exclude_services_ids), 'post_status' => 'publish', 'meta_query' => [['key' => '_thumbnail_id']]];
         $random_query = new WP_Query($random_args);
         if ($random_query->have_posts()) { foreach($random_query->get_posts() as $post) { $all_posts_collection[] = $post; } }
     }
+
+
+// ADDED: Get services posts data separately
+$services_posts_data = array();
+if ($services_tag) {
+    $services_args_full = array(
+        'post_type' => 'post', 
+        'posts_per_page' => -1, 
+        'tag_id' => $services_tag->term_id,
+        'post_status' => 'publish'
+    );
+    $services_query_full = new WP_Query($services_args_full);
+    if ($services_query_full->have_posts()) {
+        foreach ($services_query_full->get_posts() as $post) {
+            setup_postdata($post);
+            $thumb_url_raw = get_the_post_thumbnail_url($post->ID, 'medium_large');
+            $large_url_raw = get_the_post_thumbnail_url($post->ID, 'large');
+            $image_url = $thumb_url_raw ? str_replace('http://', 'https://', $thumb_url_raw) : false;
+            $large_image_url = $large_url_raw ? str_replace('http://', 'https://', $large_url_raw) : false;
+            
+            $services_posts_data[] = [
+                'title' => get_the_title($post),
+                'content' => apply_filters('the_content', $post->post_content),
+                'image_url' => $image_url ? esc_url($image_url) : '',
+                'large_image_url' => $large_image_url ? esc_url($large_image_url) : ''
+            ];
+        }
+        wp_reset_postdata();
+    }
+    }
+
     $initial_posts_data = []; $additional_posts_data = []; $post_index = 0;
     foreach ($all_posts_collection as $post) {
         setup_postdata($post); 
@@ -249,6 +331,7 @@ get_header();
 <script>
     const initialPostsData = <?php echo json_encode($initial_posts_data); ?>;
     const additionalPostsData = <?php echo json_encode($additional_posts_data); ?>;
+    const servicesPostsData = <?php echo json_encode($services_posts_data); ?>; // ADDED: Services posts data
     const ajax_object = <?php echo json_encode(array( 'ajax_url' => admin_url( 'admin-ajax.php' ), 'nonce' => wp_create_nonce( 'concept_request_nonce' ) )); ?>;
 </script>
 
@@ -290,7 +373,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         highestZ = document.querySelectorAll('.post-page').length;
         setTimeout(() => {
-            const brandCardData = { type: 'brand', title: 'AVF', slogan: 'Play Your Creative Card.', content: `<div class="brand-content"><p>A good foundational concept is the only true way to stand out. Reach us for a touch up session.</p><a href="#" id="brand-contact-link">+ request your card</a></div><div class="brand-card-footer"><div class="brand-card-logo">AVF</div></div>` };
+            const brandCardData = { 
+                type: 'brand', 
+                title: 'AVF', 
+                slogan: 'Play Your Creative Card.', 
+                content: `<div class="brand-content"><p>A good foundational concept is the only true way to stand out. Reach us for a touch up session.</p><a href="#" id="brand-contact-link">+ request your card</a><button id="our-services-btn" class="services-button">Our services</button></div><div class="brand-card-footer"><div class="brand-card-logo">AVF</div></div>` 
+            };
             const brandCard = createCard(brandCardData);
             brandCard.style.left=`calc(50% - 125px)`,brandCard.style.top=`40%`,brandCard.style.setProperty('--r','-2deg');
             setTimeout(()=>brandCard.classList.add("is-visible"),50);
@@ -319,8 +407,11 @@ document.addEventListener('DOMContentLoaded', function() {
         proposeCard.style.left=`${randomX}px`,proposeCard.style.top=`${randomY}px`,proposeCard.style.setProperty("--r",`${randomRot}deg`);
         setTimeout(() => {
             proposeCard.classList.add("is-visible");
+            setupProposeForm();                // <-- attach the submit handler now
             if (andExpand) expandCard(proposeCard);
         }, 50);
+
+       
         return proposeCard;
     }
 
@@ -382,6 +473,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     e.preventDefault();
                     collapseCard();
                     setTimeout(() => throwProposeCard(true), 400);
+                }
+            }
+
+                // ADDED: Services button handler
+            const servicesButton = document.getElementById('our-services-btn');
+            if (servicesButton) {
+                servicesButton.onclick = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    collapseCard();
+                    setTimeout(() => createServicesCards(), 400);
                 }
             }
         }
@@ -506,6 +608,51 @@ function setupProposeForm() {
         document.removeEventListener("mouseup", dragEnd); 
         document.removeEventListener("touchend", dragEnd);
     }
+
+    function createServicesCards() {
+    if (!servicesPostsData || servicesPostsData.length === 0) return;
+    
+    // Close the brand card first
+    if (expandedCard && expandedCard.cardData && expandedCard.cardData.type === 'brand') {
+        collapseCard();
+    }
+    
+    // Create a black card for each services post
+    servicesPostsData.forEach((serviceData, index) => {
+        setTimeout(() => {
+            const serviceCardData = {
+                type: 'services',
+                title: serviceData.title,
+                content: `<h1>${serviceData.title}</h1><div class="post-body-content">${serviceData.content}</div>`,
+                image_url: serviceData.image_url,
+                large_image_url: serviceData.large_image_url
+            };
+            
+            const serviceCard = createCard(serviceCardData);
+            serviceCard.classList.add('services-card');
+            
+            // Position cards in a grid-like pattern
+            const cardsPerRow = Math.min(3, servicesPostsData.length);
+            const cardWidth = 250;
+            const cardHeight = 375;
+            const horizontalSpacing = (window.innerWidth - (cardsPerRow * cardWidth)) / (cardsPerRow + 1);
+            const verticalSpacing = 50;
+            
+            const row = Math.floor(index / cardsPerRow);
+            const col = index % cardsPerRow;
+            
+            const posX = horizontalSpacing + (col * (cardWidth + horizontalSpacing));
+            const posY = 100 + (row * (cardHeight + verticalSpacing));
+            const randomRot = Math.random() * 10 - 5;
+            
+            serviceCard.style.left = `${posX}px`;
+            serviceCard.style.top = `${posY}px`;
+            serviceCard.style.setProperty("--r", `${randomRot}deg`);
+            
+            setTimeout(() => serviceCard.classList.add("is-visible"), index * 100);
+        }, index * 150);
+    });
+}
 
     // --- Event Listeners & Initial Calls ---
     window.onload = function(){
