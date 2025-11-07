@@ -177,6 +177,9 @@ get_header();
 <div id="page-loader"><div id="loader-spiral"></div></div>
 
 <main class="concept-body" id="concept-body">
+
+    <div id="image-lightbox" class="image-lightbox-overlay"></div>
+
     <div id="card-viewer-overlay"></div>
     <div class="header-content"></div>
     <!-- PHP with Image Optimization -->
@@ -313,6 +316,36 @@ document.addEventListener('DOMContentLoaded', function() {
         else { contentHTML = data.content; }
         contentView.innerHTML = contentHTML; contentView.prepend(closeButton);
         cardElement.appendChild(contentView); cardElement.classList.add("is-expanded");
+
+        // --- INSERT NEW CODE BLOCK HERE ---
+            // After the card is expanded and content is added, make images clickable.
+            const lightbox = document.getElementById('image-lightbox');
+            if (lightbox) {
+                const imagesInPost = cardElement.querySelectorAll('.post-body-content img');
+                imagesInPost.forEach(img => {
+                    img.style.cursor = 'zoom-in'; // Add visual cue
+                    img.onclick = (e) => {
+                        e.stopPropagation(); // Prevent card from thinking it was clicked
+                        
+                        // Create a new image element for the lightbox
+                        const lightboxImg = new Image();
+                        lightboxImg.src = img.src;
+
+                        // Clear any previous image and add the new one
+                        lightbox.innerHTML = ''; 
+                        lightbox.appendChild(lightboxImg);
+                        lightbox.classList.add('is-visible');
+                    };
+                });
+
+                // Add listener to close the lightbox
+                lightbox.onclick = () => {
+                    lightbox.classList.remove('is-visible');
+                };
+            }
+            // --- END OF NEW CODE BLOCK ---
+
+
         if (data.type === 'propose') {
             setupProposeForm();
         } else if (data.type === 'brand') {
@@ -369,6 +402,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
 
     // --- Unified Drag-and-Drop Engine ---
     let activeElement=null, isDragging=false, startX, startY, initialX, initialY;
