@@ -8,9 +8,34 @@
 get_header(); 
 ?>
 
+
 <style>
-    /* All CSS is correct and unchanged from your last working version with the editorial styles. */
-    html, body { height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+
+
+    /* --- NEW: Custom Font Declaration --- */
+    @font-face {
+        font-family: 'Airbnb Cereal App'; /* You can name this whatever you like */
+        src: url('<?php echo get_stylesheet_directory_uri(); ?>/assets/fonts/AirbnbCereal_W_Bd.otf') format('otf'),
+            url('<?php echo get_stylesheet_directory_uri(); ?>/assets/fonts/AirbnbCereal_W_Md.otf') format('otf'),
+            url('<?php echo get_stylesheet_directory_uri(); ?>/assets/fonts/AirbnbCereal_W_Bk.otf') format('otf'),
+            url('<?php echo get_stylesheet_directory_uri(); ?>/assets/fonts/AirbnbCereal_W_Blk.otf') format('otf'),
+            url('<?php echo get_stylesheet_directory_uri(); ?>/assets/fonts/AirbnbCereal_W_Lt.otf') format('otf'),
+             url('<?php echo get_stylesheet_directory_uri(); ?>/assets/fonts/AirbnbCereal_W_XBd.otf') format('otf');
+
+
+            /* Add more formats if you have them, e.g., .ttf */
+        font-weight: 700; /* 'Bd' usually means Bold, which is 700 */
+        font-style: normal;
+        font-display: swap; /* Improves perceived performance */
+    }
+
+
+    /* --- Basic Setup & Background --- */
+    html, body {
+        height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden;
+        font-family: 'Airbnb Cereal App', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; /* MODIFIED: Add the new font first */
+    }
+
     .concept-body { height: 100vh; width: 100vw; position: relative; background-color: black; background-image: radial-gradient(ellipse at center, #4a4a4a 0%, #2b2b2b 100%); color: #f0f0f0; }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     #page-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(ellipse at center, #4a4a4a 0%, #2b2b2b 100%); display: flex; justify-content: center; align-items: center; z-index: 99999; transition: opacity 0.5s ease-out; }
@@ -20,7 +45,7 @@ get_header();
     #card-viewer-overlay { display: none; }
     .is-draggable { cursor: grab; user-select: none; -webkit-user-select: none; }
     .is-draggable.is-dragging { cursor: grabbing; transition: none !important; }
-    .post-page { position: absolute; width: 250px; height: 375px; background-color: transparent; background-image: var(--bg-image); background-size: cover; background-position: center; border: 2px solid white; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); opacity: 0; transform: scale(0.5); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+    .post-page { position: absolute; width: 250px; height: 375px; background-color: transparent; background-image: var(--bg-image); background-size: cover; background-position: center; border-radius: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); opacity: 0; transform: scale(0.5); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
     .post-page.is-visible { opacity: 1; transform: scale(1) rotate(var(--r, 0deg)); }
     .post-page:hover { box-shadow: 0 15px 45px rgba(0,0,0,0.5); transform: scale(1.03) rotate(var(--r, 0deg)); z-index: 4000 !important; }
     .post-page.is-expanded { top: 50% !important; left: 50% !important; width: 95vw !important; height: 95vh !important; transform: translate(-50%, -50%) rotate(0deg) !important; cursor: default !important; z-index: 5000; border-color: rgba(255, 255, 255, 0.5); background-image: none !important; background-color: var(--expanded-bg, rgba(30, 30, 30, 0.97)); }
@@ -30,18 +55,52 @@ get_header();
     .propose-card { background-color: #fff; background-image: none !important; color: #111; display: flex; justify-content: center; align-items: center; text-align: center; padding: 20px; }
     .propose-card h3 { font-size: 1.5rem; font-weight: 600; margin: 0; }
     .propose-card.is-expanded h3 { display: none; }
-    .card-content-view { position: absolute; top: 0; left: 0; right: 0; bottom: 0; color: var(--expanded-text-color, #fff); padding: 5vw; overflow-y: auto; opacity: 0; transition: opacity 0.5s ease 0.3s; border-radius: 6px; }
+    .card-content-view {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        color: var(--expanded-text-color, #fff);
+        /* MODIFIED: More vertical padding, less horizontal */
+        padding: 8vh 5vw; 
+        overflow-y: auto;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.3s;
+        border-radius: 6px;
+        box-sizing: border-box; /* Ensures padding is calculated correctly */
+    }    
+    
     .post-page.is-expanded .card-content-view { opacity: 1; }
     .card-content-view h1 { font-size: clamp(2rem, 5vw, 4.5rem); margin: 0 0 2rem 0; }
     .card-content-view .post-body-content { max-width: 850px; margin: 0 auto; font-size: clamp(1rem, 1.5vw, 1.1rem); line-height: 1.7; }
     .post-body-content p { max-width: 75ch; margin-left: auto; margin-right: auto; margin-bottom: 1.7em; }
-    .post-body-content > p:first-of-type::first-letter { font-size: 4em; font-weight: bold; float: left; line-height: 0.8; margin-right: 0.1em; color: #ddd; }
+    .post-body-content > p:first-of-type::first-letter { font-size: 4em; font-weight: bold; float: left; line-height: 0.8; margin-right: 0.1em; color: gray; }
     .post-body-content img { max-width: 100%; height: auto; display: block; margin: 2em auto; border-radius: 4px; box-shadow: 0 8px 25px rgba(0,0,0,0.3); filter: sepia(20%) brightness(95%); }
-    .post-body-content .wp-block-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 2.5em 0; }
+    .post-body-content .wp-block-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); margin: 2.5em 0; }
     .post-body-content blockquote { max-width: 70ch; margin: 2.5em auto; padding: 1.5em 2em; font-size: 1.4em; font-style: italic; line-height: 1.4; background-color: rgba(255, 255, 255, 0.05); border: none; border-left: 4px solid #aaa; }
-    .card-content-view .brand-content { max-width: 850px; margin: 0 auto; text-align: center; }
-    .brand-card-footer { margin-top: 40px; opacity: 0.7; }
-    .card-close-button { position: absolute; top: 15px; right: 15px; font-size: 2.5rem; color: inherit; background: none; border: none; cursor: pointer; z-index: 10; }
+    .card-content-view .brand-content { 
+        font-weight: bold; max-width: 850px; margin: 0 auto; text-align: center;  
+        padding: 100px 20px;
+
+    }
+    /* --- NEW: Restored Brand Card Link Style --- */
+    .card-content-view .brand-content a {
+        display: inline-block; /* Allows padding, margins, and border to work correctly */
+        margin-top: 30px;
+        padding: 12px 24px;
+        border: 1px solid #fff;
+        border-radius: 30px; /* Creates the pill shape */
+        color: #fff;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .card-content-view .brand-content a:hover {
+        background-color: #fff;
+        color: #111; /* Inverts colors for a satisfying hover effect */
+        transform: scale(1.05);
+    }
+    
+    .card-close-button { position: fixed; top: 15px; right: 15px; font-size: 2.5rem; color: inherit; background: none; border: none; cursor: pointer; z-index: 10; }
     .propose-form-container { max-width: 850px; margin: 0 auto; text-align: left; }
     .propose-form-container h1 { color: #111; }
     .propose-form-container p { color: #666; margin-top: -15px; margin-bottom: 25px; font-size: 1rem; }
@@ -50,8 +109,63 @@ get_header();
     .propose-form-container textarea { min-height: 150px; resize: vertical; }
     .propose-form-container .captcha-group { display: flex; align-items: center; margin-bottom: 20px; color: #333; }
     .propose-form-container button[type="submit"] { width: 100%; padding: 15px; background-color: #333; color: #fff; border: none; border-radius: 4px; font-size: 1.1rem; cursor: pointer; }
-    .add-card-button { position: fixed; z-index: 2000; bottom: 40px; right: 40px; width: 60px; height: 60px; background-color: #f0f0f0; color: #333; border: none; border-radius: 50%; font-size: 3rem; line-height: 60px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: all 0.4s ease; cursor: pointer; }
+    .add-card-button { position: fixed; z-index: 2000; bottom: 40px; right: 40px; width: 60px; height: 60px; background-color: #f0f0f0; color: #333; border: none; border-radius: 50%; font-size: 3rem; line-height: 60px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: all 0.4s ease; cursor: pointer; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 10px;
+    padding-right: 10px;
+    padding-left: 10px;
+    padding-top: 5px;
+    }
     .add-card-button.is-disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+
+
+        /* --- NEW: Image Lightbox Styling --- */
+    .image-lightbox-overlay {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 6000; /* Above the expanded card */
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        cursor: zoom-out;
+    }
+    .image-lightbox-overlay.is-visible {
+        opacity: 1;
+        pointer-events: all;
+    }
+    .image-lightbox-overlay img {
+        display: block;
+        max-height: 90vh;
+        max-width: 90vw;
+        box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        border-radius: 4px;
+        width: 100%; /* On mobile, take up full width */
+    }
+    /* Desktop-specific sizing */
+    @media (min-width: 769px) {
+
+        .image-lightbox-overlay img {
+            width: 50%; /* On desktop, take up 50% width */
+        }
+
+        .post-body-content {
+
+              padding-top: 50px;
+
+        }
+
+        .card-content-view .brand-content {
+       
+            padding: 100px 20px;
+        }
+    }
 </style>
 
 <div id="page-loader"><div id="loader-spiral"></div></div>
