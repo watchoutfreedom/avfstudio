@@ -118,6 +118,20 @@ error_log('Name: ' . $name);
 error_log('Email: ' . $email);
 error_log('Message: ' . $message);
 
+// Add this to your theme's functions.php to test if wp_mail is working
+function test_wp_mail() {
+    $to = 'watchoutfreedom@gmail.com';
+    $subject = 'Test Email';
+    $message = 'This is a test email.';
+    
+    $sent = wp_mail($to, $subject, $message);
+    var_dump($sent);
+    wp_die();
+}
+add_action('wp_ajax_test_wp_mail', 'test_wp_mail');
+add_action('wp_ajax_nopriv_test_wp_mail', 'test_wp_mail');
+
+
 // Enqueue your script and localize it
 function enqueue_custom_scripts() {
     wp_enqueue_script('your-script-handle', get_template_directory_uri() . '/js/your-script.js', array('jquery'), null, true);
