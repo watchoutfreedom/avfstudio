@@ -52,6 +52,7 @@ get_header();
     .brand-card { background-color: #111; background-image: none !important; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; text-align: center; }
     .brand-card h1 { color: white; margin: 0; letter-spacing: 1px; font-size: 2.5rem; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; }
     .brand-card h2 { color: #aaa; margin: 0; font-size: 0.9rem; font-weight: 300; }
+    .brand-card-logo { color: #aaa; margin: 0; font-size: 0.9rem; font-weight: 300; }
     /* --- NEW: Hides the title/slogan on the expanded Brand Card --- */
     .brand-card.is-expanded h1,
     .brand-card.is-expanded h2 {
@@ -289,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         highestZ = document.querySelectorAll('.post-page').length;
         setTimeout(() => {
-            const brandCardData = { type: 'brand', title: 'AVF', slogan: 'Play Your Creative Card.', content: `<div class="brand-content"><p>A good foundational concept is the only true way to stand out. Reach us for a touch up session.</p><a href="#" id="brand-contact-link">+ request your card</a></div><div class="brand-card-footer"><div>AVF</div><div>Play your creative card.</div></div>` };
+            const brandCardData = { type: 'brand', title: 'AVF', slogan: 'Play Your Creative Card.', content: `<div class="brand-content"><p>A good foundational concept is the only true way to stand out. Reach us for a touch up session.</p><a href="#" id="brand-contact-link">+ request your card</a></div><div class="brand-card-footer"><div class="brand-card-logo">AVF</div></div>` };
             const brandCard = createCard(brandCardData);
             brandCard.style.left=`calc(50% - 125px)`,brandCard.style.top=`40%`,brandCard.style.setProperty('--r','-2deg');
             setTimeout(()=>brandCard.classList.add("is-visible"),50);
