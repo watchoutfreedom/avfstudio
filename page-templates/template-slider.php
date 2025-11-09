@@ -433,15 +433,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function expandCard(cardElement){
         if(expandedCard || !cardElement.cardData) return;
-        expandedCard = cardElement; body.classList.add("card-is-active");
-
-
+        expandedCard = cardElement; 
+        body.classList.add("card-is-active");
+        
         // NEW: Remove hover effects and transitions during expansion
         cardElement.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
         cardElement.style.transform = 'translate(-50%, -50%) rotate(0deg) scale(1)';
         cardElement.style.boxShadow = '0 10px 30px rgba(0,0,0,0.4)';
         
-        const data = cardElement.cardData; 
+        const data = cardElement.cardData;  // This line was duplicated
         if (data.type === 'propose') {
             cardElement.style.setProperty('--expanded-bg', '#fff');
             cardElement.style.setProperty('--expanded-text-color', '#111');
@@ -449,15 +449,7 @@ document.addEventListener('DOMContentLoaded', function() {
             cardElement.style.setProperty('--expanded-bg', 'rgba(30, 30, 30, 0.97)');
             cardElement.style.setProperty('--expanded-text-color', '#fff');
         }
-
-        const data = cardElement.cardData; 
-        if (data.type === 'propose') {
-            cardElement.style.setProperty('--expanded-bg', '#fff');
-            cardElement.style.setProperty('--expanded-text-color', '#111');
-        } else {
-            cardElement.style.setProperty('--expanded-bg', 'rgba(30, 30, 30, 0.97)');
-            cardElement.style.setProperty('--expanded-text-color', '#fff');
-        }
+        
         const contentView = document.createElement("div"); contentView.className = "card-content-view";
         const closeButton = document.createElement("button"); closeButton.className = "card-close-button"; closeButton.innerHTML = "&times;";
         closeButton.onclick = (e) => { e.stopPropagation(); collapseCard(); };
@@ -467,34 +459,31 @@ document.addEventListener('DOMContentLoaded', function() {
         contentView.innerHTML = contentHTML; contentView.prepend(closeButton);
         cardElement.appendChild(contentView); cardElement.classList.add("is-expanded");
 
-        // --- INSERT NEW CODE BLOCK HERE ---
-            // After the card is expanded and content is added, make images clickable.
-            const lightbox = document.getElementById('image-lightbox');
-            if (lightbox) {
-                const imagesInPost = cardElement.querySelectorAll('.post-body-content img');
-                imagesInPost.forEach(img => {
-                    img.style.cursor = 'zoom-in'; // Add visual cue
-                    img.onclick = (e) => {
-                        e.stopPropagation(); // Prevent card from thinking it was clicked
-                        
-                        // Create a new image element for the lightbox
-                        const lightboxImg = new Image();
-                        lightboxImg.src = img.src;
+        // Image lightbox functionality
+        const lightbox = document.getElementById('image-lightbox');
+        if (lightbox) {
+            const imagesInPost = cardElement.querySelectorAll('.post-body-content img');
+            imagesInPost.forEach(img => {
+                img.style.cursor = 'zoom-in'; // Add visual cue
+                img.onclick = (e) => {
+                    e.stopPropagation(); // Prevent card from thinking it was clicked
+                    
+                    // Create a new image element for the lightbox
+                    const lightboxImg = new Image();
+                    lightboxImg.src = img.src;
 
-                        // Clear any previous image and add the new one
-                        lightbox.innerHTML = ''; 
-                        lightbox.appendChild(lightboxImg);
-                        lightbox.classList.add('is-visible');
-                    };
-                });
-
-                // Add listener to close the lightbox
-                lightbox.onclick = () => {
-                    lightbox.classList.remove('is-visible');
+                    // Clear any previous image and add the new one
+                    lightbox.innerHTML = ''; 
+                    lightbox.appendChild(lightboxImg);
+                    lightbox.classList.add('is-visible');
                 };
-            }
-            // --- END OF NEW CODE BLOCK ---
+            });
 
+            // Add listener to close the lightbox
+            lightbox.onclick = () => {
+                lightbox.classList.remove('is-visible');
+            };
+        }
 
         if (data.type === 'propose') {
             setupProposeForm();
@@ -508,7 +497,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-                        // MODIFIED: Services button handler - now creates only Creative Mentorship card with auto-expand
+            // MODIFIED: Services button handler - now creates only Creative Mentorship card with auto-expand
             const servicesButton = document.getElementById('our-services-btn');
             if (servicesButton) {
                 servicesButton.onclick = (e) => {
