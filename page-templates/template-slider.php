@@ -390,7 +390,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 type: 'brand', 
                 title: 'watch Out Studio', 
                 slogan: 'Play your creative card.', 
-                content: `<div class="brand-content"><p>A good foundational concept is the only true way to stand out. Reach us for a touch-up session.</p><a href="#" id="brand-contact-link">Contact</a><button id="our-services-btn" class="services-button">Our services</button></div><div class="brand-card-footer"><div class="brand-card-logo">AVF</div></div>` 
+                content: `<div class="brand-content"><p>A good foundational concept is the only true way to stand out. Reach us for a touch-up session.</p><a href="#" id="brand-contact-link">Contact</a><button id="our-services-btn" class="services-button">Our services</button></div><div class="brand-card-footer"><div class="brand-card-logo">WOSTUDIO</div></div>` 
             };
             const brandCard = createCard(brandCardData);
             brandCard.style.left=`calc(50% - 125px)`,brandCard.style.top=`40%`,brandCard.style.setProperty('--r','-2deg');
