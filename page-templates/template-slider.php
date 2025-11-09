@@ -131,7 +131,7 @@ get_header();
     .propose-form-container h1 { color: #111; }
     .propose-form-container p { color: #666; margin-top: -15px; margin-bottom: 25px; font-size: 1rem; }
     .propose-form-container label { display: block; margin-bottom: 5px; font-weight: 600; color: #555; }
-    .propose-form-container input, .propose-form-container textarea { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; box-sizing: border-box; background-color: #f9f9f9; }
+    .propose-form-container input, .propose-form-container textarea { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 30px; font-size: 1rem; box-sizing: border-box; background-color: #f9f9f9; }
     .propose-form-container textarea { min-height: 150px; resize: vertical; }
     .propose-form-container .captcha-group { display: flex; align-items: center; margin-bottom: 20px; color: #333; }
     .propose-form-container button[type="submit"] { width: 100%; padding: 15px; background-color: #333; color: #fff; border: none; border-radius: 4px; font-size: 1.1rem; cursor: pointer; }
