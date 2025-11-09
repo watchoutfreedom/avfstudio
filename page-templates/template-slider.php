@@ -134,7 +134,7 @@ get_header();
     .propose-form-container input, .propose-form-container textarea { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 30px; font-size: 1rem; box-sizing: border-box; background-color: #f9f9f9; }
     .propose-form-container textarea { min-height: 150px; resize: vertical; }
     .propose-form-container .captcha-group { display: flex; align-items: center; margin-bottom: 20px; color: #333; }
-    .propose-form-container button[type="submit"] { width: 100%; padding: 15px; background-color: #333; color: #fff; border: none; border-radius: 4px; font-size: 1.1rem; cursor: pointer; }
+    .propose-form-container button[type="submit"] { width: 100%; padding: 15px; background-color: #333; color: #fff; border: none; border-radius: 30px; font-size: 1.1rem; cursor: pointer; }
     .add-card-button { position: fixed; z-index: 2000; bottom: 40px; right: 40px; width: 60px; height: 60px; background-color: #f0f0f0; color: #333; border: none; border-radius: 50%; font-size: 3rem; line-height: 60px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: all 0.4s ease; cursor: pointer; 
     display: flex;
     justify-content: center;
@@ -388,9 +388,9 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             const brandCardData = { 
                 type: 'brand', 
-                title: 'AVF', 
-                slogan: 'Play Your Creative Card.', 
-                content: `<div class="brand-content"><p>A good foundational concept is the only true way to stand out. Reach us for a touch-up session.</p><a href="#" id="brand-contact-link">Start a Blank Card with us</a><button id="our-services-btn" class="services-button">Our services</button></div><div class="brand-card-footer"><div class="brand-card-logo">AVF</div></div>` 
+                title: 'WOSTUDIO', 
+                slogan: 'Play your creative card.', 
+                content: `<div class="brand-content"><p>A good foundational concept is the only true way to stand out. Reach us for a touch-up session.</p><a href="#" id="brand-contact-link">Contact</a><button id="our-services-btn" class="services-button">Our services</button></div><div class="brand-card-footer"><div class="brand-card-logo">AVF</div></div>` 
             };
             const brandCard = createCard(brandCardData);
             brandCard.style.left=`calc(50% - 125px)`,brandCard.style.top=`40%`,brandCard.style.setProperty('--r','-2deg');
@@ -413,7 +413,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function throwProposeCard(andExpand = false){
-        const formHTML = `<div class="propose-form-container"><h1>This is your Blank Card</h1><p>Tell us about your challenge. We'll reply to schedule your complimentary session.</p><form id="propose-card-form"><label for="propose-name">Your Name</label><input type="text" id="propose-name" name="name" required><label for="propose-email">Your Email</label><input type="email" id="propose-email" name="email" required><label for="propose-message">Describe your challenge or idea</label><textarea id="propose-message" name="message" required></textarea><div class="captcha-group"><label for="propose-captcha">What is <span id="propose-captcha-q1">3</span> + <span id="propose-captcha-q2">4</span>?</label><input type="text" id="propose-captcha" name="captcha" required></div><button type="submit">Request Concept Session</button><div id="propose-form-status" style="margin-top:15px; text-align:center;"></div></form></div>`;
+        const formHTML = `<div class="propose-form-container"><h1>This is your Blank Card</h1><p>Tell us about your challenge. We'll reply to schedule your complimentary session.</p><form id="propose-card-form"><label for="propose-name">Your Name</label><input type="text" id="propose-name" name="name" required><label for="propose-email">Your Email</label><input type="email" id="propose-email" name="email" required><label for="propose-message">Describe your challenge or idea</label><textarea id="propose-message" name="message" required></textarea><div class="captcha-group"><label for="propose-captcha">What is <span id="propose-captcha-q1">3</span> + <span id="propose-captcha-q2">4</span>?</label><input type="text" id="propose-captcha" name="captcha" required></div><button type="submit">Request a session</button><div id="propose-form-status" style="margin-top:15px; text-align:center;"></div></form></div>`;
         const proposeCardData = { type: 'propose', title: 'Start a card', content: formHTML };
         const proposeCard = createCard(proposeCardData);
         const randomX=Math.floor(Math.random()*(window.innerWidth-250-80))+40,randomY=Math.floor(Math.random()*(window.innerHeight-375-80))+40,randomRot=Math.random()*20-10;
