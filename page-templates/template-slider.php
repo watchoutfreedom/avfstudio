@@ -417,7 +417,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function throwProposeCard(andExpand = false){
         const formHTML = `<div class="propose-form-container"><h1>This is your Blank Card</h1><p>Tell us about your challenge. We'll reply to schedule your complimentary session.</p><form id="propose-card-form"><label for="propose-name">Your Name</label><input type="text" id="propose-name" name="name" required><label for="propose-email">Your Email</label><input type="email" id="propose-email" name="email" required><label for="propose-message">Describe your challenge or idea</label><textarea id="propose-message" name="message" required></textarea><div class="captcha-group"><label for="propose-captcha">What is <span id="propose-captcha-q1">3</span> + <span id="propose-captcha-q2">4</span>?</label><input type="text" id="propose-captcha" name="captcha" required></div><button type="submit">Request a session</button><div id="propose-form-status" style="margin-top:15px; text-align:center;"></div></form></div>`;
-        const proposeCardData = { type: 'propose', title: 'Start a card', content: formHTML };
+        const proposeCardData = { type: 'propose', title: 'Start yours', content: formHTML };
         const proposeCard = createCard(proposeCardData);
         const randomX=Math.floor(Math.random()*(window.innerWidth-250-80))+40,randomY=Math.floor(Math.random()*(window.innerHeight-375-80))+40,randomRot=Math.random()*20-10;
         proposeCard.style.left=`${randomX}px`,proposeCard.style.top=`${randomY}px`,proposeCard.style.setProperty("--r",`${randomRot}deg`);
