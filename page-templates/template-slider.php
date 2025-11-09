@@ -518,7 +518,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const contentView = expandedCard.querySelector(".card-content-view");
         if (contentView) expandedCard.removeChild(contentView);
         expandedCard.classList.remove("is-expanded");
-        expandedCard.style.zIndex = '';
         expandedCard = null;
     }
 function setupProposeForm() {
