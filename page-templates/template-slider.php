@@ -290,34 +290,36 @@ get_header();
     }
 
 
-// ADDED: Get services posts data separately
-$services_posts_data = array();
+// MODIFIED: Get only the Creative Mentorship service post
+$creative_mentorship_data = null;
 if ($services_tag) {
-    $services_args_full = array(
+    // Look for the Creative Mentorship post specifically
+    $mentorship_args = array(
         'post_type' => 'post', 
-        'posts_per_page' => -1, 
+        'posts_per_page' => 1, 
         'tag_id' => $services_tag->term_id,
-        'post_status' => 'publish'
+        'post_status' => 'publish',
+        's' => 'Creative Mentorship' // Search for Creative Mentorship in title
     );
-    $services_query_full = new WP_Query($services_args_full);
-    if ($services_query_full->have_posts()) {
-        foreach ($services_query_full->get_posts() as $post) {
-            setup_postdata($post);
-            $thumb_url_raw = get_the_post_thumbnail_url($post->ID, 'medium_large');
-            $large_url_raw = get_the_post_thumbnail_url($post->ID, 'large');
-            $image_url = $thumb_url_raw ? str_replace('http://', 'https://', $thumb_url_raw) : false;
-            $large_image_url = $large_url_raw ? str_replace('http://', 'https://', $large_url_raw) : false;
-            
-            $services_posts_data[] = [
-                'title' => get_the_title($post),
-                'content' => apply_filters('the_content', $post->post_content),
-                'image_url' => $image_url ? esc_url($image_url) : '',
-                'large_image_url' => $large_image_url ? esc_url($large_image_url) : ''
-            ];
-        }
-        wp_reset_postdata();
+    $mentorship_query = new WP_Query($mentorship_args);
+    
+    if ($mentorship_query->have_posts()) {
+        $mentorship_post = $mentorship_query->posts[0];
+        setup_postdata($mentorship_post);
+        $thumb_url_raw = get_the_post_thumbnail_url($mentorship_post->ID, 'medium_large');
+        $large_url_raw = get_the_post_thumbnail_url($mentorship_post->ID, 'large');
+        $image_url = $thumb_url_raw ? str_replace('http://', 'https://', $thumb_url_raw) : false;
+        $large_image_url = $large_url_raw ? str_replace('http://', 'https://', $large_url_raw) : false;
+        
+        $creative_mentorship_data = [
+            'title' => get_the_title($mentorship_post),
+            'content' => apply_filters('the_content', $mentorship_post->post_content),
+            'image_url' => $image_url ? esc_url($image_url) : '',
+            'large_image_url' => $large_image_url ? esc_url($large_image_url) : ''
+        ];
     }
-    }
+    wp_reset_postdata();
+}
 
     $initial_posts_data = []; $additional_posts_data = []; $post_index = 0;
     foreach ($all_posts_collection as $post) {
@@ -344,7 +346,7 @@ if ($services_tag) {
 <script>
     const initialPostsData = <?php echo json_encode($initial_posts_data); ?>;
     const additionalPostsData = <?php echo json_encode($additional_posts_data); ?>;
-    const servicesPostsData = <?php echo json_encode($services_posts_data); ?>; // ADDED: Services posts data
+    const creativeMentorshipData = <?php echo json_encode($creative_mentorship_data); ?>; // MODIFIED: Only Creative Mentorship data
     const ajax_object = <?php echo json_encode(array( 'ajax_url' => admin_url( 'admin-ajax.php' ), 'nonce' => wp_create_nonce( 'concept_request_nonce' ) )); ?>;
 </script>
 
@@ -372,6 +374,7 @@ document.addEventListener('DOMContentLoaded', function() {
         switch (data.type) {
             case 'brand': card.classList.add('brand-card'); card.innerHTML = `<h1>${data.title}</h1><h2>${data.slogan}</h2><div class="hand-icon-anim"></div>`; break;
             case 'propose': card.classList.add('propose-card'); card.innerHTML = `<h3>${data.title}</h3>`; break;
+            case 'services': card.classList.add('services-card'); card.innerHTML = `<div class="services-card-title">${data.title}</div>`; break; // MODIFIED: Services card
             default: card.style.setProperty("--bg-image", `url('${data.image_url}')`); break;
         }
         highestZ++; card.style.zIndex = highestZ; container.appendChild(card); return card;
@@ -443,7 +446,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const closeButton = document.createElement("button"); closeButton.className = "card-close-button"; closeButton.innerHTML = "&times;";
         closeButton.onclick = (e) => { e.stopPropagation(); collapseCard(); };
         let contentHTML = '';
-        if (data.type === 'post') { contentHTML = `<h1>${data.title}</h1><div class="post-body-content">${data.content}</div>`; }
+        if (data.type === 'post' || data.type === 'services') { contentHTML = `<h1>${data.title}</h1><div class="post-body-content">${data.content}</div>`; }
         else { contentHTML = data.content; }
         contentView.innerHTML = contentHTML; contentView.prepend(closeButton);
         cardElement.appendChild(contentView); cardElement.classList.add("is-expanded");
@@ -489,14 +492,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-                // ADDED: Services button handler
+                // MODIFIED: Services button handler - now creates only Creative Mentorship card
             const servicesButton = document.getElementById('our-services-btn');
             if (servicesButton) {
                 servicesButton.onclick = (e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     collapseCard();
-                    setTimeout(() => createServicesCards(), 400);
+                    setTimeout(() => createCreativeMentorshipCard(), 400);
                 }
             }
         }
@@ -575,7 +578,6 @@ function setupProposeForm() {
     });
 }
 
-
     // --- Unified Drag-and-Drop Engine ---
     let activeElement=null, isDragging=false, startX, startY, initialX, initialY;
     
@@ -621,54 +623,45 @@ function setupProposeForm() {
         document.removeEventListener("mouseup", dragEnd); 
         document.removeEventListener("touchend", dragEnd);
     }
-function createServicesCards() {
-    if (!servicesPostsData || servicesPostsData.length === 0) return;
+
+// MODIFIED: Create only the Creative Mentorship card
+function createCreativeMentorshipCard() {
+    if (!creativeMentorshipData) return;
     
     // Close the brand card first
     if (expandedCard && expandedCard.cardData && expandedCard.cardData.type === 'brand') {
         collapseCard();
     }
     
-    // Create a black card for each services post
-    servicesPostsData.forEach((serviceData, index) => {
-        setTimeout(() => {
-            const serviceCardData = {
-                type: 'services',
-                title: serviceData.title,
-                content: `<h1>${serviceData.title}</h1><div class="post-body-content">${serviceData.content}</div>`,
-                image_url: serviceData.image_url,
-                large_image_url: serviceData.large_image_url
-            };
-            
-            const serviceCard = createCard(serviceCardData);
-            serviceCard.classList.add('services-card');
-            
-            // ADDED: Display title on the card when not expanded
-            serviceCard.innerHTML = `<div class="services-card-title">${serviceData.title}</div>`;
-            serviceCard.style.backgroundImage = 'none';
-            serviceCard.style.backgroundColor = '#000';
-            
-            // Position cards in a grid-like pattern
-            const cardsPerRow = Math.min(3, servicesPostsData.length);
-            const cardWidth = 250;
-            const cardHeight = 375;
-            const horizontalSpacing = (window.innerWidth - (cardsPerRow * cardWidth)) / (cardsPerRow + 1);
-            const verticalSpacing = 50;
-            
-            const row = Math.floor(index / cardsPerRow);
-            const col = index % cardsPerRow;
-            
-            const posX = horizontalSpacing + (col * (cardWidth + horizontalSpacing));
-            const posY = 100 + (row * (cardHeight + verticalSpacing));
-            const randomRot = Math.random() * 10 - 5;
-            
-            serviceCard.style.left = `${posX}px`;
-            serviceCard.style.top = `${posY}px`;
-            serviceCard.style.setProperty("--r", `${randomRot}deg`);
-            
-            setTimeout(() => serviceCard.classList.add("is-visible"), index * 100);
-        }, index * 150);
-    });
+    // Create a black card for Creative Mentorship
+    const serviceCardData = {
+        type: 'services',
+        title: creativeMentorshipData.title,
+        content: `<h1>${creativeMentorshipData.title}</h1><div class="post-body-content">${creativeMentorshipData.content}</div>`,
+        image_url: creativeMentorshipData.image_url,
+        large_image_url: creativeMentorshipData.large_image_url
+    };
+    
+    const serviceCard = createCard(serviceCardData);
+    serviceCard.classList.add('services-card');
+    
+    // Display title on the card when not expanded
+    serviceCard.innerHTML = `<div class="services-card-title">${creativeMentorshipData.title}</div>`;
+    serviceCard.style.backgroundImage = 'none';
+    serviceCard.style.backgroundColor = '#000';
+    
+    // Position the card in the center of the screen
+    const cardWidth = 250;
+    const cardHeight = 375;
+    const posX = (window.innerWidth - cardWidth) / 2;
+    const posY = (window.innerHeight - cardHeight) / 2;
+    const randomRot = Math.random() * 10 - 5;
+    
+    serviceCard.style.left = `${posX}px`;
+    serviceCard.style.top = `${posY}px`;
+    serviceCard.style.setProperty("--r", `${randomRot}deg`);
+    
+    setTimeout(() => serviceCard.classList.add("is-visible"), 100);
 }
 
     // --- Event Listeners & Initial Calls ---
