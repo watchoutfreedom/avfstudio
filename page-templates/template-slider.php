@@ -656,7 +656,7 @@ function createCreativeMentorshipCard() {
     const serviceCardData = {
         type: 'services',
         title: creativeMentorshipData.title,
-        content: `<h1>${creativeMentorshipData.title}</h1><div class="post-body-content">${creativeMentorshipData.content}</div>`,
+        content: `<div class="post-body-content">${creativeMentorshipData.content}</div>`,
         image_url: creativeMentorshipData.image_url,
         large_image_url: creativeMentorshipData.large_image_url
     };
