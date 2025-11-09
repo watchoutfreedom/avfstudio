@@ -440,6 +440,7 @@ document.addEventListener('DOMContentLoaded', function() {
         cardElement.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
         cardElement.style.transform = 'translate(-50%, -50%) rotate(0deg) scale(1)';
         cardElement.style.boxShadow = '0 10px 30px rgba(0,0,0,0.4)';
+        cardElement.style.zIndex = '5000'; // NEW: Cancel hover z-index and set to expanded card z-index
         
         const data = cardElement.cardData;  // This line was duplicated
         if (data.type === 'propose') {
@@ -517,6 +518,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const contentView = expandedCard.querySelector(".card-content-view");
         if (contentView) expandedCard.removeChild(contentView);
         expandedCard.classList.remove("is-expanded");
+        expandedCard.style.zIndex = '';
         expandedCard = null;
     }
 function setupProposeForm() {
