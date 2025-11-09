@@ -435,6 +435,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if(expandedCard || !cardElement.cardData) return;
         expandedCard = cardElement; 
         body.classList.add("card-is-active");
+
+                // NEW: Store the original z-index before changing it
+        cardElement.dataset.originalZIndex = cardElement.style.zIndex;
         
         // NEW: Remove hover effects and transitions during expansion
         cardElement.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
@@ -512,14 +515,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function collapseCard() {
-        if (!expandedCard) return;
-        body.classList.remove("card-is-active");
-        const contentView = expandedCard.querySelector(".card-content-view");
-        if (contentView) expandedCard.removeChild(contentView);
-        expandedCard.classList.remove("is-expanded");
-        expandedCard = null;
-    }
+function collapseCard() {
+    if (!expandedCard) return;
+    
+    // Store the current expanded card's z-index before collapsing
+    const collapsedZIndex = expandedCard.style.zIndex;
+    
+    body.classList.remove("card-is-active");
+    const contentView = expandedCard.querySelector(".card-content-view");
+    if (contentView) expandedCard.removeChild(contentView);
+    expandedCard.classList.remove("is-expanded");
+    
+    // NEW: Reset z-index to its original value (before expansion) but ensure it's lower than expanded cards
+    // Keep the card's position in the deck but make sure it's below any currently expanded card
+    expandedCard.style.zIndex = Math.min(parseInt(collapsedZIndex) - 1, highestZ).toString();
+    
+    expandedCard = null;
+}
 function setupProposeForm() {
     const form = document.getElementById('propose-card-form');
     if (!form) return;
