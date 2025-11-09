@@ -434,6 +434,22 @@ document.addEventListener('DOMContentLoaded', function() {
     function expandCard(cardElement){
         if(expandedCard || !cardElement.cardData) return;
         expandedCard = cardElement; body.classList.add("card-is-active");
+
+
+        // NEW: Remove hover effects and transitions during expansion
+        cardElement.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+        cardElement.style.transform = 'translate(-50%, -50%) rotate(0deg) scale(1)';
+        cardElement.style.boxShadow = '0 10px 30px rgba(0,0,0,0.4)';
+        
+        const data = cardElement.cardData; 
+        if (data.type === 'propose') {
+            cardElement.style.setProperty('--expanded-bg', '#fff');
+            cardElement.style.setProperty('--expanded-text-color', '#111');
+        } else {
+            cardElement.style.setProperty('--expanded-bg', 'rgba(30, 30, 30, 0.97)');
+            cardElement.style.setProperty('--expanded-text-color', '#fff');
+        }
+
         const data = cardElement.cardData; 
         if (data.type === 'propose') {
             cardElement.style.setProperty('--expanded-bg', '#fff');
@@ -492,14 +508,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-                // MODIFIED: Services button handler - now creates only Creative Mentorship card
+                        // MODIFIED: Services button handler - now creates only Creative Mentorship card with auto-expand
             const servicesButton = document.getElementById('our-services-btn');
             if (servicesButton) {
                 servicesButton.onclick = (e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     collapseCard();
-                    setTimeout(() => createCreativeMentorshipCard(), 400);
+                    // REMOVED: The setTimeout delay since we're auto-expanding now
+                    createCreativeMentorshipCard();
                 }
             }
         }
@@ -624,7 +641,7 @@ function setupProposeForm() {
         document.removeEventListener("touchend", dragEnd);
     }
 
-// MODIFIED: Create only the Creative Mentorship card
+// MODIFIED: Create only the Creative Mentorship card and auto-expand it
 function createCreativeMentorshipCard() {
     if (!creativeMentorshipData) return;
     
@@ -661,7 +678,11 @@ function createCreativeMentorshipCard() {
     serviceCard.style.top = `${posY}px`;
     serviceCard.style.setProperty("--r", `${randomRot}deg`);
     
-    setTimeout(() => serviceCard.classList.add("is-visible"), 100);
+    setTimeout(() => {
+        serviceCard.classList.add("is-visible");
+        // MODIFIED: Auto-expand the card after it becomes visible
+        setTimeout(() => expandCard(serviceCard), 300);
+    }, 100);
 }
 
     // --- Event Listeners & Initial Calls ---
